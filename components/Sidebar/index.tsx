@@ -6,19 +6,40 @@ import { routeList } from "./constant";
 import Image from "next/image";
 import { Logo, clinca_logo } from "@/assets/images";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const screenHeight = window.innerHeight;
-const sidebarMaxHeight = screenHeight - 200;
-
-const customTheme: CustomFlowbiteTheme["sidebar"] = {
-  root: {
-    base: "bg-white",
-    inner: `bg-white overflow-auto max-h-[${sidebarMaxHeight}]`,
-  },
-};
+// const screenHeight = window.innerHeight;
+// const sidebarMaxHeight = screenHeight - 200;
 
 export const SidebarSection = () => {
   const pathname = usePathname();
+  const [sidebarMaxHeight, setSidebarMaxHeight] = useState(0);
+
+  useEffect(() => {
+    // Get the window height after the component mounts
+    const updateWindowDimensions = () => {
+      const newHeight = window.innerHeight;
+      setSidebarMaxHeight(newHeight - 200);
+    };
+
+    // Attach the event listener
+    window.addEventListener("resize", updateWindowDimensions);
+
+    // Call the function initially
+    updateWindowDimensions();
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", updateWindowDimensions);
+    };
+  }, []);
+
+  const customTheme: CustomFlowbiteTheme["sidebar"] = {
+    root: {
+      base: "bg-white",
+      inner: `bg-white overflow-auto max-h-[${sidebarMaxHeight}]`,
+    },
+  };
 
   const sidebarStyle = {
     maxHeight: `${sidebarMaxHeight}px`,
