@@ -36,8 +36,8 @@ export const SidebarSection = () => {
 
   const customTheme: CustomFlowbiteTheme["sidebar"] = {
     root: {
-      base: "bg-white",
-      inner: `bg-white overflow-auto max-h-[${sidebarMaxHeight}]`,
+      base: "bg-white h-[80%]",
+      inner: `bg-white overflow-y-auto max-h-[95%]`,
     },
   };
 
@@ -114,7 +114,7 @@ export const SidebarSection = () => {
           </Sidebar.ItemGroup>
         </Sidebar.Items>
       </Sidebar>
-      <article className="w-full p-3 bottom-5 bg-white flex justify-center">
+      <article className="fixed w-full p-3 bottom-5 bg-white flex justify-center">
         <div className="w-[185px] h-[55px] rounded-[8px] bg-[#8AA0C2] p-2 flex items-center justify-start gap-3">
           <Image
             src={clinca_logo}
