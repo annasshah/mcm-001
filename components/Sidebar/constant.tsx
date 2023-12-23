@@ -1,14 +1,32 @@
-import { HiHome } from "react-icons/hi2";
-import { IoIosPeople } from "react-icons/io";
-import { FiInbox } from "react-icons/fi";
-import { RiToolsFill } from "react-icons/ri";
-import { MdInventory2 } from "react-icons/md";
+import {
+  home,
+  appointment,
+  inbox,
+  inventory,
+  patients,
+  phone_leads,
+  pos,
+  reputation,
+  tools,
+} from "@/assets/SVGs";
 
-export const routeList = [
+interface Route {
+  id: number;
+  name: string;
+  icon?: {
+    src: string;
+    height: number;
+    width: number;
+  };
+  route?: string;
+  children?: Route[];
+}
+
+export const routeList: Route[] = [
   {
     id: 1,
     name: "Home",
-    icon: HiHome,
+    icon: home,
     children: [
       { id: 1, name: "Dashboard", route: "/dashboard" },
       { id: 2, name: "Profiles", route: "profiles" },
@@ -19,7 +37,7 @@ export const routeList = [
   {
     id: 2,
     name: "Patients",
-    icon: IoIosPeople,
+    icon: patients,
     children: [
       { id: 1, name: "All Patients", route: "/patients/all" },
       { id: 2, name: "On-site", route: "/patients/onsite" },
@@ -29,7 +47,7 @@ export const routeList = [
   {
     id: 3,
     name: "Inbox",
-    icon: FiInbox,
+    icon: inbox,
     children: [
       { id: 1, name: "Text", route: "/inbox/text" },
       { id: 2, name: "Whatsapp", route: "/inbox/whatsapp" },
@@ -38,20 +56,22 @@ export const routeList = [
   },
   {
     id: 4,
-    name: "Appoinments",
-    icon: FiInbox,
-    children: [],
+    name: "Appointments",
+    icon: appointment,
+    // children: [],
+    route: "/appoinments",
   },
   {
     id: 5,
     name: "Phone leads",
-    icon: FiInbox,
-    children: [],
+    icon: phone_leads,
+    // children: [],
+    route: "/phoneleads",
   },
   {
     id: 6,
     name: "Reputation",
-    icon: FiInbox,
+    icon: reputation,
     children: [
       { id: 1, name: "Public Reviews", route: "/reputation/publicreviews" },
       { id: 2, name: "Private Feedback", route: "/reputation/privatefeedback" },
@@ -62,7 +82,7 @@ export const routeList = [
   {
     id: 7,
     name: "POS",
-    icon: FiInbox,
+    icon: pos,
     children: [
       { id: 1, name: "Sales", route: "/pos/sales" },
       { id: 2, name: "Return", route: "/pos/return" },
@@ -72,7 +92,7 @@ export const routeList = [
   {
     id: 8,
     name: "Inventory",
-    icon: MdInventory2,
+    icon: inventory,
     children: [
       { id: 1, name: "Stock panel", route: "/inventory/stockpanel" },
       { id: 2, name: "Manage", route: "/inventory/manage" },
@@ -81,7 +101,7 @@ export const routeList = [
   {
     id: 9,
     name: "Tools",
-    icon: RiToolsFill,
+    icon: tools,
     children: [
       { id: 1, name: "Email Broadcast", route: "/tools/emailbroadcast" },
       { id: 2, name: "Website Content", route: "/tools/websitecontent" },

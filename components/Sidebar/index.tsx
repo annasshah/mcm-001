@@ -6,43 +6,27 @@ import { routeList } from "./constant";
 import Image from "next/image";
 import { Logo, clinca_logo } from "@/assets/images";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-// const screenHeight = window.innerHeight;
-// const sidebarMaxHeight = screenHeight - 200;
+import { FaChevronRight } from "react-icons/fa";
 
 export const SidebarSection = () => {
   const pathname = usePathname();
-  const [sidebarMaxHeight, setSidebarMaxHeight] = useState(0);
-
-  useEffect(() => {
-    // Get the window height after the component mounts
-    const updateWindowDimensions = () => {
-      const newHeight = window.innerHeight;
-      setSidebarMaxHeight(newHeight - 200);
-    };
-
-    // Attach the event listener
-    window.addEventListener("resize", updateWindowDimensions);
-
-    // Call the function initially
-    updateWindowDimensions();
-
-    // Remove the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("resize", updateWindowDimensions);
-    };
-  }, []);
+  const [openedCollapse, setOpenedCollapse] = useState<number>(-1);
 
   const customTheme: CustomFlowbiteTheme["sidebar"] = {
     root: {
-      base: "bg-white h-[80%]",
-      inner: `bg-white overflow-y-auto max-h-[95%]`,
+      base: "bg-white overflow-y-auto",
+      inner: `bg-white overflow-y-auto flex flex-col justify-between h-full pr-3`,
     },
   };
 
+  const handleCollapseClick = (collapseId: number) => {
+    setOpenedCollapse(collapseId === openedCollapse ? -1 : collapseId);
+  };
+
   const sidebarStyle = {
-    maxHeight: `${sidebarMaxHeight}px`,
+    marginBottom: `80px`,
   };
 
   return (
@@ -65,15 +49,42 @@ export const SidebarSection = () => {
           <Sidebar.ItemGroup className="flex flex-col gap-5 ">
             {routeList.map((list, index) => {
               if (!list.children) {
+                const isRouteActive = list.route === pathname;
+
                 return (
-                  <Sidebar.Item
-                    key={list.id}
-                    // href={list.route || ""}
-                    icon={list.icon}
-                    className="text-[#3A3541]"
-                  >
-                    {list.name}
-                  </Sidebar.Item>
+                  <div key={list.id} className="relative w-full">
+                    {isRouteActive && (
+                      <div
+                        style={{ zIndex: 30 }}
+                        className="w-[6px] h-[40px] bg-[#0F4698] bg-opacity-30 rounded-r-[20px] absolute left-0 -ml-[1.25rem]"
+                      />
+                    )}
+                    <Sidebar.Item
+                      key={list.id}
+                      href={list.route}
+                      icon={() => (
+                        <div className="flex items-center">
+                          <Image
+                            src={list?.icon?.src || ""}
+                            alt="Icon"
+                            height={list?.icon?.height}
+                            width={list?.icon?.width}
+                          />
+                        </div>
+                      )}
+                      label={
+                        <div className="text-[15px] -mr-1">
+                          <FaChevronRight />
+                        </div>
+                      }
+                      labelColor="transparent"
+                      className={`text-[#3A3541] hover:bg-[#0F4698] hover:bg-opacity-30  ${
+                        isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
+                      }`}
+                    >
+                      <h3>{list.name}</h3>
+                    </Sidebar.Item>
+                  </div>
                 );
               } else {
                 const isRouteActive = list.children.some(
@@ -85,21 +96,30 @@ export const SidebarSection = () => {
                     {isRouteActive && (
                       <div
                         style={{ zIndex: 30 }}
-                        className="w-[6px] h-full bg-[#0F4698] bg-opacity-30 rounded-r-[20px] absolute left-0 -ml-[1.25rem]"
+                        className="w-[6px] h-[40px] bg-[#0F4698] bg-opacity-30 rounded-r-[20px] absolute left-0 -ml-[1.25rem]"
                       />
                     )}
                     <Sidebar.Collapse
-                      icon={list.icon}
+                      icon={() => (
+                        <Image
+                          src={list?.icon?.src || ""}
+                          alt="Icon"
+                          height={list?.icon?.height}
+                          width={list?.icon?.width}
+                        />
+                      )}
                       label={list.name}
                       className={`text-[#3A3541] hover:bg-[#0F4698] hover:bg-opacity-30  ${
                         isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
                       }`}
+                      onClick={() => handleCollapseClick(list.id)}
+                      open={list.id === openedCollapse}
                     >
                       {list.children.map((item, index) => (
                         <Sidebar.Item
                           key={item.id}
                           href={item.route}
-                          className={`text-[#3A3541] ${
+                          className={`text-[#3A3541] text-left ${
                             pathname === item.route ? "text-[#0F4698]" : ""
                           }`}
                         >
@@ -114,7 +134,7 @@ export const SidebarSection = () => {
           </Sidebar.ItemGroup>
         </Sidebar.Items>
       </Sidebar>
-      <article className="fixed w-full p-3 bottom-5 bg-white flex justify-center">
+      <article className="fixed w-[233px] p-3 bottom-5 bg-white flex justify-center">
         <div className="w-[185px] h-[55px] rounded-[8px] bg-[#8AA0C2] p-2 flex items-center justify-start gap-3">
           <Image
             src={clinca_logo}
