@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar, SidebarSection } from "@/components";
 
+// contexts
+import { ActiveTabProvider } from "@/context";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,27 +22,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} relative flex h-screen`}>
-        <section
-          className="fixed left-0 top-0 h-full"
-          style={{ width: sidebarWidth }}
-        >
-          <SidebarSection />
-        </section>
-        <section
-          className="flex flex-col flex-grow"
-          style={{ marginLeft: sidebarWidth }}
-        >
-          <Navbar width={sidebarWidth} />
-
+      <ActiveTabProvider>
+        <body className={`${inter.className} relative flex h-screen`}>
           <section
-            className="flex-grow p-4"
-            style={{ minHeight: "calc(100vh - 70px)" }}
+            className="fixed left-0 top-0 h-full"
+            style={{ width: sidebarWidth }}
           >
-            {children}
+            <SidebarSection />
           </section>
-        </section>
-      </body>
+          <section
+            className="flex flex-col flex-grow"
+            style={{ marginLeft: sidebarWidth }}
+          >
+            <Navbar width={sidebarWidth} />
+
+            <section
+              className="flex-grow p-4"
+              style={{ minHeight: "calc(100vh - 70px)" }}
+            >
+              {children}
+            </section>
+          </section>
+        </body>
+      </ActiveTabProvider>
     </html>
   );
 }
