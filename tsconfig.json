@@ -23,6 +23,6 @@
       "@/*": ["./*", "./utils"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "actions/supabase_auth"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "actions/supabase_auth", "app/(root)/appoinments/page.js"],
   "exclude": ["node_modules"]
 }

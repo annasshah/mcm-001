@@ -6,8 +6,34 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services'
 import { Select, Spinner } from "flowbite-react";
 
+export interface Location {
+  id: number
+  title: string
+}
 
-const render_detail_keys = [
+interface RenderDetailKey {
+  label: string
+  key: keyof Appointment | 'location'
+}
+
+export interface Appointment {
+  id: number
+  location_id: number
+  first_name: string
+  last_name: string
+  service: string
+  sex: string
+  location?: Location
+  in_office_patient:boolean
+  new_patient:boolean
+}
+
+interface RenderDetailFields {
+  label: string
+  key: string
+}
+
+const render_detail_keys:RenderDetailFields[] = [
   {
     label:'First Name',
     key:'first_name'
@@ -43,14 +69,14 @@ const render_detail_keys = [
 ]
 
 
-const List_Item = ({ data, click_handle,is_selected }: { data: Object, click_handle:Function, is_selected:Boolean }) => {
+const List_Item = ({ data, click_handle,is_selected }: { data: any, click_handle:Function, is_selected:Boolean | null }) => {
   const { id, first_name, last_name, service, sex } = data
 
 
   return <div onClick={()=>click_handle(data)} className={`${is_selected ? 'bg-text_primary_color' : 'bg-[#D9D9D9]' }   px-3 py-3 rounded-lg flex justify-between cursor-pointer pointer-events-auto`}>
     <div>
       <h1 className={`${is_selected ? 'text-white' : 'text-text_primary_color'}  font-bold text-xl`}>
-        {`${first_name || '-'} ${last_name || '-'}`}
+        {`${data.first_name || '-'} ${data.last_name || '-'}`}
       </h1>
       <p className="text-primary_color text-lg">{service || '-'}</p>
     </div>
@@ -67,7 +93,7 @@ const Appoinments = () => {
   const [locations, setLocations] = useState<any>([])
   const [appointments, setAppointments] = useState<any>([])
   const [appoint_loading, setAppoint_loading] = useState(false)
-  const [appointment_details, setAppointment_details] = useState(null)
+  const [appointment_details, setAppointment_details] = useState<any | null>(null)
 
 
   useEffect(() => {
@@ -126,7 +152,7 @@ const Appoinments = () => {
 
           </div> : appointments.length === 0 ? <div className="flex h-full flex-1 flex-col justify-center items-center">
             <h1>No Appointment is available</h1>
-          </div> : appointments.map((appointment: Object, index: any) => <List_Item is_selected={appointment_details && appointment_details.id === appointment.id} click_handle={select_for_details_handle} key={index} data={appointment} />)}
+          </div> : appointments.map((appointment: Appointment, index: any) => <List_Item is_selected={appointment_details && appointment_details.id === appointment.id} click_handle={select_for_details_handle} key={index} data={appointment} />)}
 
 
         </div>
@@ -151,15 +177,10 @@ const Appoinments = () => {
               </div>
 
               <div className=" font-semibold space-y-4 text-black">
-                {render_detail_keys.map((elem, index)=><h1 key={index}>{elem.label}: <span className="font-normal">{ elem.key === 'location' ? appointment_details.location.title : appointment_details[elem.key]}</span></h1>)}
-                {/* <h1>Name:</h1>
-                <h1>Last Name:</h1>
-                <h1>Email Address:</h1>
-                <h1>D.O.B:</h1>
-                <h1>Sex:</h1>
-                <h1>Service:</h1>
-                <h1>Location:</h1>
-                <h1>Address:</h1> */}
+                {render_detail_keys.map((elem:any, index:any)=>{
+                      const key:string = elem.key 
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{ elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-' }</span></h1>
+                })}
               </div>
             </>
            : <div className="flex h-full flex-1 flex-col justify-center items-center">
