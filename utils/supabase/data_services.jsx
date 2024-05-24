@@ -10,25 +10,29 @@ export async function fetchLocations() {
   if (error) {
     throw new Error(error.message)
   }
-  
+
   return data
 }
 
 
-
 export async function fetchAppointmentsByLocation(locationId) {
-  const { data, error } = await supabase
+  let query = supabase
     .from('Appoinments')
     .select(`*,location:Locations (
       id,
       title
-    )`)
-    .eq('location_id', locationId)
+    )`);
 
-  if (error) {
-    console.log(error.message)
-    throw new Error(error.message)
+  if (locationId) {
+    query = query.eq('location_id', locationId);
   }
 
-  return data
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
 }

@@ -24,8 +24,8 @@ export interface Appointment {
   service: string
   sex: string
   location?: Location
-  in_office_patient:boolean
-  new_patient:boolean
+  in_office_patient: boolean
+  new_patient: boolean
 }
 
 interface RenderDetailFields {
@@ -33,47 +33,47 @@ interface RenderDetailFields {
   key: string
 }
 
-const render_detail_keys:RenderDetailFields[] = [
+const render_detail_keys: RenderDetailFields[] = [
   {
-    label:'First Name',
-    key:'first_name'
+    label: 'First Name',
+    key: 'first_name'
   },
   {
-    label:'Last Name',
-    key:'last_name'
+    label: 'Last Name',
+    key: 'last_name'
   },
   {
-    label:'Email Address',
-    key:'email_Address'
+    label: 'Email Address',
+    key: 'email_Address'
   },
   {
-    label:'D.O.B',
-    key:'dob'
+    label: 'D.O.B',
+    key: 'dob'
   },
   {
-    label:'Sex',
-    key:'sex'
+    label: 'Sex',
+    key: 'sex'
   },
   {
-    label:'Service',
-    key:'service'
+    label: 'Service',
+    key: 'service'
   },
   {
-    label:'Location',
-    key:'location'
+    label: 'Location',
+    key: 'location'
   },
   {
-    label:'Address',
-    key:'address'
+    label: 'Address',
+    key: 'address'
   },
 ]
 
 
-const List_Item = ({ data, click_handle,is_selected }: { data: any, click_handle:Function, is_selected:Boolean | null }) => {
+const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handle: Function, is_selected: Boolean | null }) => {
   const { id, first_name, last_name, service, sex } = data
 
 
-  return <div onClick={()=>click_handle(data)} className={`${is_selected ? 'bg-text_primary_color' : 'bg-[#D9D9D9]' }   px-3 py-3 rounded-lg flex justify-between cursor-pointer pointer-events-auto`}>
+  return <div onClick={() => click_handle(data)} className={`${is_selected ? 'bg-text_primary_color' : 'bg-[#D9D9D9]'}   px-3 py-3 rounded-lg flex justify-between cursor-pointer pointer-events-auto`}>
     <div>
       <h1 className={`${is_selected ? 'text-white' : 'text-text_primary_color'}  font-bold text-xl`}>
         {`${data.first_name || '-'} ${data.last_name || '-'}`}
@@ -92,19 +92,24 @@ const Appoinments = () => {
 
   const [locations, setLocations] = useState<any>([])
   const [appointments, setAppointments] = useState<any>([])
-  const [appoint_loading, setAppoint_loading] = useState(false)
+  const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
 
 
   useEffect(() => {
+    setAppoint_loading(true)
 
     ; (async function getLocations() {
       const data = await fetchLocations()
       setLocations(data)
+      const appoint_data = await fetchAppointmentsByLocation(null)
+      setAppointments(appoint_data)
+      setAppoint_loading(false)
       // console.log(data)
     })()
 
   }, [])
+
 
 
   const select_change_handle = async (e: any) => {
@@ -114,10 +119,10 @@ const Appoinments = () => {
     const data = await fetchAppointmentsByLocation(value)
     setAppointments(data)
     setAppoint_loading(false)
-    console.log(data)
+    // console.log(data)
   }
 
-  const select_for_details_handle = (appoint:any) => {
+  const select_for_details_handle = (appoint: any) => {
     setAppointment_details(appoint)
   }
 
@@ -159,7 +164,7 @@ const Appoinments = () => {
         <div className="w-1/4 bg-[#EFEFEF] overflow-scroll px-3 py-3 rounded-lg text-lg ">
 
 
-          { appointment_details ?
+          {appointment_details ?
             <>
               <div className="flex items-center justify-end space-x-5 text-black">
                 <div className="flex items-center space-x-1 text-base">
@@ -171,21 +176,21 @@ const Appoinments = () => {
                 <div className="flex items-center space-x-1 text-sm">
                   <GoDotFill />
                   <p>
-                  {appointment_details.in_office_patient ? 'In-Office' : '-'} 
+                    {appointment_details.in_office_patient ? 'In-Office' : '-'}
                   </p>
                 </div>
               </div>
 
               <div className=" font-semibold space-y-4 text-black">
-                {render_detail_keys.map((elem:any, index:any)=>{
-                      const key:string = elem.key 
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{ elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-' }</span></h1>
+                {render_detail_keys.map((elem: any, index: any) => {
+                  const key: string = elem.key
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
                 })}
               </div>
             </>
-           : <div className="flex h-full flex-1 flex-col justify-center items-center">
-           <h1>Select appointment to view details</h1>
-         </div>}
+            : <div className="flex h-full flex-1 flex-col justify-center items-center">
+              <h1>Select appointment to view details</h1>
+            </div>}
         </div>
 
       </div>
