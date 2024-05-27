@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services'
+import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
 import { Select, Spinner } from "flowbite-react";
 
 export interface Location {
