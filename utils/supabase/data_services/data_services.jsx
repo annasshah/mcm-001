@@ -78,3 +78,5 @@ export async function updateHeroSectionContent(language, post_data) {
 }
 
 
+
+

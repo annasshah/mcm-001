@@ -5,6 +5,7 @@ import { Rating, RatingStar, Sidebar } from "flowbite-react";
 import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser } from "react-icons/hi";
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import Image from 'next/image';
+import { Select_Dropdown } from '@/components/Select_Dropdown';
 const Career = () => {
 
 
@@ -17,44 +18,29 @@ const Career = () => {
     return (
         <WebsiteContentLayout>
             <div className='mb-5 px-3' >
-                <div className='flex  justify-between items-center p-0 my-5'>
-                    <div className='flex gap-10'  >
-                        <Sidebar
+                <div className='flex items-end my-5'>
 
-                            theme={customTheme}
 
-                            className='h-auto ' >
-                            <h6 className='text-primary_color'>ID</h6>
-                            <Sidebar.Items    >
-                                <Sidebar.ItemGroup className='bg-gray-200 rounded-lg'>
-                                    <Sidebar.Collapse label="1" className='rounded'>
-                                        {[...Array(5)].map((_, index) => (
-                                            <Sidebar.Item key={index} href="#">Hero Section</Sidebar.Item>
-                                        ))}
-                                    </Sidebar.Collapse>
-                                </Sidebar.ItemGroup>
-                            </Sidebar.Items>
-                        </Sidebar>
-                        <Sidebar
-                            theme={customTheme}
+                    <div className='flex  flex-1'>
+                        <div className='w-2/5'>
+                        <Select_Dropdown value={''} label='ID' options_arr={[{
+                            value: '',
+                            label: '1',
+                        }]}
 
-                            className='h-auto' aria-label="Sidebar with multi-level dropdown example">
-                            <h6 className='text-primary_color'>Language</h6>
-                            <Sidebar.Items>
-                                <Sidebar.ItemGroup className='bg-gray-200 rounded-lg'>
-                                    <Sidebar.Collapse label="Hero Section" className='rounded-lg'>
-                                        {[...Array(5)].map((_, index) => (
-                                            <Sidebar.Item key={index} href="#">Hero Section</Sidebar.Item>
-                                        ))}
-                                    </Sidebar.Collapse>
-                                </Sidebar.ItemGroup>
-                            </Sidebar.Items>
-                        </Sidebar>
+                            // on_change_handle={select_language_handle}
+
+                            required={true} />
+                        </div>
                     </div>
+
+
+
+
                     <div >
 
                         <Image
-                            className="w-16"
+                            className="w-12"
                             src={PlusIcon}
                             alt="Logo"
                         />
