@@ -5,6 +5,7 @@ import { GoDotFill } from "react-icons/go";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
 import { Select, Spinner } from "flowbite-react";
+import {useLocationClinica} from '@/hooks/useLocationClinica'
 
 export interface Location {
   id: number
@@ -90,7 +91,7 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 
 const Appoinments = () => {
 
-  const [locations, setLocations] = useState<any>([])
+  const {locations} = useLocationClinica()
   const [appointments, setAppointments] = useState<any>([])
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
@@ -101,7 +102,6 @@ const Appoinments = () => {
 
     ; (async function getLocations() {
       const data = await fetchLocations()
-      setLocations(data)
       const appoint_data = await fetchAppointmentsByLocation(null)
       setAppointments(appoint_data)
       setAppoint_loading(false)

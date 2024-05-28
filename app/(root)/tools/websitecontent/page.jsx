@@ -3,7 +3,7 @@
 "use client"
 import React from 'react';
 import WebsiteContentLayout from './Layout';
-import { Button, Label, Select } from "flowbite-react";
+import { Button, Label, Select, Toast } from "flowbite-react";
 import { fetchHeroSectionContent, updateHeroSectionContent } from '@/utils/supabase/data_services/data_services';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle'
 import { Select_Dropdown } from '@/components/Select_Dropdown'
@@ -20,13 +20,14 @@ const Home = () => {
         on_change_handle,
         handle_update,
         reset_fields
-    } = useSingleRowDataHandle(fetchHeroSectionContent, updateHeroSectionContent);
+    } = useSingleRowDataHandle({fetch_content_function:fetchHeroSectionContent, update_content_function:updateHeroSectionContent});
 
 
 
     const select_section_handle = (val) => {
 
-        console.log(language)
+        // console.log(language)
+        // Toast
 
     }
 

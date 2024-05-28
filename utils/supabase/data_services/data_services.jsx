@@ -80,3 +80,65 @@ export async function updateHeroSectionContent(language, post_data) {
 
 
 
+
+export async function fetch_about_content(language) {
+  let query = supabase
+    .from(`about${language}`)
+    .select(`*`);
+
+
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+
+
+
+export async function fetch_testimonials(id) {
+    let query = supabase
+    .from('Testinomial')
+    .select(`*,location:Locations (
+      id,
+      title
+    )`);
+
+  if (id) {
+    query = query.eq('location_id', id);
+  }
+
+
+
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+
+
+export async function fetch_careers(language) {
+    let query = supabase
+    .from(`career${language}`)
+    .select(`*`);
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}

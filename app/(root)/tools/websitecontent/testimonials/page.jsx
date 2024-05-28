@@ -1,77 +1,73 @@
 "use client"
 import React from 'react';
 import WebsiteContentLayout from '../Layout';
-import { Rating, RatingStar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser } from "react-icons/hi";
-import { langage_list_options } from '@/utils/list_options/dropdown_list_options';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { fetch_testimonials } from '@/utils/supabase/data_services/data_services';
+import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle';
+import {Render_Rating} from '@/components/Rating_Component/Render_Rating'
+
 
 const Testimonials = () => {
 
+    const { locations, set_location_handle, selected_location } = useLocationClinica()
 
-    const customTheme = {
-        root: {
-            base: "bg-none overflow-y-auto",
-            inner: `bg-none overflow-y-auto flex flex-col justify-between h-full pr-3`,
-        },
-    };
+
+    const {
+        default_data,
+        data_list,
+        data,
+        is_edited,
+        update_loading,
+        selected_language,
+        select_language_handle,
+        on_change_handle,
+        handle_update,
+        reset_fields,
+        fetch_data_by_parameter
+    } = useSingleRowDataHandle({ fetch_content_function: fetch_testimonials, list_data: true });
+
+
+    const select_location_handle = (val) => {
+        const value = val.target.value
+        set_location_handle(value)
+        fetch_data_by_parameter(value)
+    }
+
+
+
     return (
         <WebsiteContentLayout>
             <div className='mb-5 px-3' >
-                <div className='grid grid-cols-4 gap-6 my-5'>
+                <div className='grid grid-cols-5 lg:flex-row lg:gap-24 my-5'>
 
-                    <Select_Dropdown value={''} label='Section' 
-                    options_arr={[{
-                        value: '',
-                        label: '1',
-                    }]} 
-                    // on_change_handle={select_section_handle} 
-                    required={true} />
-                    <Select_Dropdown 
-                    // on_change_handle={select_language_handle}
-                    // value={selected_language}
-                    label='Language' 
-                    options_arr={langage_list_options} 
-                     required={true} />
+                    <Select_Dropdown
+                        value={''} label='ID' start_empty={true} options_arr={data_list.map(({ id, }) => ({ value: id, label: id }))}
+                        // on_change_handle={select_section_handle} 
+                        required={true} />
+                    <Select_Dropdown
+                        value={selected_location} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }) => ({ value: id, label: title }))}
+                        on_change_handle={select_location_handle}
+                        required={true} />
                 </div>
                 <div className="border-t my-3 border-black"></div>
-                <div className='px-3 flex flex-col gap-5'>
-                    <h6 className='text-primary_color'>Content</h6>
-                    <div>
-                        <p className='text-primary_color'>Rating :</p>
-                        <Rating size="lg">
-                            <RatingStar />
-                            <RatingStar />
-                            <RatingStar />
-                            <RatingStar />
-                            <RatingStar filled={false} />
-                        </Rating>
 
-                    </div>
-                    <div>
-                        <p className='text-primary_color'>Text :</p>
-                        <textarea name=""
 
-                            className='rounded-lg bg-input_bg resize-none outline-none border-none' rows={8} cols={51}></textarea>
-                    </div>
-                    <div>
-                        <p className='text-primary_color'>Name :</p>
-                        <input
 
-                            type="text" className='w-2/5 p-3 rounded-lg bg-input_bg' />
-                    </div>
-                    <div className='flex justify-end w-2/5 ' >
-                        <div className='flex items-end gap-2 ' >
-                            <span className='text-sm'>
-                                Reset
-                            </span>
-                            <button className='bg-primary_color text-sm px-10 py-2 rounded-lg text-white' >
-                                Update
-                            </button>
+
+                <div>
+                    {data_list.map(({ name, rating, review },ind) => {
+
+                        return <div key={ind} className="border-t my-3 bg-slate-200 hover:bg-slate-300 rounded-lg px-4 py-4 cursor-pointer">
+                            <ul className='space-y-3'>
+                                <li className='text-primary_color font-bold text-xl'>{name}</li>
+                                <li className='text-primary_color'><Render_Rating rating={rating} /> </li>
+                                <li className='text-primary_color'>{review}</li>
+                            </ul>
                         </div>
-
-                    </div>
+                    })}
                 </div>
+
             </div>
         </WebsiteContentLayout>
     );
