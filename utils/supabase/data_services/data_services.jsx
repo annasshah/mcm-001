@@ -142,3 +142,21 @@ export async function fetch_careers(language) {
 
   return data;
 }
+
+
+
+
+export async function updateLocationData(id, post_data) {
+  const { data, error } = await supabase
+
+    .from(`Locations`)
+    .update(post_data)
+    .eq('id', post_data.id)
+    .select()
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
