@@ -5,7 +5,14 @@ import { Button, Label, Select } from "flowbite-react";
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle'
 import { Select_Dropdown } from '@/components/Select_Dropdown'
 import { about_section_options, langage_list_options } from '@/utils/list_options/dropdown_list_options'
-import { fetch_about_content } from '@/utils/supabase/data_services/data_services';
+import { fetch_about_content, update_about_content } from '@/utils/supabase/data_services/data_services';
+import { Form_Component } from '@/components/Form_Component';
+
+
+const only_fields_to_render = {
+    about:['text_1', 'title_1', 'text_2', 'title_2', 'text_3', 'title_3', 'text_4', 'title_4','text_5', 'title_5']
+
+}
 
 
 
@@ -47,11 +54,12 @@ const About = () => {
         is_edited,
         update_loading,
         selected_language,
+        selected_section ,
         select_language_handle,
         on_change_handle,
         handle_update,
         reset_fields
-    } = useSingleRowDataHandle({fetch_content_function:fetch_about_content});
+    } = useSingleRowDataHandle({ update_content_function:update_about_content, table:'about', default_selected_section:about_section_options[0].value});
 
 
     console.log({ data })
@@ -71,51 +79,14 @@ const About = () => {
                     <Select_Dropdown value={selected_language} label='Language' options_arr={langage_list_options} on_change_handle={select_language_handle} required={true} />
                 </div>
                 <div className="border-t my-3 border-black"></div>
+
+
+
                 <div className='px-3 w-1/2 space-y-5'>
-                    <h6 className='text-primary_color font-bold'>Content</h6>
+                    {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={only_fields_to_render[selected_section]} on_change_handle={on_change_handle}   />}
 
-
-                    <div className='space-y-8'>
-                    {data &&
-                        Object.keys(data).map((field, key) => {
-                            const field_type = field.split('_')
-
-                            const Field_To_Render = fields[field_type[0]]
-
-                            if(Field_To_Render){
-                                return (
-                                    <div key={key} className='space-y-3'>
-                                        <p className='text-primary_color'>{field_type.join(' ')} :</p>
-                                        <Field_To_Render
-                                            value={data[field]}
-                                            label={field}
-                                            // className='w-full  p-3 rounded-lg bg-input_bg'
-                                            on_change_handle={on_change_handle}
-                                        />
-                                    </div>
-                                )
-
-                            }
-
-                        })
-                    }
-                    </div>
-                    <div className='flex justify-end' >
-                        <div className='flex items-end gap-2 ' >
-                            <button onClick={reset_fields}>
-                                <span className='text-sm underline' >
-                                    Reset
-                                </span>
-                            </button>
-                            <Button onClick={handle_update} isProcessing={update_loading} disabled={!is_edited || update_loading} className='bg-primary_color px-3'>
-                                <span className='text-sm' >
-                                    Update
-                                </span>
-                            </Button>
-
-                        </div>
-                    </div>
                 </div>
+
             </div>
         </WebsiteContentLayout>
     );

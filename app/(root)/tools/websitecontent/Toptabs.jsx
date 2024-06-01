@@ -23,24 +23,28 @@ const TopTabs = () => {
             title: "Career",
             url: "career"
         },
-        {
-            title: "Blogs",
-            url: "blogs"
-        },
+        // {
+        //     title: "Blogs",
+        //     url: "blogs"
+        // },
         {
             title: "Locations",
             url: "locations"
         },
+        // {
+        //     title: "Specials",
+        //     url: "specials"
+        // },
         {
-            title: "Specials",
-            url: "specials"
+            title: "FAQs",
+            url: "faqs"
         }
     ];
 
 
     return (
         <nav className="" >
-            <ul className="flex sm:flex-col md:flex-row lg:flex-row justify-between" >
+            <ul className="flex sm:flex-col md:flex-row lg:flex-row justify-around" >
                 {WebsiteContentMenu.map((menuItem, index) => (
                     <li className="text-text_primary_color" key={index}>
                         <Link

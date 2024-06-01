@@ -3,16 +3,14 @@
 
 import { Button, Modal } from "flowbite-react";
 import Image from "next/image";
-import { useState } from "react";
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 
-export function Custom_Modal({children, Title, loading}) {
-    const [openModal, setOpenModal] = useState(false);
+export function Custom_Modal({children, Title, loading, is_open,close_handle, open_handle, create_new_handle}) {
 
     return (
         <>
 
-            <button onClick={() => setOpenModal(true)}>
+            <button onClick={open_handle}>
                 <Image
                     className="w-12"
                     src={PlusIcon}
@@ -20,7 +18,7 @@ export function Custom_Modal({children, Title, loading}) {
                 />
             </button>
             {/* <Button onClick={() => setOpenModal(true)}>Toggle modal</Button> */}
-            <Modal  show={openModal} onClose={() => setOpenModal(false)}>
+            <Modal  show={is_open} onClose={close_handle}>
                 <Modal.Header>{Title}</Modal.Header>
                 <Modal.Body>
                     <div className="space-y-6">
@@ -28,10 +26,10 @@ export function Custom_Modal({children, Title, loading}) {
                     </div>
                 </Modal.Body>
                 <Modal.Footer className="flex justify-end">
-                    <Button  color="gray" onClick={() => setOpenModal(false)}>
+                    <Button  color="gray" onClick={close_handle}>
                         Cancel
                     </Button>
-                    <Button  isProcessing={loading} disabled={loading}  onClick={() => setOpenModal(false)}>Create</Button>
+                    <Button  isProcessing={loading} disabled={loading}  onClick={create_new_handle}>Create</Button>
                 </Modal.Footer>
             </Modal>
         </>

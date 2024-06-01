@@ -39,117 +39,28 @@ export async function fetchAppointmentsByLocation(locationId) {
 
 
 
-export async function fetchHeroSectionContent(language) {
+
+
+
+
+export async function fetch_content_service({ table, language }) {
   let query = supabase
-    .from(`Hero_Section${language}`)
-    .select(`*
-      id,
-      title,
-      content
-    `);
-
-
-
+    .from(`${table}${language}`)
+    .select(`*`);
   const { data, error } = await query;
-
   if (error) {
     console.log(error.message);
     throw new Error(error.message);
   }
-
   return data;
 }
 
 
-
-export async function updateHeroSectionContent(language, post_data) {
+export async function update_content_service({ table, language, post_data }) {
+  console.log({ language, post_data, section })
   const { data, error } = await supabase
 
-    .from(`Hero_Section${language}`)
-    .update({ title: post_data.title, content: post_data.content })
-    .eq('id', post_data.id)
-    .select()
-  if (error) {
-    console.log(error.message);
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-
-
-
-
-export async function fetch_about_content(language) {
-  let query = supabase
-    .from(`about${language}`)
-    .select(`*`);
-
-
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.log(error.message);
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-
-
-
-export async function fetch_testimonials(id) {
-    let query = supabase
-    .from('Testinomial')
-    .select(`*,location:Locations (
-      id,
-      title
-    )`);
-
-  if (id) {
-    query = query.eq('location_id', id);
-  }
-
-
-
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.log(error.message);
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-
-
-export async function fetch_careers(language) {
-    let query = supabase
-    .from(`career${language}`)
-    .select(`*`);
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.log(error.message);
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-
-
-
-export async function updateLocationData(id, post_data) {
-  const { data, error } = await supabase
-
-    .from(`Locations`)
+    .from(`${table}${language}`)
     .update(post_data)
     .eq('id', post_data.id)
     .select()
@@ -160,3 +71,26 @@ export async function updateLocationData(id, post_data) {
 
   return data;
 }
+
+
+
+export async function create_content_service({ table, language, post_data }) {
+
+  let query = supabase
+    .from(`${table}${language}`)
+    .insert([
+      post_data
+    ])
+    .select()
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+

@@ -15,14 +15,20 @@ import { fields_list_components, find_fields } from '@/utils/list_options/fields
 
 const inputLabelandValue = [
     {
-        label: "Text",
-        key: "Text"
+        label: "Question",
+        key: "question", 
+        type:'input'
     },
+    {
+        label: "Answer",
+        key: "answer",
+        type:'textarea'
+    }
 ];
 
 
 
-const Career = () => {
+const FAQs = () => {
 
 
     const {
@@ -48,7 +54,7 @@ const Career = () => {
         create_row_language,
         create_new_row_language_handle,
         fetch_data_by_parameter
-    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function:update_career, table:'career', list_data: true });
+    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function:update_career, table:'FAQs', list_data: true });
 
 
     return (
@@ -87,7 +93,7 @@ const Career = () => {
 
                             {
                                 inputLabelandValue.map((item, index) => {
-                                    const { Component_Render } = fields_list_components['input']
+                                    const { Component_Render } = fields_list_components[item.type]
                                     return (
 
                                         <Component_Render key={index} on_change_handle={on_change_handle} label={item.label} key_id={item.key} data={create_data} />
@@ -109,7 +115,7 @@ const Career = () => {
 
 
                     <div className='px-3 w-1/2 space-y-5'>
-                        {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={['Text']} on_change_handle={on_change_handle} />}
+                        {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={inputLabelandValue.map(({key})=>key)} on_change_handle={on_change_handle} />}
 
                     </div>
 
@@ -122,4 +128,4 @@ const Career = () => {
     );
 };
 
-export default Career;
+export default FAQs;
