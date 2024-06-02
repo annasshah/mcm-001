@@ -12,8 +12,17 @@ import { langage_list_options } from '@/utils/list_options/dropdown_list_options
 import { Form_Component } from '@/components/Form_Component';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { fields_list_components, find_fields } from '@/utils/list_options/fields_list_components';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
 
 const inputLabelandValue = [
+    // {
+    //     label: "Language",
+    //     key: "language"
+    // },
+    {
+        label: "Location",
+        key: "location_id"
+    },
     {
         label: "Text",
         key: "Text"
@@ -23,6 +32,7 @@ const inputLabelandValue = [
 
 
 const Career = () => {
+    const { locations } = useLocationClinica()
 
 
     const {
@@ -48,7 +58,7 @@ const Career = () => {
         create_row_language,
         create_new_row_language_handle,
         fetch_data_by_parameter
-    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function:update_career, table:'career', list_data: true });
+    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function: update_career, table: 'career', list_data: true, required_fields: inputLabelandValue});
 
 
     return (
@@ -85,8 +95,23 @@ const Career = () => {
                                 <Select_Dropdown value={create_row_language} label='Language' options_arr={langage_list_options} on_change_handle={create_new_row_language_handle} required={true} />
                             </div>
 
+                            <div className='flex flex-1'>
+                                <Select_Dropdown
+
+                                    value={create_data.location_id || ''} 
+                                    start_empty={true}
+                                    label='Locations' options_arr={locations.map(({id, title})=>({key:id, label:title}))}
+                                    on_change_handle={(e) => on_change_handle('location_id', e.target.value)}
+                                    // on_change_handle={select_language_handle}
+
+                                    required={true} />
+
+
+
+                            </div>
+
                             {
-                                inputLabelandValue.map((item, index) => {
+                                inputLabelandValue.slice(1).map((item, index) => {
                                     const { Component_Render } = fields_list_components['input']
                                     return (
 

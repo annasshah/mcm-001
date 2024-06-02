@@ -24,6 +24,7 @@ export interface Appointment {
   last_name: string
   service: string
   sex: string
+  phone: string,
   location?: Location
   in_office_patient: boolean
   new_patient: boolean
@@ -62,6 +63,10 @@ const render_detail_keys: RenderDetailFields[] = [
   {
     label: 'Location',
     key: 'location'
+  },
+  {
+    label: 'Phone',
+    key: 'phone'
   },
   {
     label: 'Address',
@@ -136,7 +141,7 @@ const Appoinments = () => {
         <div className="w-1/4 ">
           <div >
             <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-              <option disabled selected value=''>Locations</option>
+              <option disabled selected value=''>All locations</option>
               {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
             </Select>
 

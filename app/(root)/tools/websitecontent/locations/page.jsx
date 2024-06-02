@@ -14,6 +14,14 @@ const Locations = () => {
 
 
     const inputLabelandValue = [
+        // {
+        //     label: "Language",
+        //     key: "language"
+        // },
+        // {
+        //     label: "Location",
+        //     key: "location_id"
+        // },
         {
             label: "Title",
             key: "title"
@@ -75,7 +83,9 @@ const Locations = () => {
     } = useSingleRowDataHandle({
          update_content_function: updateLocationData, 
         create_content_function: create_location,
-        list_data: true, table: 'Locations'
+        list_data: true, table: 'Locations',
+
+        required_fields: inputLabelandValue
     });
 
 
@@ -102,7 +112,9 @@ const Locations = () => {
                                     const { key, label, col_span } = item
                                     // const formattedKey = label.replace(/_/g, " ");
                                     // const is_disabled = update_loading 
-                                    const { Component_Render } = fields_list_components['input']
+                                    const splited_str = key.split('_')[0].toLocaleLowerCase()
+                                    console.log(splited_str, find_fields[splited_str])
+                                    const { Component_Render } = fields_list_components[find_fields[splited_str] || "input"]
                                     return (
 
                                         <div key={index} className={col_span ? `col-span-2` : ''}>

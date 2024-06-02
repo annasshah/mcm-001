@@ -14,6 +14,10 @@ import { fields_list_components, find_fields } from '@/utils/list_options/fields
 
 const inputLabelandValue = [
     {
+        label: "Location",
+        key: "location_id"
+    },
+    {
         label: "Rating",
         key: "rating"
     },
@@ -57,7 +61,7 @@ const Testimonials = () => {
         fetch_data_by_parameter
     } = useSingleRowDataHandle({ update_content_function: update_testimonial_content,
         create_content_function:create_testimonials,
-        list_data: true, table:'Testinomial' });
+        list_data: true, table:'Testinomial', required_fields:inputLabelandValue });
 
     const select_location_handle = (val) => {
         const value = val.target.value
@@ -93,7 +97,7 @@ const Testimonials = () => {
 
 
                             {
-                                inputLabelandValue.map((item, index) => {
+                                inputLabelandValue.slice(1).map((item, index) => {
                                     // const { key, label, col_span } = item
                                     // const formattedKey = label.replace(/_/g, " ");
                                     // const is_disabled = update_loading 

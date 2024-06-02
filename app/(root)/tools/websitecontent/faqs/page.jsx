@@ -15,6 +15,10 @@ import { fields_list_components, find_fields } from '@/utils/list_options/fields
 
 const inputLabelandValue = [
     {
+        label: "Location",
+        key: "location_id"
+    },
+    {
         label: "Question",
         key: "question", 
         type:'input'
@@ -84,7 +88,7 @@ const FAQs = () => {
 
 
                     <Custom_Modal
-                        create_new_handle={create_content_handle} open_handle={open_modal} close_handle={close_modal} is_open={create_modal_open} Title='Create Career' loading={create_data_loading} >
+                        create_new_handle={create_content_handle} open_handle={open_modal} close_handle={close_modal} is_open={create_modal_open} Title='Create FAQ' loading={create_data_loading} >
                         <div className='grid grid-cols-1 gap-4'>
 
                             <div className='flex flex-1'>
@@ -92,7 +96,7 @@ const FAQs = () => {
                             </div>
 
                             {
-                                inputLabelandValue.map((item, index) => {
+                                inputLabelandValue.slice(1).map((item, index) => {
                                     const { Component_Render } = fields_list_components[item.type]
                                     return (
 

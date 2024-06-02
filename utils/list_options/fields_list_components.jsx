@@ -33,17 +33,29 @@ export const fields_list_components = {
             return <div>
                 <p className='font-bold text-primary_color'>{label} :</p>
                 <Rating
-                size='large'
-                 name="simple-controlled"
-                 value={data[key_id] || 0}
-                 onChange={(event, newValue) => {
-                    on_change_handle(key_id, newValue)
-                 }}
-                
+                    size='large'
+                    name="simple-controlled"
+                    value={data[key_id] || 0}
+                    onChange={(event, newValue) => {
+                        on_change_handle(key_id, newValue)
+                    }}
+
                 />
             </div>
         }
     },
+    // timer: {
+    //     Component_Render: ({ on_change_handle, label, key_id, data }) => {
+    //         return <div>
+    //             <p className='font-bold text-primary_color'>{label} :</p>
+    //             <TimePicker
+    //                 label="Controlled picker"
+    //                 // value={value}
+    //                 // onChange={(newValue) => setValue(newValue)}
+    //             />
+    //         </div>
+    //     }
+    // }
 
 }
 
@@ -52,13 +64,14 @@ export const find_fields = {
     text: 'textarea',
     title: 'input',
     content: 'textarea',
-    rating:'rating',
-    name:'input',
-    // mon_timing:'timings',
-    // sunday_timing:'timings',
-    // saturday_timing:'timings',
-    review:'textarea',
-    answer:"textarea"
+    rating: 'rating',
+    name: 'input',
+    // mon:'timer',
+    // sunday:'timer',
+    // saturday:'timer',
+    review: 'textarea',
+    answer: "textarea",
+    phone:'input'
 }
 
 

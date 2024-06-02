@@ -85,12 +85,9 @@ export async function create_content_service({ table, language, post_data }) {
 
   const { data, error } = await query;
 
-  if (error) {
-    console.log(error.message);
-    throw new Error(error.message);
-  }
+ 
 
-  return data;
+  return { data, error }
 }
 
 
