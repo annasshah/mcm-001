@@ -6,6 +6,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
 import { Select, Spinner } from "flowbite-react";
 import {useLocationClinica} from '@/hooks/useLocationClinica'
+import Moment from 'moment';
 
 export interface Location {
   id: number
@@ -32,7 +33,8 @@ export interface Appointment {
 
 interface RenderDetailFields {
   label: string
-  key: string
+  key: string,
+  date_format?:boolean
 }
 
 const render_detail_keys: RenderDetailFields[] = [
@@ -71,6 +73,11 @@ const render_detail_keys: RenderDetailFields[] = [
   {
     label: 'Address',
     key: 'address'
+  },
+  {
+    label: 'Date & time',
+    key: 'created_at',
+    date_format: true
   },
 ]
 
@@ -189,7 +196,7 @@ const Appoinments = () => {
               <div className=" font-semibold space-y-4 text-black">
                 {render_detail_keys.map((elem: any, index: any) => {
                   const key: string = elem.key
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
                 })}
               </div>
             </>

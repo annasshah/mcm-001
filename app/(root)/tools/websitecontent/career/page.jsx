@@ -19,10 +19,10 @@ const inputLabelandValue = [
     //     label: "Language",
     //     key: "language"
     // },
-    {
-        label: "Location",
-        key: "location_id"
-    },
+    // {
+    //     label: "Location",
+    //     key: "location_id"
+    // },
     {
         label: "Text",
         key: "Text"
@@ -95,7 +95,7 @@ const Career = () => {
                                 <Select_Dropdown value={create_row_language} label='Language' options_arr={langage_list_options} on_change_handle={create_new_row_language_handle} required={true} />
                             </div>
 
-                            <div className='flex flex-1'>
+                            {/* <div className='flex flex-1'>
                                 <Select_Dropdown
 
                                     value={create_data.location_id || ''} 
@@ -108,10 +108,10 @@ const Career = () => {
 
 
 
-                            </div>
+                            </div> */}
 
                             {
-                                inputLabelandValue.slice(1).map((item, index) => {
+                                inputLabelandValue.map((item, index) => {
                                     const { Component_Render } = fields_list_components['input']
                                     return (
 
