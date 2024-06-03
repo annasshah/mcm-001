@@ -1,4 +1,7 @@
 import { Rating } from "@mui/material"
+import { Checkbox, TimePicker } from "antd"
+import { useState } from "react"
+import Moment from 'moment';
 
 export const fields_list_components = {
     input: {
@@ -44,18 +47,83 @@ export const fields_list_components = {
             </div>
         }
     },
-    // timer: {
-    //     Component_Render: ({ on_change_handle, label, key_id, data }) => {
-    //         return <div>
-    //             <p className='font-bold text-primary_color'>{label} :</p>
-    //             <TimePicker
-    //                 label="Controlled picker"
-    //                 // value={value}
-    //                 // onChange={(newValue) => setValue(newValue)}
-    //             />
-    //         </div>
-    //     }
-    // }
+    timer: {
+        Component_Render: ({ on_change_handle, label, key_id, data }) => {
+            const [checked, setChecked] = useState(false);
+
+            const onChange = (e) => {
+                // console.log('checked = ', e.target.checked);
+                const val = e.target.checked
+                const save_value = val ? 'Closed' : ''
+                setChecked(val)
+                on_change_handle(key_id, save_value)
+            };
+
+            const render_time = (val) => {
+                if (val?.toLocaleLowerCase() === 'closed') {
+                    return ['', '']
+                }
+                else if (val === '') {
+                    return ['', '']
+
+                }
+
+                else if (val) {
+                    const split_time = val.split('-')
+                    return [Moment(split_time[0] || '', 'LT'), Moment(split_time[1] || '', 'LT')]
+                }
+                else {
+                    return ['', '']
+                }
+            }
+
+            const time_change_handle = (e) => {
+
+                if(data[key_id]){
+                    on_change_handle(key_id, '')
+                }
+                
+                let value = ''
+                if (e) {
+
+                    const start_time = Moment(e[0]['$d']).format('LT')
+
+                    const end_time = Moment(e[1]['$d']).format('LT')
+                    console.log({
+                        start_time,
+                        end_time
+                    })
+                    value = `${start_time}-${end_time}`
+                }
+
+                on_change_handle(key_id, value)
+
+            }
+            return <div className="">
+
+               <div className="flex gap-2 justify-between items-end">
+                    <p className='font-bold text-primary_color '>{label} :</p> {key_id !== 'mon_timing' &&  <Checkbox
+                        className="font-bold"
+                        checked={checked || data[key_id] && data[key_id] == "Closed" }
+                        onChange={onChange}
+
+                    >
+                        Closed
+                    </Checkbox>}
+                </div>
+
+                <div className="flex items-center space-x-3 w-full">
+                    <TimePicker.RangePicker onChange={time_change_handle} disabled={checked || data[key_id] && data[key_id] == "Closed" }
+                        use12Hours
+                        
+                        defaultValue={render_time(data[key_id])}
+                        format="hh:mm A"
+                        className="py-3 border-gray-800 w-full" size="large" />
+
+                </div>
+            </div>
+        }
+    }
 
 }
 
@@ -66,12 +134,12 @@ export const find_fields = {
     content: 'textarea',
     rating: 'rating',
     name: 'input',
-    // mon:'timer',
-    // sunday:'timer',
-    // saturday:'timer',
+    mon: 'timer',
+    sunday: 'timer',
+    saturday: 'timer',
     review: 'textarea',
     answer: "textarea",
-    phone:'input'
+    phone: 'input'
 }
 
 

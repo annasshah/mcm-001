@@ -22,7 +22,7 @@ export const Form_Component = (props) => {
                         console.log(splited_str)
 
                         if (render_list_fields.includes(field)) {
-                            const { Component_Render } = fields_list_components[find_fields[splited_str] || 'input']
+                            const { Component_Render } = fields_list_components[find_fields[splited_str] === 'timer' ? 'input' : find_fields[splited_str] || 'input']
                             const label = capitalize_word_letter(field)
 
                             return <Component_Render key={index} key_id={field} label={label} {...props} />

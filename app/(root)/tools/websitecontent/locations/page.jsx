@@ -27,16 +27,8 @@ const Locations = () => {
             key: "title"
         },
         {
-            label: "Monday to Friday Timing",
-            key: "mon_timing"
-        },
-        {
             label: 'Phone',
             key: "phone"
-        },
-        {
-            label: "Saturday Timing",
-            key: "saturday_timing"
         },
         {
             label: "Direction",
@@ -46,6 +38,14 @@ const Locations = () => {
         {
             label: 'Email',
             key: "email"
+        },
+        {
+            label: "Monday to Friday Timing",
+            key: "mon_timing"
+        },
+        {
+            label: "Saturday Timing",
+            key: "saturday_timing"
         },
         {
             label: "Sunday Timing",
