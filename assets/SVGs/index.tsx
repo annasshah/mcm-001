@@ -10,6 +10,7 @@ import tools from "./tools.svg";
 import login_bottom_right_arrows from "./login-bottom-right-arrows.svg";
 import login_top_right_circle from "./login-top-right-circle.svg";
 import login_left_circle from "./login-left-circle.svg";
+import cronitor from "./cronitor.svg";
 
 export {
   appointment,
@@ -21,6 +22,7 @@ export {
   pos,
   reputation,
   tools,
+  cronitor,
 
   // login page svgs
   login_bottom_right_arrows,

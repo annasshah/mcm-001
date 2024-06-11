@@ -17,6 +17,7 @@
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.42.0",
     "antd": "^5.18.0",
+    "axios": "^1.7.2",
     "flowbite": "^2.2.1",
     "flowbite-react": "^0.7.2",
     "moment": "^2.30.1",
