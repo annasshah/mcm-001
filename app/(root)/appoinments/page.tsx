@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
+import { delete_appointment_service, fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
 import { Select, Spinner } from "flowbite-react";
-import {useLocationClinica} from '@/hooks/useLocationClinica'
+import { useLocationClinica } from '@/hooks/useLocationClinica'
 import Moment from 'moment';
+import { supabase } from "@/services/supabase";
+import { toast } from "react-toastify";
 
 export interface Location {
   id: number
@@ -34,7 +36,8 @@ export interface Appointment {
 interface RenderDetailFields {
   label: string
   key: string,
-  date_format?:boolean
+  type?: string,
+  date_format?: boolean
 }
 
 const render_detail_keys: RenderDetailFields[] = [
@@ -75,6 +78,18 @@ const render_detail_keys: RenderDetailFields[] = [
     key: 'address'
   },
   {
+    label: 'Date slot',
+    key: 'date_and_time',
+    type: 'date_slot'
+
+  },
+  {
+    label: 'Time slot',
+    key: 'date_and_time',
+    type: 'time_slot'
+
+  },
+  {
     label: 'Date & time',
     key: 'created_at',
     date_format: true
@@ -103,7 +118,7 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 
 const Appoinments = () => {
 
-  const {locations} = useLocationClinica()
+  const { locations } = useLocationClinica()
   const [appointments, setAppointments] = useState<any>([])
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
@@ -112,13 +127,13 @@ const Appoinments = () => {
   useEffect(() => {
     setAppoint_loading(true)
 
-    ; (async function getLocations() {
-      const data = await fetchLocations()
-      const appoint_data = await fetchAppointmentsByLocation(null)
-      setAppointments(appoint_data)
-      setAppoint_loading(false)
-      // console.log(data)
-    })()
+      ; (async function getLocations() {
+        const data = await fetchLocations()
+        const appoint_data = await fetchAppointmentsByLocation(null)
+        setAppointments(appoint_data)
+        setAppoint_loading(false)
+        // console.log(data)
+      })()
 
   }, [])
 
@@ -138,12 +153,25 @@ const Appoinments = () => {
     setAppointment_details(appoint)
   }
 
+  const delete_appointments_handle = async (delId: number) => {
+    const { error } = await delete_appointment_service(delId)
+    if (!error) {
+      setAppointments(appointments.filter((appoint: any) => appoint.id !== delId))
+      toast.success('Deleled successfully');
+      setAppointment_details(null)
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+  }
+
   return (
-    <main className="mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
+    <main className="relative mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
 
 
 
-      <div className="flex flex-col items-end ps-3">
+      <div className="flex flex-col items-end ps-3 ">
 
         <div className="w-1/4 ">
           <div >
@@ -196,8 +224,13 @@ const Appoinments = () => {
               <div className=" font-semibold space-y-4 text-black">
                 {render_detail_keys.map((elem: any, index: any) => {
                   const key: string = elem.key
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
                 })}
+              </div>
+
+              <div className="w-full flex mt-3 gap-3">
+                <button onClick={() => delete_appointments_handle(appointment_details.id)} className="border-red-700 flex-1 text-red-700 border-2 active:opacity-60 rounded-md px-4 py-1 hover:bg-text_primary_color_hover">Delete</button>
+                <button className="border-text_primary_color flex-1 text-text_primary_color border-2 active:opacity-60 rounded-md px-4 py-1 ml-2 hover:bg-text_primary_color_hover">Edit</button>
               </div>
             </>
             : <div className="flex h-full flex-1 flex-col justify-center items-center">
@@ -205,7 +238,16 @@ const Appoinments = () => {
             </div>}
         </div>
 
+        {/* <div className="absolute h-screen w-full bg-black/50 top-0 left-0 right-0">
+
+        </div> */}
       </div>
+
+
+
+
+
+
     </main>
   );
 };

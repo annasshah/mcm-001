@@ -85,7 +85,21 @@ export async function create_content_service({ table, language, post_data }) {
 
   const { data, error } = await query;
 
- 
+
+
+  return { data, error }
+}
+
+
+export async function delete_appointment_service(id) {
+  const query = await supabase
+    .from('Appoinments')
+    .delete()
+    .eq('id', id)
+
+  const { data, error } = await query;
+
+
 
   return { data, error }
 }
