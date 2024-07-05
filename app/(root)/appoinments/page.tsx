@@ -9,6 +9,8 @@ import { useLocationClinica } from '@/hooks/useLocationClinica'
 import Moment from 'moment';
 import { supabase } from "@/services/supabase";
 import { toast } from "react-toastify";
+import moment from "moment";
+import { DatePicker } from "antd";
 
 export interface Location {
   id: number
@@ -100,6 +102,16 @@ const render_detail_keys: RenderDetailFields[] = [
 const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handle: Function, is_selected: Boolean | null }) => {
   const { id, first_name, last_name, service, sex } = data
 
+  const formattedDateTime = () => {
+
+    const str = ('12|6-07-2024 - 3:00 PM').split('|')[1].split(' - ')
+
+    const date = str[0]
+    const time = str[1]
+
+    return `${date} ${time}`
+  }
+
 
   return <div onClick={() => click_handle(data)} className={`${is_selected ? 'bg-text_primary_color' : 'bg-[#D9D9D9]'}   px-3 py-3 rounded-lg flex justify-between cursor-pointer pointer-events-auto`}>
     <div>
@@ -108,9 +120,15 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
       </h1>
       <p className="text-primary_color text-lg">{service || '-'}</p>
     </div>
-    <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-lg`}>
-      {sex || '-'}
-    </h3>
+    <div className="text-end">
+      <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-lg`}>
+        {sex || '-'}
+      </h3>
+      {data.date_and_time && <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-xs`}>
+        {/* 2024-06-28 21:28:52.532542+00 */}
+        Appointment: {moment(formattedDateTime(), 'DD-MM-YYYY h:mm A').fromNow()}
+      </h3>}
+    </div>
   </div>
 }
 
@@ -119,6 +137,7 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 const Appoinments = () => {
 
   const { locations } = useLocationClinica()
+  const [allAppointments, setAllAppointments] = useState<any>([])
   const [appointments, setAppointments] = useState<any>([])
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
@@ -130,6 +149,7 @@ const Appoinments = () => {
       ; (async function getLocations() {
         const data = await fetchLocations()
         const appoint_data = await fetchAppointmentsByLocation(null)
+        setAllAppointments(appoint_data)
         setAppointments(appoint_data)
         setAppoint_loading(false)
         // console.log(data)
@@ -144,6 +164,7 @@ const Appoinments = () => {
     setAppointment_details(null)
     setAppoint_loading(true)
     const data = await fetchAppointmentsByLocation(value)
+    setAllAppointments(data)
     setAppointments(data)
     setAppoint_loading(false)
     // console.log(data)
@@ -157,6 +178,7 @@ const Appoinments = () => {
     const { error } = await delete_appointment_service(delId)
     if (!error) {
       setAppointments(appointments.filter((appoint: any) => appoint.id !== delId))
+      setAllAppointments(appointments.filter((appoint: any) => appoint.id !== delId))
       toast.success('Deleled successfully');
       setAppointment_details(null)
     }
@@ -166,13 +188,50 @@ const Appoinments = () => {
     }
   }
 
+  const filterHandle = (e: Date | null) => {
+
+    if (e) {
+      const dateToStr = e.toString()
+      const dateToMoment = moment(dateToStr).format('YYYY-MM-DD')
+
+
+      const filteredAppointments = allAppointments.filter((appoint: any) => {
+
+      if( appoint.date_and_time){
+      const str = appoint.date_and_time.split('|')[1].split(' - ')[0]
+      const formattedDate = moment(str, 'DD-MM-YYYY').format('YYYY-MM-DD')
+      return formattedDate === dateToMoment
+      
+      }
+      
+
+      
+      
+      })
+      setAppointments(filteredAppointments)
+    }
+    else {
+      setAppointments(allAppointments)
+    }
+
+    setAppointment_details(null)
+
+
+  }
+
   return (
     <main className="relative mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
 
 
 
-      <div className="flex flex-col items-end ps-3 ">
+      <div className="flex justify-end items-end ps-3 gap-3 ">
 
+        <div className="w-1/4 ">
+          <div >
+            <DatePicker onChange={filterHandle} className="bg-[#D9D9D9] py-2 w-full" placeholder="Filter by date appointment" />
+
+          </div>
+        </div>
         <div className="w-1/4 ">
           <div >
             <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
