@@ -299,12 +299,12 @@ const Page = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const username = '65d66aa7947049a4895ca7385db9d943';
+    const username = '40317b2ffb7c4fdfa9618c8345c8b0e4';
     const password = ''; // Leave this empty if there's no password
     const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-    
+  //  " https://cronitor.io/api/monitors/YnJGeQ?env=production&sort=-created&time=7d"
 
-    axios.get('https://cronitor.io/api/monitors', {
+    axios.get('https://cronitor.io/api/monitors/YnJGeQ?env=production&sort=-created&time=7d', {
       // proxy: {
       //   host: "https://new.clinicsanmiguel.com/",
       //   port: 8001
