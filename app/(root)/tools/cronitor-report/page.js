@@ -120,7 +120,8 @@ const render_arr = [
 
 const Render_Data = ({ data }) => {
 
-  const { attributes: { site: { ssl, dns } }, request, platform, schedule } = data.monitors[0]
+  const { attributes: { site: { ssl, dns } }, request, platform, schedule } = data
+  console.log(request.regions)
   return (
     <div className="mt-24 text-slate-700 ">
 
@@ -236,7 +237,7 @@ const Render_Data = ({ data }) => {
               <dt className="font-bold">
                 Request
               </dt>
-              <dd> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-xs ">GET</span> <span>{request.url}</span></dd>
+              <dd> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-xs ">GET</span> <span>{request?.url}</span></dd>
             </dl>
 
             <div className="grid grid-cols-2 gap-4">
@@ -274,7 +275,7 @@ const Render_Data = ({ data }) => {
 
                 <div className="flex items-center space-x-3 flex-wrap">
                   {
-                    request.regions.map(region,index => <dd key={index}> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-sm ">{region}</span></dd>)
+                    request?.regions?.map((region,index) => <dd key={index}> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-sm ">{region}</span></dd>)
                   }
                 </div>
 
@@ -304,7 +305,7 @@ const Page = () => {
     const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
   //  " https://cronitor.io/api/monitors/YnJGeQ?env=production&sort=-created&time=7d"
 
-    axios.get('https://cronitor.io/api/monitors/YnJGeQ?env=production&sort=-created&time=7d', {
+    axios.get('/api/monitors/YnJGeQ', {
       // proxy: {
       //   host: "https://new.clinicsanmiguel.com/",
       //   port: 8001
@@ -325,6 +326,8 @@ const Page = () => {
     })
 
   }, [])
+
+  console.log(data)
 
 
   return <>
