@@ -1,7 +1,7 @@
 'use client'
 import { Input_Component } from '@/components/Input_Component';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
-import React from 'react'
+import React, { useState } from 'react'
 import { Quantity_Field } from '@/components/Quantity_Field';
 import { RxReload } from "react-icons/rx";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -9,6 +9,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { Select } from 'flowbite-react';
 import { PiCaretCircleRightFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
+import { Edit_Modal } from './EditModal';
 
 interface PatientDetailsInterface {
   name: string;
@@ -71,12 +72,13 @@ const Payment_Method_Select = () => {
 interface Action_Button_Props {
   bg_color: string;
   label: string;
+  onClick?: () => void;
 }
 
-const Action_Button: React.FC<Action_Button_Props> = ({ bg_color, label }) => {
+const Action_Button: React.FC<Action_Button_Props> = ({ bg_color, label,onClick }) => {
   const bg_class = `${bg_color}`
 
-  return <button className={`text-[17px] text-white ${bg_class}  py-1 px-4 rounded-lg`} >
+  return <button onClick={onClick} className={`text-[17px] text-white ${bg_class}  py-1 px-4 rounded-lg`} >
     {label}
   </button>
 }
@@ -84,11 +86,20 @@ const Action_Button: React.FC<Action_Button_Props> = ({ bg_color, label }) => {
 
 
 const Patients = () => {
+  const [modalOpen, setModalOpen] = useState(false)
   const category_change_handle = () => {
 
   }
   const select_product_change_handle = () => {
 
+  }
+
+  const close_modal_handle = () => {
+    setModalOpen(false)
+  }
+
+  const openModal_handle = () => {
+    setModalOpen(true)
   }
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
@@ -137,7 +148,7 @@ const Patients = () => {
                     </p>
                     <div className='text-right space-y-2'>
                       <div className='space-x-3'>
-                        <Action_Button label='Edit' bg_color='bg-[#13787E]' />
+                        <Action_Button onClick={openModal_handle} label='Edit' bg_color='bg-[#13787E]' />
                         <Action_Button label='Delete' bg_color='bg-[#FF6363]' />
                         <Action_Button label='Select' bg_color='bg-[#00720B]' />
 
@@ -207,6 +218,8 @@ const Patients = () => {
 
       </div>
 
+
+      <Edit_Modal is_open={modalOpen} close_handle={close_modal_handle}  />
     </main>
   )
 }
