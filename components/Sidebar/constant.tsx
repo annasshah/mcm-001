@@ -8,6 +8,7 @@ import {
   pos,
   reputation,
   tools,
+  cronitor,
 } from "@/assets/SVGs";
 
 interface Route {
@@ -98,14 +99,24 @@ export const routeList: Route[] = [
       { id: 2, name: "Manage", route: "/inventory/manage" },
     ],
   },
+  // {
+  //   id: 9,
+  //   name: "Cronitor panel",
+  //   icon: cronitor,
+  //   children: [
+  //     { id: 1, name: "Stock panel", route: "/inventory/stockpanel" },
+  //     { id: 2, name: "Manage", route: "/inventory/manage" },
+  //   ],
+  // },
   {
-    id: 9,
+    id: 10,
     name: "Tools",
     icon: tools,
     children: [
       { id: 1, name: "Email Broadcast", route: "/tools/emailbroadcast" },
       { id: 2, name: "Website Content", route: "/tools/websitecontent" },
       { id: 3, name: "Text Broadcast", route: "/tools/textbroadcast" },
+      { id: 4, name: "Cronitor", route: "/tools/cronitor-report" },
     ],
   },
 ];
