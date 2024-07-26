@@ -22,41 +22,62 @@ interface FanData {
   fans: number;
 }
 const Card3 = () => {
-  const [fansCountry, setFansCountry] = useState(undefined);
-  const [fansRemoveMenu, setFansRemoveMenu] = useState(false);
-  const [fansCountryMenu, setFansCountryMenu] = useState(false);
-  const [fansCountryOption, setFansCountryOption] = useState("");
-  const [countryOptions, setCountryOptions] = useState<string[]>();
-  const [fanData, setFanData] = useState<FanData[]>([]);
-  useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        const fanscountrykeys = await FansCountryKeys();
 
-        // Use map to create an array of promises
-        const promises = fanscountrykeys.map(async (element: any) => {
-          const fanscountry = await PageFansCountry(element);
-          // console.log(`{ country: ${element}, fans: ${fanscountry} }`);
-          return { country: element, fans: fanscountry };
-        });
-
-        // Wait for all promises to resolve
-        const results = await Promise.all(promises);
-
-        // Sort the array based on the 'fans' property
-        results.sort((a: any, b: any) => b.fans - a.fans);
-
-        // Now 'results' array is sorted based on the 'fans' property
-        const top5 = results.slice(0, 5);
-
-        setFanData(top5);
-      } catch (error) {
-        console.error("Error fetching likes:", error);
+    const [menArray, setMenArray] = useState([]);
+    const [womenArray, setWomenArray] = useState([]);
+    const [undefinedArray, setUndefinedArray] = useState([]);
+  
+    useEffect(() => {
+      const responseData = {
+        "value": {
+          "U.55-64": 3,
+          "M.55-64": 141,
+          "U.35-44": 10,
+          "F.45-54": 750,
+          "M.18-24": 42,
+          "M.35-44": 399,
+          "F.25-34": 651,
+          "M.25-34": 208,
+          "F.13-17": 3,
+          "U.45-54": 7,
+          "F.65+": 113,
+          "F.55-64": 276,
+          "M.13-17": 1,
+          "M.65+": 66,
+          "F.35-44": 914,
+          "U.25-34": 6,
+          "M.45-54": 337,
+          "F.18-24": 78
+        }
+      };
+  
+      // Initialize arrays
+      const men = [];
+      const women = [];
+      const undefinedValues = [];
+  
+      // Parse the response data
+      for (const key in responseData.value) {
+        const [gender, ageRange] = key.split('.');
+        const fans = responseData.value[key];
+  
+        // Remove "M.", "F.", and "U." prefixes
+        const cleanAgeRange = ageRange.replace(/^\d{1,2}-/, '');
+  
+        if (gender === 'M') {
+          men.push({ age: cleanAgeRange, fans: fans });
+        } else if (gender === 'F') {
+          women.push({ age: cleanAgeRange, fans: fans });
+        } else {
+          undefinedValues.push({ age: cleanAgeRange, fans: fans });
+        }
       }
-    };
-
-    fetchLikes();
-  }, []);
+  
+      // Set state with the parsed data
+      setMenArray(men);
+      setWomenArray(women);
+      setUndefinedArray(undefinedValues);
+    }, []);
 
   return (
     <div
@@ -66,7 +87,7 @@ const Card3 = () => {
       <p className=" text-3xl mt-2 font-extrabold">300</p>
       <p className=" text-[#343131] ">Total Users</p>
       <div className="h-[250px] flex mt-[10px]  items-end justify-start  w-[100%]">
-        <ResponsiveContainer width="100%" height="100%">
+        {/* <ResponsiveContainer width="100%" height="100%">
           <BarChart
             width={500}
             height={500}
@@ -89,7 +110,7 @@ const Card3 = () => {
               activeBar={<Rectangle fill="gold" stroke="purple" />}
             />
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer> */}
       </div>
     </div>
   );
