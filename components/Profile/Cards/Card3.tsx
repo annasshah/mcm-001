@@ -80,7 +80,7 @@ const Card3: FC<Card2> = ({ color, name }) => {
           >
             <XAxis dataKey="country" />
             <YAxis dataKey="fans" />
-            <Tooltip />
+            {/* <Tooltip /> */}
             <Legend />
 
             <Bar
