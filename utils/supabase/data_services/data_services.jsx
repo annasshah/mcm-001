@@ -14,9 +14,9 @@ export async function fetchLocations() {
 
 export async function create_location() {}
 
-export async function updateLocationData(id: any, data: any) {}
+export async function updateLocationData(id, data) {}
 
-export async function fetchAppointmentsByLocation(locationId: any) {
+export async function fetchAppointmentsByLocation(locationId) {
   let query = supabase.from("Appoinments").select(`*,location:Locations (
       id,
       title
@@ -36,7 +36,7 @@ export async function fetchAppointmentsByLocation(locationId: any) {
   return data;
 }
 
-export async function fetch_content_service({ table, language }: any) {
+export async function fetch_content_service({ table, language }) {
   let query = supabase.from(`${table}${language}`).select(`*`);
   const { data, error } = await query;
   if (error) {
@@ -46,11 +46,7 @@ export async function fetch_content_service({ table, language }: any) {
   return data;
 }
 
-export async function update_content_service({
-  table,
-  language,
-  post_data,
-}: any) {
+export async function update_content_service({ table, language, post_data }) {
   console.log({ language, post_data, section });
   const { data, error } = await supabase
 
@@ -70,7 +66,7 @@ export async function create_content_service({
   table,
   language: any,
   post_data,
-}: any) {
+}) {
   let query = supabase.from(`${table}${language}`).insert([post_data]).select();
 
   const { data, error } = await query;
@@ -79,7 +75,7 @@ export async function create_content_service({
 }
 
 // Update testimonial content
-export async function update_testimonial_content(id: number, content: string) {
+export async function update_testimonial_content(id, content) {
   const { data, error } = await supabase
     .from("Testimonials")
     .update({ content })
@@ -95,7 +91,7 @@ export async function update_testimonial_content(id: number, content: string) {
 }
 
 // Create a new testimonial
-export async function create_testimonials(testimonialData: any) {
+export async function create_testimonials(testimonialData) {
   const { data, error } = await supabase
     .from("Testimonials")
     .insert([testimonialData])
@@ -110,7 +106,7 @@ export async function create_testimonials(testimonialData: any) {
 }
 
 // Update Hero Section content
-export async function updateHeroSectionContent(id: number, content: any) {
+export async function updateHeroSectionContent(id, content) {
   const { data, error } = await supabase
     .from("HeroSection")
     .update(content)
@@ -126,7 +122,7 @@ export async function updateHeroSectionContent(id: number, content: any) {
 }
 
 // Update About content
-export async function update_about_content(id: number, data: any) {
+export async function update_about_content(id, data) {
   const { data: resultData, error } = await supabase
     .from("About")
     .update(data)
@@ -142,7 +138,7 @@ export async function update_about_content(id: number, data: any) {
 }
 
 // Create a new career entry
-export async function create_career(careerData: any) {
+export async function create_career(careerData) {
   const { data, error } = await supabase
     .from("Careers")
     .insert([careerData])
@@ -157,7 +153,7 @@ export async function create_career(careerData: any) {
 }
 
 // Delete an appointment
-export async function delete_appointment_service(id: number) {
+export async function delete_appointment_service(id) {
   const { data, error } = await supabase
     .from("Appointments")
     .delete()
@@ -172,7 +168,7 @@ export async function delete_appointment_service(id: number) {
 }
 
 // Update a career entry
-export async function update_career(id: number, data: any) {
+export async function update_career(id, data) {
   const { data: resultData, error } = await supabase
     .from("Careers")
     .update(data)
