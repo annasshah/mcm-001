@@ -57,7 +57,7 @@ export async function fetch_content_service({ table, language }) {
 
 
 export async function update_content_service({ table, language, post_data }) {
-  console.log({ language, post_data, section })
+  // console.log({ language, post_data, section })
   const { data, error } = await supabase
 
     .from(`${table}${language}`)

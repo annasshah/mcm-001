@@ -19,11 +19,11 @@ export const Form_Component = (props) => {
                 {
                     Object.keys(data).map((field, index) => {
                         const splited_str = field.split('_')[0].toLocaleLowerCase()
-                        console.log(splited_str)
+                        // console.log(splited_str)
 
                         if (render_list_fields.includes(field)) {
                             const { Component_Render } = fields_list_components[find_fields[splited_str] === 'timer' ? 'input' : find_fields[splited_str] || 'input']
-                            const label = capitalize_word_letter(field)
+                            const label = field === 'mon_timing' ? 'Mon - Fri Timing' : capitalize_word_letter(field)
 
                             return <Component_Render key={index} key_id={field} label={label} {...props} />
 

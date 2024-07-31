@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import WebsiteContentLayout from '../Layout';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import { useLocationClinica } from '@/hooks/useLocationClinica';
@@ -37,6 +37,7 @@ const inputLabelandValue = [
 const Testimonials = () => {
 
     const { locations, set_location_handle, selected_location } = useLocationClinica()
+    const [filteredData, setfilteredData] = useState([])
 
 
     const {
@@ -59,19 +60,36 @@ const Testimonials = () => {
         create_data_loading,
         create_content_handle,
         fetch_data_by_parameter
-    } = useSingleRowDataHandle({ update_content_function: update_testimonial_content,
-        create_content_function:create_testimonials,
-        list_data: true, table:'Testinomial', required_fields:inputLabelandValue });
+    } = useSingleRowDataHandle({
+        update_content_function: update_testimonial_content,
+        create_content_function: create_testimonials,
+        list_data: true, table: 'Testinomial', required_fields: inputLabelandValue
+    });
 
     const select_location_handle = (val) => {
         const value = val.target.value
+        console.log('first')
         set_location_handle(value)
-        fetch_data_by_parameter(value)
+        const filterByLocation = data_list.filter(data => data.location_id == value)
+        setfilteredData(filterByLocation)
+        if (filterByLocation.length) {
+            change_selected_list_id(filterByLocation[0].id, true)
+        }
+        else{
+            change_selected_list_id('', true)
+        }
     }
 
 
+    useEffect(() => {
 
-    console.log({create_data})
+        // const filterByLocation
+        setfilteredData(data_list)
+    }, [data_list])
+
+
+
+
     return (
         <WebsiteContentLayout>
             <div className='mb-5 px-3' >
@@ -83,7 +101,7 @@ const Testimonials = () => {
                             on_change_handle={select_location_handle}
                             required={true} />
                         <Select_Dropdown
-                            value={selected_list_id} label='ID' start_empty={true} options_arr={data_list.map(({ id, }) => ({ value: id, label: id }))}
+                            value={selected_list_id} label='ID' start_empty={true} options_arr={filteredData.map(({ id, }) => ({ value: id, label: id }))}
                             on_change_handle={change_selected_list_id}
                             required={true} />
                     </div>
@@ -92,7 +110,7 @@ const Testimonials = () => {
 
                             <Select_Dropdown
                                 value={create_data.location_id} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }) => ({ value: id, label: title }))}
-                                on_change_handle={(e)=>on_change_handle('location_id', e.target.value)}
+                                on_change_handle={(e) => on_change_handle('location_id', e.target.value)}
                                 required={true} />
 
 
@@ -105,7 +123,7 @@ const Testimonials = () => {
                                     return (
 
                                         <Component_Render key={index} on_change_handle={on_change_handle} label={item.label} key_id={item.key} data={create_data} />
-                                        
+
                                     );
                                 })
                             }

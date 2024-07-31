@@ -10,7 +10,8 @@ import Moment from 'moment';
 import { supabase } from "@/services/supabase";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { DatePicker } from "antd";
+import { Calendar, DatePicker, Input } from "antd";
+import { Custom_Modal } from "@/components/Modal_Components/Custom_Modal";
 
 export interface Location {
   id: number
@@ -142,6 +143,9 @@ const Appoinments = () => {
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
 
+  const [openModal, setOpenModal] = useState(false)
+  const [LoadingUpdate, setLoadingUpdate] = useState(false)
+
 
   useEffect(() => {
     setAppoint_loading(true)
@@ -197,16 +201,16 @@ const Appoinments = () => {
 
       const filteredAppointments = allAppointments.filter((appoint: any) => {
 
-      if( appoint.date_and_time){
-      const str = appoint.date_and_time.split('|')[1].split(' - ')[0]
-      const formattedDate = moment(str, 'DD-MM-YYYY').format('YYYY-MM-DD')
-      return formattedDate === dateToMoment
-      
-      }
-      
+        if (appoint.date_and_time) {
+          const str = appoint.date_and_time.split('|')[1].split(' - ')[0]
+          const formattedDate = moment(str, 'DD-MM-YYYY').format('YYYY-MM-DD')
+          return formattedDate === dateToMoment
 
-      
-      
+        }
+
+
+
+
       })
       setAppointments(filteredAppointments)
     }
@@ -219,8 +223,39 @@ const Appoinments = () => {
 
   }
 
+
+  const create_content_handle = () => {
+
+  }
+
+  const openModalHandle = () => {
+    setOpenModal(true)
+  }
+  const closeModalHandle = () => {
+    setOpenModal(false)
+  }
+
+
+  const splitDateAndTime = (returnType:string) => {
+
+    if (appointment_details && appointment_details.date_and_time
+    ){
+      const str = appointment_details.date_and_time.split('|')[1].split(' - ')
+      const date = str[0]
+      const time = str[1]
+      if (returnType === 'date') {
+        return date
+      }
+      if (returnType === 'time') {
+        return time
+      }
+    }else {
+      return ''
+    }
+  }
+
   return (
-    <main className="relative mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
+    <main className=" mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
 
 
 
@@ -236,7 +271,7 @@ const Appoinments = () => {
           <div >
             <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
               <option disabled selected value=''>All locations</option>
-              {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+              {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.address}</option>)}
             </Select>
 
           </div>
@@ -289,7 +324,7 @@ const Appoinments = () => {
 
               <div className="w-full flex mt-3 gap-3">
                 <button onClick={() => delete_appointments_handle(appointment_details.id)} className="border-red-700 flex-1 text-red-700 border-2 active:opacity-60 rounded-md px-4 py-1 hover:bg-text_primary_color_hover">Delete</button>
-                <button className="border-text_primary_color flex-1 text-text_primary_color border-2 active:opacity-60 rounded-md px-4 py-1 ml-2 hover:bg-text_primary_color_hover">Edit</button>
+                <button onClick={openModalHandle} className="border-text_primary_color flex-1 text-text_primary_color border-2 active:opacity-60 rounded-md px-4 py-1 ml-2 hover:bg-text_primary_color_hover">Edit</button>
               </div>
             </>
             : <div className="flex h-full flex-1 flex-col justify-center items-center">
@@ -297,15 +332,26 @@ const Appoinments = () => {
             </div>}
         </div>
 
-        {/* <div className="absolute h-screen w-full bg-black/50 top-0 left-0 right-0">
 
-        </div> */}
       </div>
 
 
 
 
+      <Custom_Modal create_new_handle={create_content_handle} open_handle={openModalHandle} close_handle={closeModalHandle} is_open={openModal} Title='Update Appointment Time Slot' buttonLabel='Update' loading={LoadingUpdate} >
+        <div className='grid grid-cols-1 gap-4'>
+          <div className="border-2  rounded-md" >
+            <Input type="date" defaultValue={moment(splitDateAndTime('date'), 'DD-MM-YYYY').format('YYYY-MM-DD')} />
+          </div>
+          <div className="border-2  rounded-md" >
+            <Input type="time" defaultValue="10:00 AM" />
+          </div>
 
+
+
+        </div>
+
+      </Custom_Modal>
 
     </main>
   );

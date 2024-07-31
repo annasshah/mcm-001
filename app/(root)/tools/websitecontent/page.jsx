@@ -48,7 +48,6 @@ const Home = () => {
 
     }
 
-    console.log(data)
 
     return (
         <WebsiteContentLayout>

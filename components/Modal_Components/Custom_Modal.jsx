@@ -5,7 +5,7 @@ import { Button, Modal } from "flowbite-react";
 import Image from "next/image";
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 
-export function Custom_Modal({children, Title, loading, is_open,close_handle, open_handle, create_new_handle}) {
+export function Custom_Modal({children, Title, loading, is_open,close_handle, open_handle, create_new_handle, buttonLabel='Create'}) {
 
     return (
         <>
@@ -29,7 +29,7 @@ export function Custom_Modal({children, Title, loading, is_open,close_handle, op
                     <Button  color="gray" onClick={close_handle}>
                         Cancel
                     </Button>
-                    <Button  isProcessing={loading} disabled={loading}  onClick={create_new_handle}>Create</Button>
+                    <Button  isProcessing={loading} disabled={loading}  onClick={create_new_handle}>{buttonLabel}</Button>
                 </Modal.Footer>
             </Modal>
         </>

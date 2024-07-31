@@ -113,7 +113,7 @@ const Locations = () => {
                                     // const formattedKey = label.replace(/_/g, " ");
                                     // const is_disabled = update_loading 
                                     const splited_str = key.split('_')[0].toLocaleLowerCase()
-                                    console.log(splited_str, find_fields[splited_str])
+                                    // console.log(splited_str, find_fields[splited_str])
                                     const { Component_Render } = fields_list_components[find_fields[splited_str] || "input"]
                                     return (
 

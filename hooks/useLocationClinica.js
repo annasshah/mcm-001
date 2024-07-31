@@ -51,7 +51,7 @@ export function useLocationClinica() {
             if (res_data?.length) {
                 toast.success('Updated successfully');
             }
-            console.log(res_data);
+            // console.log(res_data);
             setSelected_location_data(res_data[0]);
             set_update_loading(false);
             set_is_edited(false);

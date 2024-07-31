@@ -121,7 +121,7 @@ const render_arr = [
 const Render_Data = ({ data }) => {
 
   const { attributes: { site: { ssl, dns } }, request, platform, schedule } = data
-  console.log(request.regions)
+  // console.log(request.regions)
   return (
     <div className="mt-24 text-slate-700 ">
 
@@ -327,7 +327,7 @@ const Page = () => {
 
   }, [])
 
-  console.log(data)
+  // console.log(data)
 
 
   return <>

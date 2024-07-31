@@ -72,44 +72,44 @@ function useSingleRowDataHandle({
         else if (create_content_service) {
 
 
-            if(Object.keys(create_data).includes('email')){
-            
+            if (Object.keys(create_data).includes('email')) {
+
                 const check_valid_email = String(create_data.email)
-                .toLowerCase()
-                .match(
-                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                );
-                
-                if(!check_valid_email){
+                    .toLowerCase()
+                    .match(
+                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+
+                if (!check_valid_email) {
                     toast.error('Invalid email address, please enter a valid email address')
                 }
-    
+
             }
 
 
 
-            else{
+            else {
                 setCreate_data_loading(true)
-            async function create_row_handle() {
-                const { data: res_data, error } = await create_content_service({ table: selected_section, language: create_row_language, post_data: create_data });
+                async function create_row_handle() {
+                    const { data: res_data, error } = await create_content_service({ table: selected_section, language: create_row_language, post_data: create_data });
 
-                if (error) {
-                    console.log(error.message);
-                    toast.error(error.message);
-                    setCreate_data_loading(false)
-                    // throw new Error(error.message);
+                    if (error) {
+                        console.log(error.message);
+                        toast.error(error.message);
+                        setCreate_data_loading(false)
+                        // throw new Error(error.message);
+                    }
+
+
+
+
+                    if (res_data?.length) {
+                        toast.success('Created successfully');
+                        close_modal()
+                        setCreate_data_loading(false)
+                    }
                 }
-
-
-
-
-                if (res_data?.length) {
-                    toast.success('Created successfully');
-                    close_modal()
-                    setCreate_data_loading(false)
-                }
-            }
-            create_row_handle();
+                create_row_handle();
             }
         }
 
@@ -118,8 +118,8 @@ function useSingleRowDataHandle({
 
 
 
-    const change_selected_list_id = (e) => {
-        const value = e.target.value
+    const change_selected_list_id = (e, directVal) => {
+        const value = directVal ? e : e.target.value
 
         setselected_list_id(value)
         const find_data = data_list.find((elem) => elem.id == value)
@@ -182,7 +182,7 @@ function useSingleRowDataHandle({
             if (res_data?.length) {
                 toast.success('Updated successfully');
             }
-            console.log(res_data);
+            // console.log(res_data);
             set_default_data(res_data[0]);
             set_update_loading(false);
             set_is_edited(false);

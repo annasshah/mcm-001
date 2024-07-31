@@ -62,7 +62,6 @@ const About = () => {
     } = useSingleRowDataHandle({ update_content_function:update_about_content, table:'about', default_selected_section:about_section_options[0].value});
 
 
-    console.log({ data })
 
 
     const select_section_handle = (val) => {
