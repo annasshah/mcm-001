@@ -15,10 +15,10 @@ export function useLocationClinica() {
   const [is_edited, set_is_edited] = useState(false);
   const [update_loading, set_update_loading] = useState(false);
 
-  const set_location_handle = (value: any) => {
+  const set_location_handle = (value) => {
     setSelected_location(value);
 
-    const data = locations.find((item: any) => item.id == value);
+    const data = locations.find((item) => item.id == value);
     setSelected_location_data(data);
     setChange_data(data);
   };
@@ -27,9 +27,9 @@ export function useLocationClinica() {
     setChange_data(selected_location_data);
   };
 
-  const on_change_handle = (field: any, val: any) => {
+  const on_change_handle = (field, val) => {
     set_is_edited(true);
-    setChange_data((prev: any) => ({
+    setChange_data((prev) => ({
       ...prev,
       [field]: val,
     }));
