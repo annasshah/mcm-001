@@ -27,7 +27,7 @@ const only_fields_to_render = {
 };
 
 const fields = {
-  text: ({ value, on_change_handle, label }: any) => {
+  text: ({ value, on_change_handle, label }) => {
     return (
       <div className="flex flex-col space-y-2">
         {/* <Label>{label}</Label> */}
@@ -42,7 +42,7 @@ const fields = {
       </div>
     );
   },
-  title: ({ value, on_change_handle, label }: any) => {
+  title: ({ value, on_change_handle, label }) => {
     return (
       <div className="flex flex-col space-y-2">
         {/* <Label>{label}</Label> */}
@@ -55,7 +55,7 @@ const fields = {
       </div>
     );
   },
-  image: ({ value, on_change_handle, label }: any) => {
+  image: ({ value, on_change_handle, label }) => {
     return (
       <div className="flex flex-col space-y-2">
         {/* <Label>{label}</Label> */}
@@ -80,14 +80,14 @@ const About = () => {
     handle_update,
     reset_fields,
   } = useSingleRowDataHandle({
-    update_content_function: update_about_content as any,
+    update_content_function: update_about_content,
     table: "about",
     default_selected_section: about_section_options[0].value,
   });
 
   console.log({ data });
 
-  const select_section_handle = (val: any) => {};
+  const select_section_handle = (val) => {};
 
   return (
     <WebsiteContentLayout>
