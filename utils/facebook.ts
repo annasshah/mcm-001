@@ -1,8 +1,7 @@
 "use client";
 // import axios from "axios";
 import { TabContext } from "@/context";
-const access_token =
-  "EAATLOZASILrMBO7rIiLGIM0By2IJqKwU3ncRdbrsFVIZCxSRk7v7RZB1EnvhxhYHSGiqYZAABqAAUmRNs2ZBmyZAc1aSpCJ6Nu1F5pyT8EuAwpcVPn8VZANS4geTMjCrV9lt60Kzrk7HbZCUQSU6DLNWB45O8S26lX85xYokPVWPExWGwTsvPA2ieExSXPag8ia04IADwvBGYV4ryxIBhgHNEH0LmjZAnOJfmaMurCmzO";
+const access_token = process.env.FACEBOOK_ACCESS_TOKEN as string;
 
 const PageLikes = async () => {
   const res = await getRepsonse("page_fans");
