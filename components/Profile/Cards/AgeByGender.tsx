@@ -22,62 +22,61 @@ interface FanData {
   fans: number;
 }
 const Card3 = () => {
+  const [menArray, setMenArray] = useState<any>([]);
+  const [womenArray, setWomenArray] = useState<any>([]);
+  const [undefinedArray, setUndefinedArray] = useState<any>([]);
 
-    const [menArray, setMenArray] = useState([]);
-    const [womenArray, setWomenArray] = useState([]);
-    const [undefinedArray, setUndefinedArray] = useState([]);
-  
-    useEffect(() => {
-      const responseData = {
-        "value": {
-          "U.55-64": 3,
-          "M.55-64": 141,
-          "U.35-44": 10,
-          "F.45-54": 750,
-          "M.18-24": 42,
-          "M.35-44": 399,
-          "F.25-34": 651,
-          "M.25-34": 208,
-          "F.13-17": 3,
-          "U.45-54": 7,
-          "F.65+": 113,
-          "F.55-64": 276,
-          "M.13-17": 1,
-          "M.65+": 66,
-          "F.35-44": 914,
-          "U.25-34": 6,
-          "M.45-54": 337,
-          "F.18-24": 78
-        }
-      };
-  
-      // Initialize arrays
-      const men = [];
-      const women = [];
-      const undefinedValues = [];
-  
-      // Parse the response data
-      for (const key in responseData.value) {
-        const [gender, ageRange] = key.split('.');
-        const fans = responseData.value[key];
-  
-        // Remove "M.", "F.", and "U." prefixes
-        const cleanAgeRange = ageRange.replace(/^\d{1,2}-/, '');
-  
-        if (gender === 'M') {
-          men.push({ age: cleanAgeRange, fans: fans });
-        } else if (gender === 'F') {
-          women.push({ age: cleanAgeRange, fans: fans });
-        } else {
-          undefinedValues.push({ age: cleanAgeRange, fans: fans });
-        }
+  useEffect(() => {
+    const responseData: any = {
+      value: {
+        "U.55-64": 3,
+        "M.55-64": 141,
+        "U.35-44": 10,
+        "F.45-54": 750,
+        "M.18-24": 42,
+        "M.35-44": 399,
+        "F.25-34": 651,
+        "M.25-34": 208,
+        "F.13-17": 3,
+        "U.45-54": 7,
+        "F.65+": 113,
+        "F.55-64": 276,
+        "M.13-17": 1,
+        "M.65+": 66,
+        "F.35-44": 914,
+        "U.25-34": 6,
+        "M.45-54": 337,
+        "F.18-24": 78,
+      },
+    };
+
+    // Initialize arrays
+    const men = [];
+    const women = [];
+    const undefinedValues = [];
+
+    // Parse the response data
+    for (const key in responseData.value) {
+      const [gender, ageRange] = key.split(".");
+      const fans = responseData.value[key];
+
+      // Remove "M.", "F.", and "U." prefixes
+      const cleanAgeRange = ageRange.replace(/^\d{1,2}-/, "");
+
+      if (gender === "M") {
+        men.push({ age: cleanAgeRange, fans: fans });
+      } else if (gender === "F") {
+        women.push({ age: cleanAgeRange, fans: fans });
+      } else {
+        undefinedValues.push({ age: cleanAgeRange, fans: fans });
       }
-  
-      // Set state with the parsed data
-      setMenArray(men);
-      setWomenArray(women);
-      setUndefinedArray(undefinedValues);
-    }, []);
+    }
+
+    // Set state with the parsed data
+    setMenArray(men);
+    setWomenArray(women);
+    setUndefinedArray(undefinedValues);
+  }, []);
 
   return (
     <div
