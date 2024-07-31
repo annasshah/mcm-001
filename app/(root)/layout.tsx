@@ -5,15 +5,15 @@ import { ActiveTabProvider } from "@/context";
 
 const sidebarWidth = "233px";
 
-export default function RootLayout({
+export default function layout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en">
+		<div>
 			<ActiveTabProvider>
-				<body className={`relative flex h-screen`}>
+				<div className={`relative flex h-screen`}>
 					<section
 						className="fixed left-0 top-0 h-full"
 						style={{ width: sidebarWidth }}
@@ -37,8 +37,8 @@ export default function RootLayout({
 							{children}
 						</section>
 					</section>
-				</body>
+				</div>
 			</ActiveTabProvider>
-		</html>
+		</div>
 	);
 }
