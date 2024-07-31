@@ -12,7 +12,7 @@ export async function fetchLocations() {
   return data;
 }
 
-export async function fetchAppointmentsByLocation(locationId) {
+export async function fetchAppointmentsByLocation(locationId: any) {
   let query = supabase.from("Appoinments").select(`*,location:Locations (
       id,
       title
@@ -32,7 +32,7 @@ export async function fetchAppointmentsByLocation(locationId) {
   return data;
 }
 
-export async function fetch_content_service({ table, language }) {
+export async function fetch_content_service({ table, language }: any) {
   let query = supabase.from(`${table}${language}`).select(`*`);
   const { data, error } = await query;
   if (error) {
@@ -42,7 +42,11 @@ export async function fetch_content_service({ table, language }) {
   return data;
 }
 
-export async function update_content_service({ table, language, post_data }) {
+export async function update_content_service({
+  table,
+  language,
+  post_data,
+}: any) {
   console.log({ language, post_data, section });
   const { data, error } = await supabase
 
@@ -58,7 +62,11 @@ export async function update_content_service({ table, language, post_data }) {
   return data;
 }
 
-export async function create_content_service({ table, language, post_data }) {
+export async function create_content_service({
+  table,
+  language: any,
+  post_data,
+}: any) {
   let query = supabase.from(`${table}${language}`).insert([post_data]).select();
 
   const { data, error } = await query;
@@ -66,10 +74,8 @@ export async function create_content_service({ table, language, post_data }) {
   return { data, error };
 }
 
-export async function delete_appointment_service(id) {
-  const query = await supabase.from("Appoinments").delete().eq("id", id);
+export async function update_testimonial_content() {}
 
-  const { data, error } = await query;
+export async function create_testimonials() {}
 
-  return { data, error };
-}
+export async function updateHeroSectionContent() {}

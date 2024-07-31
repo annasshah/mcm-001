@@ -2,12 +2,11 @@
 import React from "react";
 import WebsiteContentLayout from "../Layout";
 import { Select_Dropdown } from "@/components/Select_Dropdown";
-import { useLocationClinica } from "@/hooks/useLocationClinica";
+import { useLocationClinica } from "../../../../../hooks/useLocationClinica";
 import {
   create_testimonials,
-  fetch_testimonials,
   update_testimonial_content,
-} from "@/utils/supabase/data_services/data_services";
+} from "../../../../../utils/supabase/data_services/data_services";
 import { useSingleRowDataHandle } from "@/hooks/useSingleRowDataHandle";
 import { Render_Rating } from "@/components/Rating_Component/Render_Rating";
 import { Form_Component } from "@/components/Form_Component";
