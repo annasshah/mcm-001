@@ -12,6 +12,10 @@ export async function fetchLocations() {
   return data;
 }
 
+export async function create_location() {}
+
+export async function updateLocationData(id: any, data: any) {}
+
 export async function fetchAppointmentsByLocation(locationId: any) {
   let query = supabase.from("Appoinments").select(`*,location:Locations (
       id,
