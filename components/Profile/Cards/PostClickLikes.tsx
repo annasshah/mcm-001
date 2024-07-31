@@ -180,7 +180,7 @@ const PostClickLikes: FC<Card1> = ({ color, name }) => {
       {name == "Likes" && <p className=" text-3xl font-bold">{likes}</p>}
       {name == "Views" && <p className=" text-3xl font-bold">{views}</p>}
       {name == "Engagements" && (
-        <p className=" text-3xl font-bold">{engagements}</p>
+        <p className=" text-3xl font-bold">{engagements ? engagements : 0}</p>
       )}
       {name == "Impressions" && (
         <p className=" text-3xl font-bold">{impressions}</p>
