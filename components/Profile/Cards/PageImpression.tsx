@@ -27,14 +27,14 @@ const PageImpression = () => {
     >
       <div className="flex flex-col w-[50%] top-3 right-3  absolute">
         <div className="w-[100%] text-xs  flex items-center justify-center   rounded-[5px]  bg-[#F6F6F6]">
-          <div
+          {/* <div
             className="w-[25%] text-center"
             onClick={() => setImpressionsType("all")}
           >
             all
-          </div>
+          </div> */}
           <div
-            className="w-[45%] text-center border border-x-[#000] "
+            className="w-[45%] text-center border border-r-[#000] "
             onClick={() => setImpressionsType("organic")}
           >
             organic
