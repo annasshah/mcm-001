@@ -2,7 +2,7 @@
 // import axios from "axios";
 import { TabContext } from "@/context";
 const access_token =
-  "EAATLOZASILrMBO9Vw7aM3XmJZCy0Hb42T03J0QjWDAWs0WZA6U1YgZAIZCC6dy7mSwA7SammMrIejSOXZC022tDwUcwoCjW7WzjraSy7kEVlUnlkJxaIi3ZBldZAtZB1UxpohBjDThn2zFTZB3zNPjVdTcNXDcveRwVyMrrSie8DOGMONVgnqW5ZAiZAxks8SALwqtpBhBcEJ27L";
+  "EAATLOZASILrMBO7rIiLGIM0By2IJqKwU3ncRdbrsFVIZCxSRk7v7RZB1EnvhxhYHSGiqYZAABqAAUmRNs2ZBmyZAc1aSpCJ6Nu1F5pyT8EuAwpcVPn8VZANS4geTMjCrV9lt60Kzrk7HbZCUQSU6DLNWB45O8S26lX85xYokPVWPExWGwTsvPA2ieExSXPag8ia04IADwvBGYV4ryxIBhgHNEH0LmjZAnOJfmaMurCmzO";
 
 const PageLikes = async () => {
   const res = await getRepsonse("page_fans");
