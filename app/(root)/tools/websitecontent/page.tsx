@@ -2,10 +2,7 @@
 import React from "react";
 import WebsiteContentLayout from "./Layout";
 import { Button, Label, Select, Toast } from "flowbite-react";
-import {
-  fetchHeroSectionContent,
-  updateHeroSectionContent,
-} from "@/utils/supabase/data_services/data_services";
+import { updateHeroSectionContent } from "@/utils/supabase/data_services/data_services";
 import { useSingleRowDataHandle } from "@/hooks/useSingleRowDataHandle";
 import { Select_Dropdown } from "@/components/Select_Dropdown";
 import { Form_Component } from "@/components/Form_Component";
