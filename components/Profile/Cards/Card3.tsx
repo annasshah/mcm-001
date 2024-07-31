@@ -63,7 +63,7 @@ const Card3: FC<Card2> = ({ color, name }) => {
       className={`flex flex-col items-start  relative p-4  rounded-[10px] mx-5 w-[30%] h-[350px] ${color} justify-start`}
     >
       <p className=" text-xl font-bold">{name}</p>
-      <p className=" text-3xl mt-2 font-extrabold">300</p>
+      {/* <p className=" text-3xl mt-2 font-extrabold">300</p> */}
       <p className=" text-[#343131] ">Total Users</p>
       <div className="h-[250px] flex mt-[10px]  items-end justify-start  w-[100%]">
         <ResponsiveContainer width="100%" height="100%">
