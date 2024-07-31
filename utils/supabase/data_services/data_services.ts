@@ -83,3 +83,8 @@ export async function update_testimonial_content() {}
 export async function create_testimonials() {}
 
 export async function updateHeroSectionContent() {}
+
+export async function update_about_content(id, data) {}
+export async function create_career() {}
+export async function delete_appointment_service(id) {}
+export async function update_career(id, data) {}
