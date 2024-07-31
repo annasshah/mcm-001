@@ -244,7 +244,7 @@ const Render_Data = ({ data }: any) => {
                 <dt className="font-bold">Locations</dt>
 
                 <div className="flex items-center space-x-3 flex-wrap">
-                  {request?.regions?.map((region, index) => (
+                  {request?.regions?.map((region: any, index: any) => (
                     <dd key={index}>
                       {" "}
                       <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-sm ">
