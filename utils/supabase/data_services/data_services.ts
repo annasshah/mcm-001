@@ -78,13 +78,111 @@ export async function create_content_service({
   return { data, error };
 }
 
-export async function update_testimonial_content() {}
+// Update testimonial content
+export async function update_testimonial_content(id: number, content: string) {
+  const { data, error } = await supabase
+    .from("Testimonials")
+    .update({ content })
+    .eq("id", id)
+    .select();
 
-export async function create_testimonials() {}
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
 
-export async function updateHeroSectionContent() {}
+  return { data, error: null };
+}
 
-export async function update_about_content(id, data) {}
-export async function create_career() {}
-export async function delete_appointment_service(id) {}
-export async function update_career(id, data) {}
+// Create a new testimonial
+export async function create_testimonials(testimonialData: any) {
+  const { data, error } = await supabase
+    .from("Testimonials")
+    .insert([testimonialData])
+    .select();
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data, error: null };
+}
+
+// Update Hero Section content
+export async function updateHeroSectionContent(id: number, content: any) {
+  const { data, error } = await supabase
+    .from("HeroSection")
+    .update(content)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data, error: null };
+}
+
+// Update About content
+export async function update_about_content(id: number, data: any) {
+  const { data: resultData, error } = await supabase
+    .from("About")
+    .update(data)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data: resultData, error: null };
+}
+
+// Create a new career entry
+export async function create_career(careerData: any) {
+  const { data, error } = await supabase
+    .from("Careers")
+    .insert([careerData])
+    .select();
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data, error: null };
+}
+
+// Delete an appointment
+export async function delete_appointment_service(id: number) {
+  const { data, error } = await supabase
+    .from("Appointments")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data, error: null };
+}
+
+// Update a career entry
+export async function update_career(id: number, data: any) {
+  const { data: resultData, error } = await supabase
+    .from("Careers")
+    .update(data)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+    return { data: null, error };
+  }
+
+  return { data: resultData, error: null };
+}
