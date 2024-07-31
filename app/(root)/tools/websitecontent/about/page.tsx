@@ -80,14 +80,14 @@ const About = () => {
     handle_update,
     reset_fields,
   } = useSingleRowDataHandle({
-    update_content_function: update_about_content,
+    update_content_function: update_about_content as any,
     table: "about",
     default_selected_section: about_section_options[0].value,
   });
 
   console.log({ data });
 
-  const select_section_handle = (val) => {};
+  const select_section_handle = (val: any) => {};
 
   return (
     <WebsiteContentLayout>
