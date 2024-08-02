@@ -10,6 +10,7 @@ import { Select } from 'flowbite-react';
 import { PiCaretCircleRightFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { Edit_Modal } from './EditModal';
+import { Action_Button } from '@/components/Action_Button';
 
 interface PatientDetailsInterface {
   name: string;
@@ -68,21 +69,6 @@ const Payment_Method_Select = () => {
       </Select>
     </div>)
 }
-
-interface Action_Button_Props {
-  bg_color: string;
-  label: string;
-  onClick?: () => void;
-}
-
-const Action_Button: React.FC<Action_Button_Props> = ({ bg_color, label,onClick }) => {
-  const bg_class = `${bg_color}`
-
-  return <button onClick={onClick} className={`text-[17px] text-white ${bg_class}  py-1 px-4 rounded-lg`} >
-    {label}
-  </button>
-}
-
 
 
 const Patients = () => {
