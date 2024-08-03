@@ -15,7 +15,7 @@ const Card3: React.FC = () => {
   });
 
   useEffect(() => {
-    const responseData = {
+    const responseData: any = {
       value: {
         "U.55-64": 3,
         "M.55-64": 141,
