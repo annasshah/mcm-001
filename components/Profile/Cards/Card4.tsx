@@ -23,6 +23,7 @@ const Card4: React.FC = () => {
   const [others, setOthers] = useState(0);
   const [localeOptions, setLocaleOptions] = useState<string[] | undefined>();
   const [fanData, setFanData] = useState<FanData[]>([]);
+
   useEffect(() => {
     let incrementedValue = 0;
     const fetchLikes = async () => {
@@ -66,6 +67,9 @@ const Card4: React.FC = () => {
     fetchLikes();
   }, [others, en, es]);
 
+  // Define colors for each segment
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+
   return (
     <div
       className={`flex flex-col items-start  relative p-4  rounded-[10px] mx-5 w-[50%] h-[350px] bg-[#F6EBD6] justify-start`}
@@ -74,16 +78,15 @@ const Card4: React.FC = () => {
       <div className="flex w-[100%] h-full items-center justify-center">
         <div className="flex flex-col p-2 items-center   ">
           <div className="flex  items-center">
-            {" "}
-            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#C8E0BA]"></div>{" "}
+            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#0088FE]"></div>{" "}
             <h1 className="ml-3">English</h1>
           </div>
           <div className="flex ml-2 items-center">
-            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#C8E0BA]"></div>{" "}
+            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#00C49F]"></div>{" "}
             <h1 className="ml-3"> Spanish</h1>
           </div>
           <div className="flex  items-center">
-            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#C8E0BA]"></div>{" "}
+            <div className=" w-[15px] h-[15px] rounded-[100px] bg-[#FFBB28]"></div>{" "}
             <h1 className="ml-3">Others</h1>
           </div>
         </div>
@@ -98,7 +101,14 @@ const Card4: React.FC = () => {
               innerRadius={50}
               fill="#8884d8"
               label
-            ></Pie>
+            >
+              {fanData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
           </PieChart>
         </ResponsiveContainer>
       </div>
