@@ -5,18 +5,18 @@ import { Button, Modal } from "flowbite-react";
 import Image from "next/image";
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 
-export function Custom_Modal({children, Title, loading, is_open,close_handle, open_handle, create_new_handle, buttonLabel='Create'}) {
+export function Custom_Modal({children, Title, loading, is_open,close_handle, open_handle, create_new_handle, buttonLabel='Create', Trigger_Button, disabled = false}) {
 
     return (
         <>
 
-            <button onClick={open_handle}>
+           {Trigger_Button ?  Trigger_Button : <button onClick={open_handle}>
                 <Image
                     className="w-12"
                     src={PlusIcon}
                     alt="Logo"
                 />
-            </button>
+            </button>}
             {/* <Button onClick={() => setOpenModal(true)}>Toggle modal</Button> */}
             <Modal  show={is_open} onClose={close_handle}>
                 <Modal.Header>{Title}</Modal.Header>
@@ -29,7 +29,7 @@ export function Custom_Modal({children, Title, loading, is_open,close_handle, op
                     <Button  color="gray" onClick={close_handle}>
                         Cancel
                     </Button>
-                    <Button  isProcessing={loading} disabled={loading}  onClick={create_new_handle}>{buttonLabel}</Button>
+                    <Button  isProcessing={loading} disabled={loading || disabled}  onClick={create_new_handle}>{buttonLabel}</Button>
                 </Modal.Footer>
             </Modal>
         </>

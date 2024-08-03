@@ -105,3 +105,22 @@ export async function delete_appointment_service(id) {
 }
 
 
+
+export async function update_appointment_service(id, value) {
+  const query = await supabase
+    .from('Appoinments')
+    .update({ date_and_time:value })
+    .eq('id', id)
+    .select('*')
+
+
+
+
+  const { data, error } = await query;
+
+
+
+  return { data, error }
+}
+
+

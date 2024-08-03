@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import { Calendar, DatePicker, Input } from "antd";
 import { Custom_Modal } from "@/components/Modal_Components/Custom_Modal";
+import { Appointment_Edit_Modal } from "@/components/Appointment_Edit/Appointment_Edit_Modal";
 
 export interface Location {
   id: number
@@ -34,6 +35,24 @@ export interface Appointment {
   location?: Location
   in_office_patient: boolean
   new_patient: boolean
+}
+
+export interface LocationInterface {
+  id: number;
+  created_at: string;
+  phone: string;
+  direction: string;
+  email: string;
+  address: string;
+  mon_timing: string;
+  tuesday_timing: string;
+  wednesday_timing: string;
+  thursday_timing: string;
+  friday_timing: string;
+  saturday_timing: string;
+  sunday_timing: string;
+  title: string;
+  Group: string;
 }
 
 interface RenderDetailFields {
@@ -143,8 +162,6 @@ const Appoinments = () => {
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<any | null>(null)
 
-  const [openModal, setOpenModal] = useState(false)
-  const [LoadingUpdate, setLoadingUpdate] = useState(false)
 
 
   useEffect(() => {
@@ -174,9 +191,19 @@ const Appoinments = () => {
     // console.log(data)
   }
 
+  const find_locations = (location_id: number) => {
+    const find_location = locations.find((location:LocationInterface) => location.id === location_id)
+    return find_location
+  }
+
   const select_for_details_handle = (appoint: any) => {
+    console.log(find_locations(appoint.location_id))
+
     setAppointment_details(appoint)
   }
+
+
+
 
   const delete_appointments_handle = async (delId: number) => {
     const { error } = await delete_appointment_service(delId)
@@ -224,22 +251,11 @@ const Appoinments = () => {
   }
 
 
-  const create_content_handle = () => {
 
-  }
-
-  const openModalHandle = () => {
-    setOpenModal(true)
-  }
-  const closeModalHandle = () => {
-    setOpenModal(false)
-  }
-
-
-  const splitDateAndTime = (returnType:string) => {
+  const splitDateAndTime = (returnType: string) => {
 
     if (appointment_details && appointment_details.date_and_time
-    ){
+    ) {
       const str = appointment_details.date_and_time.split('|')[1].split(' - ')
       const date = str[0]
       const time = str[1]
@@ -249,7 +265,7 @@ const Appoinments = () => {
       if (returnType === 'time') {
         return time
       }
-    }else {
+    } else {
       return ''
     }
   }
@@ -299,7 +315,7 @@ const Appoinments = () => {
 
 
           {appointment_details ?
-            <>
+            <div className="flex flex-col h-full">
               <div className="flex items-center justify-end space-x-5 text-black">
                 <div className="flex items-center space-x-1 text-base">
                   <GoDotFill />
@@ -315,7 +331,7 @@ const Appoinments = () => {
                 </div>
               </div>
 
-              <div className=" font-semibold space-y-4 text-black">
+              <div className=" font-semibold space-y-4 flex-1 text-black">
                 {render_detail_keys.map((elem: any, index: any) => {
                   const key: string = elem.key
                   return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
@@ -324,9 +340,9 @@ const Appoinments = () => {
 
               <div className="w-full flex mt-3 gap-3">
                 <button onClick={() => delete_appointments_handle(appointment_details.id)} className="border-red-700 flex-1 text-red-700 border-2 active:opacity-60 rounded-md px-4 py-1 hover:bg-text_primary_color_hover">Delete</button>
-                <button onClick={openModalHandle} className="border-text_primary_color flex-1 text-text_primary_color border-2 active:opacity-60 rounded-md px-4 py-1 ml-2 hover:bg-text_primary_color_hover">Edit</button>
-              </div>
-            </>
+                <Appointment_Edit_Modal appointment_details={appointment_details} location_data={find_locations(appointment_details.location.id)!} />
+              </div >
+            </div>
             : <div className="flex h-full flex-1 flex-col justify-center items-center">
               <h1>Select appointment to view details</h1>
             </div>}
@@ -338,20 +354,7 @@ const Appoinments = () => {
 
 
 
-      <Custom_Modal create_new_handle={create_content_handle} open_handle={openModalHandle} close_handle={closeModalHandle} is_open={openModal} Title='Update Appointment Time Slot' buttonLabel='Update' loading={LoadingUpdate} >
-        <div className='grid grid-cols-1 gap-4'>
-          <div className="border-2  rounded-md" >
-            <Input type="date" defaultValue={moment(splitDateAndTime('date'), 'DD-MM-YYYY').format('YYYY-MM-DD')} />
-          </div>
-          <div className="border-2  rounded-md" >
-            <Input type="time" defaultValue="10:00 AM" />
-          </div>
 
-
-
-        </div>
-
-      </Custom_Modal>
 
     </main>
   );
