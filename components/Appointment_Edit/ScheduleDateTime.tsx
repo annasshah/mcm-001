@@ -16,14 +16,14 @@ export type DayTimings = {
 export interface ScheduleDateTimeProps {
     data: DayTimings;
     default_data_time: string;
-    selectDateTimeSlotHandle:(date: Date | '', time?:string | '' )=>void
+    selectDateTimeSlotHandle: (date: Date | '', time?: string | '') => void
 }
 
-const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotHandle, default_data_time  }) => {
+const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotHandle, default_data_time }) => {
     const [date, setDate] = useState<any>('');
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [isClosed, setIsClosed] = useState<boolean>(false);
-    const [selectedSlot, setSelectedSlot] = useState('')
+    const [selectedSlot, setSelectedSlot] = useState<string>('')
 
     const getTimingKey = (date: Date): keyof DayTimings => {
         const days = ['sunday_timing', 'mon_timing', 'tuesday_timing', 'wednesday_timing', 'thursday_timing', 'friday_timing', 'saturday_timing'] as const;
@@ -83,13 +83,13 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
         selectDateTimeSlotHandle('')
     }, [date, data]);
 
-    const dateTimeChangeHandle = (date:Date | null) => {
-        if(date){
+    const dateTimeChangeHandle = (date: Date | null) => {
+        if (date) {
             setDate(date);
         }
     }
 
-    const selectSlotHandle = (val:string) => {
+    const selectSlotHandle = (val: string) => {
         setSelectedSlot(val)
         selectDateTimeSlotHandle(date, val)
     }
@@ -99,22 +99,37 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
 
         if (default_data_time
         ) {
-          const str = default_data_time.split('|')[1].split(' - ')
-          const date = str[0]
-          const time = str[1]
-          if (returnType === 'date') {
-            return new Date(moment(date, 'DD-MM-YYYY').format('YYYY-MM-DD'))
-          }
-          if (returnType === 'time') {
-            return time
-          }
+            const str = default_data_time.split('|')[1].split(' - ')
+            const date = str[0]
+            const time = str[1]
+            if (returnType === 'date') {
+                return new Date(moment(date, 'DD-MM-YYYY').format('YYYY-MM-DD'))
+            }
+            if (returnType === 'time') {
+                return time
+            }
         } else {
-          return ''
+            return ''
         }
-      }
+    }
 
 
-      console.log(splitDateAndTime('date'), '-------------------------->', date)
+    useEffect(() => {
+        const date_default = splitDateAndTime('date')
+        const time_default = splitDateAndTime('time')
+        setDate(date_default)
+        if(time_default && typeof(time_default) === 'string'){
+            console.log(time_default)
+            setTimeout(() => {
+                setSelectedSlot(()=>time_default)
+            }, 1000);
+        }
+
+    }, [])
+
+
+
+    console.log(splitDateAndTime('date'), '-------------------------->', date, availableTimes)
 
     return (
         <div className="flex flex-col md:flex-row justify-center w-full gap-5 items-center">
@@ -124,7 +139,7 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
                 </label>
                 <ReactDatePicker
                     // minDate={}
-                    selected={date? date : splitDateAndTime('date')}
+                    selected={date }
                     onChange={dateTimeChangeHandle}
                     placeholderText={"Select Schedule date"}
                     dateFormat="dd-MM-yyyy"
@@ -137,8 +152,8 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
                     Select Schedule Time:
                 </label>
                 <select
-                value={selectedSlot}
-                onChange={(e)=>selectSlotHandle(e.target.value)}
+                    value={selectedSlot}
+                    onChange={(e) => selectSlotHandle(e.target.value)}
                     className='w-full h-[46px] border-[1px] border-[#000000] text-[16px] text-[#000000] placeholder:text-customGray placeholder:text-opacity-50 px-5 bg-transparent outline-none rounded-[10px]'
                     disabled={isClosed}
                 >
