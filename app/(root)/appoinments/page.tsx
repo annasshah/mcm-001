@@ -308,7 +308,7 @@ const Appoinments = () => {
         <div className="w-1/4 ">
           <div >
             <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-              <option disabled selected value=''>All locations</option>
+              <option selected value=''>All locations</option>
               {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.address}</option>)}
             </Select>
 
@@ -320,7 +320,7 @@ const Appoinments = () => {
 
       <div className="flex flex-row  h-[80vh] space-x-5 ">
 
-        <div className="w-3/4 bg-[#EFEFEF] overflow-scroll px-3 py-3 rounded-lg space-y-5">
+        <div className="w-3/4 bg-[#EFEFEF] h-full overflow-scroll px-3 py-3 rounded-lg space-y-5">
 
 
           {appoint_loading ? <div className="flex h-full flex-1 flex-col justify-center items-center">
