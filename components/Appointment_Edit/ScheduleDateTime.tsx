@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { FC, useState, useEffect, MouseEvent, KeyboardEvent } from 'react';
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,7 +20,7 @@ export interface ScheduleDateTimeProps {
 }
 
 const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotHandle, default_data_time  }) => {
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<any>('');
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [isClosed, setIsClosed] = useState<boolean>(false);
     const [selectedSlot, setSelectedSlot] = useState('')
@@ -93,6 +94,28 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
         selectDateTimeSlotHandle(date, val)
     }
 
+
+    const splitDateAndTime = (returnType: string) => {
+
+        if (default_data_time
+        ) {
+          const str = default_data_time.split('|')[1].split(' - ')
+          const date = str[0]
+          const time = str[1]
+          if (returnType === 'date') {
+            return new Date(moment(date, 'DD-MM-YYYY').format('YYYY-MM-DD'))
+          }
+          if (returnType === 'time') {
+            return time
+          }
+        } else {
+          return ''
+        }
+      }
+
+
+      console.log(splitDateAndTime('date'), '-------------------------->', date)
+
     return (
         <div className="flex flex-col md:flex-row justify-center w-full gap-5 items-center">
             <div className="flex flex-col items-start md:w-1/2 justify-center">
@@ -100,8 +123,8 @@ const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotH
                     Select Schedule Date:
                 </label>
                 <ReactDatePicker
-                    minDate={new Date()}
-                    selected={date}
+                    // minDate={}
+                    selected={date? date : splitDateAndTime('date')}
                     onChange={dateTimeChangeHandle}
                     placeholderText={"Select Schedule date"}
                     dateFormat="dd-MM-yyyy"

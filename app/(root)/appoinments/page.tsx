@@ -256,23 +256,7 @@ const Appoinments = () => {
 
 
 
-  const splitDateAndTime = (returnType: string) => {
 
-    if (appointment_details && appointment_details.date_and_time
-    ) {
-      const str = appointment_details.date_and_time.split('|')[1].split(' - ')
-      const date = str[0]
-      const time = str[1]
-      if (returnType === 'date') {
-        return date
-      }
-      if (returnType === 'time') {
-        return time
-      }
-    } else {
-      return ''
-    }
-  }
 
 
 
@@ -377,7 +361,7 @@ const Appoinments = () => {
 
               <div className="w-full flex mt-3 gap-3">
                 <button onClick={() => delete_appointments_handle(appointment_details.id)} className="border-red-700 flex-1 text-red-700 border-2 active:opacity-60 rounded-md px-4 py-1 hover:bg-text_primary_color_hover">Delete</button>
-                <Appointment_Edit_Modal update_available_data={update_reflect_on_close_modal} appointment_details={appointment_details} location_data={find_locations(appointment_details.location_id)!} />
+                <Appointment_Edit_Modal default_data_time={appointment_details.date_and_time} update_available_data={update_reflect_on_close_modal} appointment_details={appointment_details} location_data={find_locations(appointment_details.location_id)!} />
               </div >
             </div>
             : <div className="flex h-full flex-1 flex-col justify-center items-center">

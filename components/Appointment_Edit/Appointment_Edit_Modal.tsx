@@ -11,9 +11,10 @@ interface Appointment_Edit_Modal_Props {
     location_data: LocationInterface;
     appointment_details: Appointment;
     update_available_data: (data_and_time: string) => void;
+    default_data_time:string;
 }
 
-export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ location_data, appointment_details, update_available_data }) => {
+export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ location_data, appointment_details, update_available_data, default_data_time }) => {
 
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [LoadingUpdate, setLoadingUpdate] = useState(false)
@@ -75,7 +76,7 @@ export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ locat
         <Custom_Modal disabled={!isDateSelected || !isTimeSelected} Trigger_Button={<button onClick={openModalHandle} className="border-text_primary_color flex-1 text-text_primary_color border-2 active:opacity-60 rounded-md px-4 py-1 ml-2 hover:bg-text_primary_color_hover">Edit</button>} create_new_handle={create_content_handle} open_handle={openModalHandle} close_handle={closeModalHandle} is_open={openModal} Title='Update Appointment Time Slot' buttonLabel='Update' loading={LoadingUpdate} >
             <div className='grid grid-cols-1 gap-4'>
 
-                <ScheduleDateTime selectDateTimeSlotHandle={selectDateTimeSlotHandle} data={location_data} />
+                <ScheduleDateTime default_data_time={default_data_time} selectDateTimeSlotHandle={selectDateTimeSlotHandle} data={location_data} />
 
 
 
