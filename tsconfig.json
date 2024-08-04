@@ -23,6 +23,16 @@
       "@/*": ["./*", "./utils"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "actions/supabase_auth", "app/(root)/appoinments/page.js", "app/(root)/tools/websitecontent/Layout.tsx", "app/(root)/tools/cronitor-report/page.js", "components/Select_Dropdown/index.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "actions/supabase_auth",
+    "app/(root)/appoinments/page.js",
+    "app/(root)/tools/websitecontent/Layout.tsx",
+    "app/(root)/tools/cronitor-report/page.tsx",
+    "components/Select_Dropdown/index.jsx"
+  ],
   "exclude": ["node_modules"]
 }

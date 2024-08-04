@@ -33,34 +33,40 @@ const PageImpression = () => {
           >
             all
           </div> */}
-          <div
+          {/* <div
             className="w-[45%] text-center border border-r-[#000] "
             onClick={() => setImpressionsType("organic")}
           >
             organic
-          </div>
-          <div
+          </div> */}
+          {/* <div
             className="w-[30%] text-center "
             onClick={() => setImpressionsType("paid")}
           >
             paid
-          </div>
+          </div> */}
         </div>
         <div className="w-[100%] text-xs  flex items-center justify-center  mt-1 rounded-[5px]  bg-[#F6F6F6]">
           <div
-            className="w-[25%] text-center cursor-pointer "
+            className={`w-[25%] text-center cursor-pointer  ${
+              impressionsPeriod === "day" && "bg-[#343131] text-white"
+            } cursor-pointer `}
             onClick={() => setImpressionsPeriod("day")}
           >
             day
           </div>
           <div
-            className="w-[35%] text-center border border-x-[#000] cursor-pointer "
+            className={`w-[35%] text-center border border-x-[#000] cursor-pointer ${
+              impressionsPeriod === "week" && "bg-[#343131] text-white"
+            } cursor-pointer `}
             onClick={() => setImpressionsPeriod("week")}
           >
             week
           </div>
           <div
-            className="w-[35%] text-center cursor-pointer "
+            className={`w-[35%] text-center cursor-pointer  ${
+              impressionsPeriod === "days_28" && "bg-[#343131] text-white"
+            } cursor-pointer `}
             onClick={() => setImpressionsPeriod("days_28")}
           >
             month

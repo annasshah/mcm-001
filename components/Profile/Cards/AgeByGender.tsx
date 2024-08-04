@@ -60,7 +60,7 @@ const Card3: React.FC = () => {
 
   return (
     <div className="flex flex-col items-start relative p-4 rounded-[10px] mx-5 w-[30%] h-[350px] bg-[#B8C8E1] justify-start">
-      <p className="text-xl font-bold">Age By Gender</p>
+      <p className="text-xl font-bold">Fans By Gender</p>
       <p className="text-3xl mt-2 font-extrabold">
         {countData.male + countData.female + countData.others}
       </p>
