@@ -27,7 +27,8 @@
     "react-dom": "^18",
     "react-icons": "^4.12.0",
     "react-toastify": "^10.0.5",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "tui-date-picker": "^4.3.3"
   },
   "devDependencies": {
     "@types/node": "^20",

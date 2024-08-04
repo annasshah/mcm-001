@@ -11,7 +11,8 @@ import { supabase } from "@/services/supabase";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { Calendar, DatePicker, Input } from "antd";
-import { Appointment_Edit_Modal } from "@/components/Appointment_Edit/Appointment_Edit_Modal";
+import { Appointment_Edit_Modal } from "@/components/Appointment/Appointment_Edit/Appointment_Edit_Modal";
+import { Add_Appointment_Modal } from "@/components/Appointment/Add_Appointment_Modal";
 
 export interface Location {
   id: number;
@@ -174,7 +175,7 @@ const Appoinments = () => {
 
       ; (async function getLocations() {
         const data = await fetchLocations()
-        const appoint_data:any = await fetchAppointmentsByLocation(null)
+        const appoint_data: any = await fetchAppointmentsByLocation(null)
         setAllAppointments(appoint_data)
         setAppointments(appoint_data)
         setAppoint_loading(false)
@@ -189,7 +190,7 @@ const Appoinments = () => {
     const value = e.target.value
     setAppointment_details(null)
     setAppoint_loading(true)
-    const data:any = await fetchAppointmentsByLocation(value)
+    const data: any = await fetchAppointmentsByLocation(value)
     setAllAppointments(data)
     setAppointments(data)
     setAppoint_loading(false)
@@ -299,10 +300,16 @@ const Appoinments = () => {
 
       <div className="flex justify-end items-end ps-3 gap-3 ">
 
-        <div className="w-1/4 ">
-          <div >
-            <DatePicker onChange={filterHandle} className="bg-[#D9D9D9] py-2 w-full" placeholder="Filter by date appointment" />
+        <div className="flex justify-between pe-2 items-center flex-1">
 
+          <div className="">
+            <Add_Appointment_Modal />
+          </div>
+          <div className="w-1/4 ">
+            <div >
+              <DatePicker onChange={filterHandle} className="bg-[#D9D9D9] py-2 w-full" placeholder="Filter by date appointment" />
+
+            </div>
           </div>
         </div>
         <div className="w-1/4 ">

@@ -1,6 +1,6 @@
 'use client'
 import React, { FC, useState } from 'react'
-import { Custom_Modal } from '../Modal_Components/Custom_Modal'
+import { Custom_Modal } from '../../Modal_Components/Custom_Modal'
 import ScheduleDateTime, { DayTimings } from './ScheduleDateTime'
 import moment from 'moment'
 import { Appointment, LocationInterface } from '@/app/(root)/appoinments/page'

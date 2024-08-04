@@ -5645,6 +5645,7 @@ __metadata:
     react-toastify: ^10.0.5
     styled-components: ^6.1.11
     tailwindcss: ^3.3.0
+    tui-date-picker: ^4.3.3
     typescript: ^5
   languageName: unknown
   linkType: soft
@@ -9357,6 +9358,22 @@ __metadata:
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
+  languageName: node
+  linkType: hard
+
+"tui-date-picker@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "tui-date-picker@npm:4.3.3"
+  dependencies:
+    tui-time-picker: ^2.1.6
+  checksum: c1761676747b85119cf234802f1ac03e5623d7d31b2459bffcdf59573538a7d6e9fbda74be27e8a7cf0de9e217b0c3f1fa52b454582d0d5b5e27e8083ae0270e
+  languageName: node
+  linkType: hard
+
+"tui-time-picker@npm:^2.1.6":
+  version: 2.1.6
+  resolution: "tui-time-picker@npm:2.1.6"
+  checksum: 7bbda17af158dc56e60cabcd450ea297adc5eda03ba9bd44e61ae41ecbbf27748773ab9bdd3cbf30806a96895affcbce3263f5091f7d462ce9e3fc1893a899b4
   languageName: node
   linkType: hard
 
