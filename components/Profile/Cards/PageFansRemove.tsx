@@ -32,21 +32,27 @@ const PageFanRemove = () => {
       className={`flex  relative flex-col items-start w-[50%] h-[150px] bg-[#F9CFCF] justify-start  mr-5 rounded-[10px] p-4  `}
     >
       <div className="flex flex-col w-[50%] top-3 right-3  absolute">
-        <div className="w-[100%] text-xs  flex items-center justify-center  mt-1 rounded-[5px]  bg-[#F6F6F6]">
+        <div className="w-[100%] text-xs  flex items-center justify-between px-2  mt-1 rounded-[5px]  bg-[#F6F6F6]">
           <div
-            className="w-[25%] text-center cursor-pointer "
+            className={`${
+              fansRemovePeriod === "day" && "bg-[#343131]  text-white"
+            } cursor-pointer px-1 `}
             onClick={() => setFansRemovePeriod("day")}
           >
             day
           </div>
           <div
-            className="w-[35%] text-center border border-x-[#000] cursor-pointer "
+            className={`${
+              fansRemovePeriod === "week" && "bg-[#343131]  text-white"
+            } cursor-pointer px-1 `}
             onClick={() => setFansRemovePeriod("week")}
           >
             week
           </div>
           <div
-            className="w-[35%] text-center cursor-pointer "
+            className={`${
+              fansRemovePeriod === "days_28" && "bg-[#343131] text-white"
+            } cursor-pointer  px-1`}
             onClick={() => setFansRemovePeriod("days_28")}
           >
             month
