@@ -20,7 +20,8 @@ export async function fetchAppointmentsByLocation(locationId) {
     .from('Appoinments')
     .select(`*,location:Locations (
       id,
-      title
+      title,
+      address
     )`);
 
   if (locationId) {
