@@ -9,10 +9,11 @@ import { toast } from 'react-toastify'
 
 interface Appointment_Edit_Modal_Props {
     location_data: LocationInterface;
-    appointment_details: Appointment
+    appointment_details: Appointment;
+    update_available_data: (data_and_time: string) => void;
 }
 
-export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ location_data, appointment_details }) => {
+export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ location_data, appointment_details, update_available_data }) => {
 
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [LoadingUpdate, setLoadingUpdate] = useState(false)
@@ -25,12 +26,11 @@ export const Appointment_Edit_Modal: FC<Appointment_Edit_Modal_Props> = ({ locat
         setLoadingUpdate(true)
 
         if (selectedVal) {
-            const { error, data } = await update_appointment_service(appointment_details.id,selectedVal)
+            const { error, data } = await update_appointment_service(appointment_details.id, selectedVal)
             if (!error) {
                 toast.success('Updated successfully');
                 // Update appointment time slot in the database
-                console.log('Updating appointment time slot')
-                console.log(data)
+                update_available_data(selectedVal)
                 setOpenModal(false)
             }
 

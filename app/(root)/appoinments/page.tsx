@@ -11,7 +11,6 @@ import { supabase } from "@/services/supabase";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { Calendar, DatePicker, Input } from "antd";
-import { Custom_Modal } from "@/components/Modal_Components/Custom_Modal";
 import { Appointment_Edit_Modal } from "@/components/Appointment_Edit/Appointment_Edit_Modal";
 
 export interface Location {
@@ -25,16 +24,21 @@ interface RenderDetailKey {
 }
 
 export interface Appointment {
-  id: number
-  location_id: number
-  first_name: string
-  last_name: string
-  service: string
-  sex: string
-  phone: string,
-  location?: Location
-  in_office_patient: boolean
-  new_patient: boolean
+  id: number;
+  email_Address: string;
+  date_and_time: string;
+  address: string;
+  location_id: number;
+  first_name: string;
+  dob: string;
+  last_name: string;
+  service: string;
+  sex: string;
+  phone: string;
+  created_at: string;
+  location?: Location;
+  in_office_patient: boolean;
+  new_patient: boolean;
 }
 
 export interface LocationInterface {
@@ -124,7 +128,7 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 
   const formattedDateTime = () => {
 
-    const str = ('12|6-07-2024 - 3:00 PM').split('|')[1].split(' - ')
+    const str = (data.date_and_time).split('|')[1].split(' - ')
 
     const date = str[0]
     const time = str[1]
@@ -157,10 +161,10 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 const Appoinments = () => {
 
   const { locations } = useLocationClinica()
-  const [allAppointments, setAllAppointments] = useState<any>([])
-  const [appointments, setAppointments] = useState<any>([])
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>([])
+  const [appointments, setAppointments] = useState<Appointment[]>([])
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
-  const [appointment_details, setAppointment_details] = useState<any | null>(null)
+  const [appointment_details, setAppointment_details] = useState<Appointment | null>(null)
 
 
 
@@ -169,7 +173,7 @@ const Appoinments = () => {
 
       ; (async function getLocations() {
         const data = await fetchLocations()
-        const appoint_data = await fetchAppointmentsByLocation(null)
+        const appoint_data:any = await fetchAppointmentsByLocation(null)
         setAllAppointments(appoint_data)
         setAppointments(appoint_data)
         setAppoint_loading(false)
@@ -184,7 +188,7 @@ const Appoinments = () => {
     const value = e.target.value
     setAppointment_details(null)
     setAppoint_loading(true)
-    const data = await fetchAppointmentsByLocation(value)
+    const data:any = await fetchAppointmentsByLocation(value)
     setAllAppointments(data)
     setAppointments(data)
     setAppoint_loading(false)
@@ -192,7 +196,7 @@ const Appoinments = () => {
   }
 
   const find_locations = (location_id: number) => {
-    const find_location = locations.find((location:LocationInterface) => location.id === location_id)
+    const find_location = locations.find((location: LocationInterface) => location.id === location_id)
     return find_location
   }
 
@@ -270,6 +274,39 @@ const Appoinments = () => {
     }
   }
 
+
+
+  const update_reflect_on_close_modal = (new_date_time: string) => {
+
+    setAllAppointments((all_available) => {
+      return all_available.map((elem) => {
+        if (elem.id === appointment_details?.id) {
+          return { ...elem, date_and_time: new_date_time }
+        }
+        return elem
+      })
+    })
+    setAppointments((all_available) => {
+      return all_available.map((elem) => {
+        if (elem.id === appointment_details?.id) {
+          return { ...elem, date_and_time: new_date_time }
+        }
+        return elem
+      })
+    })
+
+    setAppointment_details((pre_details) => {
+
+      if (pre_details) {
+        return { ...pre_details, date_and_time: new_date_time }
+      }
+      else return pre_details
+    })
+
+  }
+
+
+
   return (
     <main className=" mt-20 w-full h-full text-[#B6B6B6] font-[500] text-[20px] space-y-5">
 
@@ -332,15 +369,15 @@ const Appoinments = () => {
               </div>
 
               <div className=" font-semibold space-y-4 flex-1 text-black">
-                {render_detail_keys.map((elem: any, index: any) => {
+                {render_detail_keys.map((elem, index: any) => {
                   const key: string = elem.key
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key] : '-'}</span></h1>
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.title : appointment_details ? appointment_details[key as keyof typeof Appoinments] : '-'}</span></h1>
                 })}
               </div>
 
               <div className="w-full flex mt-3 gap-3">
                 <button onClick={() => delete_appointments_handle(appointment_details.id)} className="border-red-700 flex-1 text-red-700 border-2 active:opacity-60 rounded-md px-4 py-1 hover:bg-text_primary_color_hover">Delete</button>
-                <Appointment_Edit_Modal appointment_details={appointment_details} location_data={find_locations(appointment_details.location.id)!} />
+                <Appointment_Edit_Modal update_available_data={update_reflect_on_close_modal} appointment_details={appointment_details} location_data={find_locations(appointment_details.location_id)!} />
               </div >
             </div>
             : <div className="flex h-full flex-1 flex-col justify-center items-center">

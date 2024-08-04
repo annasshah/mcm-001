@@ -14,10 +14,11 @@ export type DayTimings = {
 
 export interface ScheduleDateTimeProps {
     data: DayTimings;
+    default_data_time: string;
     selectDateTimeSlotHandle:(date: Date | '', time?:string | '' )=>void
 }
 
-const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotHandle }) => {
+const ScheduleDateTime: FC<ScheduleDateTimeProps> = ({ data, selectDateTimeSlotHandle, default_data_time  }) => {
     const [date, setDate] = useState<Date>(new Date());
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [isClosed, setIsClosed] = useState<boolean>(false);
