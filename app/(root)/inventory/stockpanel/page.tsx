@@ -1,133 +1,14 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Select } from 'flowbite-react';
 import { CiFilter } from "react-icons/ci";
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 import moment from 'moment';
-
-// interface DataListInterface {
-//     product_id:string;
-//     category:string;
-//     name:string;
-//     price:string;
-//     quantity_available:string;
-//     last_updateded:string;
-// }
+import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
-
-const dataList: DataListInterface[] = [
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    quantity_available: "200",
-    last_updateded: "2024-06-28 21:28:52.532542+00",
-
-  },
-]
 
 
 const tableHeader = [
@@ -137,22 +18,26 @@ const tableHeader = [
   },
   {
     id: 'category',
-    label: 'Category'
+    label: 'Category',
+    render_value: (val: string, elem?:any) => elem?.products?.category_id?.category_name || '-',
   },
   {
     id: 'name',
-    label: 'Name'
+    label: 'Name',
+    render_value: (val: any,  elem?:any) => elem?.products?.product_name || '-',
   },
   {
     id: 'price',
-    label: 'Price'
+    label: 'Price',
+    render_value: (val: any,  elem?:any) => elem?.products?.price,
   },
   {
-    id: 'quantity_available',
-    label: 'Quantity Available'
+    id: 'quantity_in_stock',
+    label: 'Quantity Available',
+    
   },
   {
-    id: 'last_updateded',
+    id: 'last_updated',
     label: 'Last Updated',
     render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MMM DD, YYYY'),
     align: 'text-end'
@@ -162,7 +47,41 @@ const tableHeader = [
 
 
 
-const Patients = () => {
+const StockPanel = () => {
+
+  const [dataList, setDataList] = useState<DataListInterface[]>([])
+  const [allData, setAllData] = useState<DataListInterface[]>([])
+  const [loading, setLoading] = useState(true)
+
+
+  const fetch_handle = async () => {
+    setLoading(true)
+    const fetched_data = await fetch_content_service({ table: 'inventory', language: '', selectParam:',products(product_id,product_name,price,category_id(category_name))' });
+    setDataList(fetched_data)
+    setAllData(fetched_data)
+    setLoading(false)
+
+
+  }
+
+  const onChangeHandle = (e: any) => {
+    const val = e.target.value
+    if (val === '') {
+      setDataList([...allData])
+
+    }
+    else {
+
+      const filteredData = allData.filter((elem) => elem.products.product_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+      setDataList([...filteredData])
+    }
+  }
+
+
+  useEffect(() => {
+    fetch_handle()
+
+  }, [])
 
 
   return (
@@ -197,7 +116,7 @@ const Patients = () => {
               <h1 className='text-xl font-bold'>
                 search
               </h1>
-              <input type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+              <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
             </div>
 
 
@@ -230,7 +149,7 @@ const Patients = () => {
                 return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
                   {
                     tableHeader.map(({ id, render_value, align }, ind) => {
-                      const content = render_value ? render_value(elem[id]) : elem[id]
+                      const content = render_value ? render_value(elem[id], elem) : elem[id]
                       return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
                         {content}
                       </h1>
@@ -253,4 +172,4 @@ const Patients = () => {
   )
 }
 
-export default Patients
+export default StockPanel

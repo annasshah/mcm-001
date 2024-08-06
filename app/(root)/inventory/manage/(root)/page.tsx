@@ -1,83 +1,17 @@
 'use client'
-import React, { useState } from 'react'
-import { Select } from 'flowbite-react';
+import React, { useEffect, useState } from 'react'
+import { Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-
-
-// interface DataListInterface {
-//     product_id:string;
-//     category:string;
-//     name:string;
-//     price:string;
-//     quantity_available:string;
-//     last_updateded:string;
-// }
+import { delete_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { toast } from 'react-toastify';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
-
-const dataList: DataListInterface[] = [
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-  {
-    category_id: "5453",
-    name: "Medicine",
-    actions: "",
-  },
-]
 
 
 const tableHeader = [
@@ -86,17 +20,17 @@ const tableHeader = [
     label: 'Category ID'
   },
   {
-    id: 'name',
+    id: 'category_name',
     label: 'Name',
-    align:'text-center'
+    align: 'text-center'
   },
   {
     id: 'actions',
     label: 'Action',
-    align:'text-end',
-    render_value: (val: string) => {
+    align: 'text-end',
+    Render_Value: ({ val, onClickHandle, isLoading }: { val?: string, onClickHandle?: () => void, isLoading?: boolean }) => {
 
-      return <Action_Button label='Delete' bg_color='bg-[#FF6363]' /> 
+      return <Action_Button isLoading={isLoading} onClick={onClickHandle} label='Delete' bg_color='bg-[#FF6363]' />
 
     }
 
@@ -105,7 +39,59 @@ const tableHeader = [
 
 
 
-const Patients = () => {
+const Categories = () => {
+  const [dataList, setDataList] = useState<DataListInterface[]>([])
+  const [allData, setAllData] = useState<DataListInterface[]>([])
+  const [loading, setLoading] = useState(true)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+
+  const fetch_handle = async () => {
+    setLoading(true)
+    const fetched_data = await fetch_content_service({ table: 'categories', language: '' });
+    setDataList(fetched_data)
+    setAllData(fetched_data)
+    setLoading(false)
+
+
+  }
+
+  const onChangeHandle = (e: any) => {
+    const val = e.target.value
+    if (val === '') {
+      setDataList([...allData])
+
+    }
+    else {
+
+      const filteredData = allData.filter((elem) => elem.category_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+      setDataList([...filteredData])
+    }
+  }
+
+
+  useEffect(() => {
+    fetch_handle()
+
+  }, [])
+
+
+  const onClickHandle = async (id: number) => {
+    const { error } = await delete_content_service({ table: 'categories', keyByDelete:'category_id', id })
+    if (!error) {
+      setDataList((elem) => elem.filter((data: any) => data.category_id !== id))
+      setAllData((elem) => elem.filter((data: any) => data.category_id !== id))
+      toast.success('Deleled successfully');
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+
+
+
+  }
+
 
 
   return (
@@ -125,7 +111,7 @@ const Patients = () => {
 
               <div className='flex items-center gap-x-3'>
 
-                <input type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
                 <button >
                   <Image
                     className="w-9"
@@ -163,19 +149,30 @@ const Patients = () => {
 
 
             <div className='mt-5 mb-4 space-y-5 h-[60dvh] overflow-y-auto'>
-              {dataList.map((elem: DataListInterface, index) => {
-                const even_row = (index + 1) % 2
-                return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
-                  {
-                    tableHeader.map(({ id, render_value, align }, ind) => {
-                      const content = render_value ? render_value(elem[id]) : elem[id]
-                      return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
-                        {content}
-                      </h1>
-                    })
-                  }
-                </div>
-              })}
+
+              <>
+                {loading ? <div className="flex h-full flex-1 flex-col justify-center items-center">
+                  <Spinner size='xl' />
+
+
+                </div> : dataList.length === 0 ? <div className="flex h-full flex-1 flex-col justify-center items-center">
+                  <h1>No Category is available</h1> </div> : <div className='space-y-5'>
+
+                  {dataList.map((elem: DataListInterface, index) => {
+                    const even_row = (index + 1) % 2
+                    return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
+                      {
+                        tableHeader.map(({ id, Render_Value, align }, ind) => {
+                          const content = Render_Value ? <Render_Value isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
+                          return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
+                            {content}
+                          </h1>
+                        })
+                      }
+                    </div>
+                  })}
+                </div>}
+              </>
             </div>
           </div>
 
@@ -191,4 +188,4 @@ const Patients = () => {
   )
 }
 
-export default Patients
+export default Categories

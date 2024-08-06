@@ -44,10 +44,10 @@ export async function fetchAppointmentsByLocation(locationId) {
 
 
 
-export async function fetch_content_service({ table, language }) {
+export async function fetch_content_service({ table, language, selectParam='' }) {
   let query = supabase
     .from(`${table}${language}`)
-    .select(`*`);
+    .select(`*${selectParam ? selectParam : ''}`);
   const { data, error } = await query;
   if (error) {
     console.log(error.message);
@@ -97,6 +97,20 @@ export async function delete_appointment_service(id) {
     .from('Appoinments')
     .delete()
     .eq('id', id)
+
+  const { data, error } = await query;
+
+
+
+  return { data, error }
+
+
+}
+export async function delete_content_service({table, keyByDelete='id',  id}) {
+  const query = await supabase
+    .from(table)
+    .delete()
+    .eq(keyByDelete, id)
 
   const { data, error } = await query;
 

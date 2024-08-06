@@ -1,109 +1,17 @@
 'use client'
-import React, { useState } from 'react'
-import { Select } from 'flowbite-react';
+import React, { useEffect, useState } from 'react'
+import { Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
+import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 
-
-// interface DataListInterface {
-//     product_id:string;
-//     category:string;
-//     name:string;
-//     price:string;
-//     quantity_available:string;
-//     last_updateded:string;
-// }
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
-
-const dataList: DataListInterface[] = [
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-  {
-    product_id: "5453",
-    category: "Medicine",
-    name: "Panadol",
-    price: "$20",
-    units: "200",
-    actions: "",
-
-  },
-]
 
 
 const tableHeader = [
@@ -116,7 +24,7 @@ const tableHeader = [
     label: 'Category'
   },
   {
-    id: 'name',
+    id: 'product_name',
     label: 'Name'
   },
   {
@@ -124,7 +32,7 @@ const tableHeader = [
     label: 'Price'
   },
   {
-    id: 'units',
+    id: 'quantity_available',
     label: 'Units'
   },
   {
@@ -144,7 +52,40 @@ const tableHeader = [
 
 
 
-const Patients = () => {
+const Products = () => {
+  const [dataList, setDataList] = useState<DataListInterface[]>([])
+  const [allData, setAllData] = useState<DataListInterface[]>([])
+  const [loading, setLoading] = useState(true)
+
+
+  const fetch_handle = async () => {
+    setLoading(true)
+    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam:',categories(category_name)' });
+    setDataList(fetched_data)
+    setAllData(fetched_data)
+    setLoading(false)
+
+
+  }
+
+  const onChangeHandle = (e: any) => {
+    const val = e.target.value
+    if (val === '') {
+      setDataList([...allData])
+
+    }
+    else {
+
+      const filteredData = allData.filter((elem) => elem.categories.category_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+      setDataList([...filteredData])
+    }
+  }
+
+
+  useEffect(() => {
+    fetch_handle()
+
+  }, [])
 
 
   return (
@@ -164,7 +105,7 @@ const Patients = () => {
 
               <div className='flex items-center gap-x-3'>
 
-                <input type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
                 <button >
                   <Image
                     className="w-9"
@@ -191,7 +132,7 @@ const Patients = () => {
           <div className='px-3 pt-5'>
             {/* Table goes here */}
 
-            <div className='flex items-center flex-1 font-semibold mr-3'>
+            <div className='flex items-center flex-1 font-semibold pr-5'>
               {tableHeader.map(({ label, align }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
@@ -202,19 +143,30 @@ const Patients = () => {
 
 
             <div className='mt-5 mb-4 space-y-5 h-[60dvh] overflow-y-auto'>
-              {dataList.map((elem: DataListInterface, index) => {
-                const even_row = (index + 1) % 2
-                return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
-                  {
-                    tableHeader.map(({ id, render_value, align }, ind) => {
-                      const content = render_value ? render_value(elem[id]) : elem[id]
-                      return <h1  key={ind} className={`flex-1 ${align || 'text-start'}  `}>
-                        {content}
-                      </h1>
-                    })
-                  }
-                </div>
-              })}
+
+              <>
+                {loading ? <div className="flex h-full flex-1 flex-col justify-center items-center">
+                  <Spinner size='xl' />
+
+
+                </div> : dataList.length === 0 ? <div className="flex h-full flex-1 flex-col justify-center items-center">
+                  <h1>No Product is available</h1> </div> : <div className='space-y-5'>
+
+                  {dataList.map((elem: DataListInterface, index) => {
+                    const even_row = (index + 1) % 2
+                    return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
+                      {
+                        tableHeader.map(({ id, render_value, align }, ind) => {
+                          const content = render_value ? render_value(elem[id]) : elem[id]
+                          return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
+                            {id === 'category' ? elem.categories.category_name : content}
+                          </h1>
+                        })
+                      }
+                    </div>
+                  })}
+                </div>}
+              </>
             </div>
           </div>
 
@@ -230,4 +182,4 @@ const Patients = () => {
   )
 }
 
-export default Patients
+export default Products
