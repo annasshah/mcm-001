@@ -163,8 +163,8 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
 const Appoinments = () => {
 
   const { locations } = useLocationClinica()
-  const [allAppointments, setAllAppointments] = useState<Appointment[]>([])
-  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [allAppointments, setAllAppointments] = useState<any[]>([])
+  const [appointments, setAppointments] = useState<any[]>([])
   const [appoint_loading, setAppoint_loading] = useState<boolean>(true)
   const [appointment_details, setAppointment_details] = useState<Appointment | null>(null)
 
@@ -258,6 +258,18 @@ const Appoinments = () => {
 
 
 
+  const newAddedRow = (row: any) => {
+    setAppoint_loading(true)
+
+      ; (async function getLocations() {
+        const data = await fetchLocations()
+        const appoint_data: any = await fetchAppointmentsByLocation(null)
+        setAllAppointments(appoint_data)
+        setAppointments(appoint_data)
+        setAppoint_loading(false)
+        // console.log(data)
+      })()
+  }
 
 
 
@@ -303,7 +315,7 @@ const Appoinments = () => {
         <div className="flex justify-between pe-2 items-center flex-1">
 
           <div className="">
-            <Add_Appointment_Modal />
+            <Add_Appointment_Modal newAddedRow={newAddedRow} />
           </div>
           <div className="w-1/4 ">
             <div >

@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react'
 import { IoCloseOutline } from "react-icons/io5";
 import ScheduleDateTime from './ScheduleDateTime';
 import { supabase } from '@/services/supabase';
+import { toast } from 'react-toastify';
+import moment from 'moment';
 
 interface RadioButtonOptionsInterface {
     label: string;
@@ -117,63 +119,157 @@ const gender_options: RadioButtonOptionsInterface[] = [
     }
 ]
 
-// interface FormDataInterface {
-//     location_id: number;
-//     first_name: string;
-//     last_name: string;
-//     email_Address: string;
-//     dob: string;
-//     sex: string;
-//     service: string;
-//     in_office_patient: string;
-//     new_patient: string;
-//     address: string;
-//     phone: string;
-//     date_and_time: string;
-// }
+const required_fields = {
+    location_id: { required: true, label: 'Location' },
+    first_name: { required: true, label: 'First Name' },
+    last_name: { required: true, label: 'Last Name' },
+    email_Address: { required: true, label: 'Email Address' },
+    dob: { required: true, label: 'Date of Birth' },
+    sex: { required: true, label: 'Sex' },
+    service: { required: true, label: 'Service' },
+    in_office_patient: { required: false, label: 'Type of visit' },
+    new_patient: { required: false, label: 'Are you a new or returning patient?' },
+    address: { required: true, label: 'Address' },
+    phone: { required: true, label: 'Treatment' },
+    date_and_time: { required: true, label: 'Date and Time Slot' },
+}
 
-export const Add_Appointment_Modal = () => {
+export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) => void }) => {
 
     const { locations } = useLocationClinica()
     const [formData, setFormData] = useState<any>({})
     const [open, setOpen] = useState(false)
-  const [services, setServices] = useState<string[] | null | undefined>([]);
+    const [services, setServices] = useState<string[] | null | undefined>([]);
+    const [loading, setLoading] = useState(false)
 
 
 
     const close_handle = () => {
         setOpen(false)
+        setFormData({})
     }
     const open_handle = () => {
         setOpen(true)
     }
     const select_change_handle = (key: string, val: string | number) => {
-        setFormData((pre:any) => {
+        setFormData((pre: any) => {
             return { ...pre, [key]: val }
         })
 
     }
-    const selectDateTimeSlotHandle = () => {
-        // setFormData((pre) => {
-        //     return { ...pre, [key]: val }
-        // })
+    const selectDateTimeSlotHandle = (date: Date | '', time?: string | '') => {
+        if (formData.location_id) {
+            let dbSlot = ''
+            if (date && time) {
+                const formated_date = moment(date).format('DD-MM-YYYY')
 
+                const createSlotForDB = `${formData.location_id}|${formated_date} - ${time}`
+                console.log({ createSlotForDB })
+                dbSlot = createSlotForDB
+            }
+
+
+            setFormData((pre: any) => {
+                return { ...pre, date_and_time: dbSlot }
+            })
+            console.log(dbSlot)
+        }
+        else {
+            // toast.warning(`Select location first`);
+        }
     }
+    const submitHandle = async () => {
+        setLoading(true)
+        const {
+            location_id,
+            first_name,
+            last_name,
+            email_Address,
+            address,
+            in_office_patient,
+            new_patient,
+            dob,
+            sex,
+            phone,
+            date_and_time,
+            service } = formData
+        let appointmentDetails: any = {
+            location_id,
+            first_name,
+            last_name,
+            email_Address,
+            address: address,
+            in_office_patient: in_office_patient === 'true' || false,
+            new_patient: new_patient === 'true' || false,
+            dob: dob,
+            sex: sex,
+            phone: phone,
+            service: service,
+            date_and_time
+        };
+
+        const requiredFields = [
+            "location_id",
+            "first_name",
+            "last_name",
+            "email_Address",
+            "address",
+            "dob",
+            "sex",
+            "phone",
+            "date_and_time",
+            "service",
+        ];
+
+        for (const field of requiredFields) {
+            if (!appointmentDetails[field]) {
+                toast.warning(`Please fill in the ${field}`);
+                setLoading(false)
+                return;
+            }
+        }
+
+        const postData = {
+            ...appointmentDetails,
+            date_and_time,
+        }
+        const { data, error } = await supabase
+            .from("Appoinments")
+            .insert([postData])
+            .select();
+
+
+        newAddedRow(data?.[0])
+
+        if (error) {
+            if (error?.message === 'duplicate key value violates unique constraint "Appoinments_date_and_time_key"') {
+                toast.error(`Sorry, Appointment time slot is not available, Please select any other time slot`);
+
+            }
+            else { toast.error(`Error submitting appointment: ${error?.message}`); }
+        } else {
+            toast.success("Appointment Submitted");
+            console.log(data, "Appointment Submitted");
+            close_handle()
+        }
+        setLoading(false)
+
+    };
 
 
     useEffect(() => {
         const fetchServices = async () => {
-          let { data, error } = await supabase.from('services').select("title");
-    
-          if (data) {
-            const serviceData = data.map((item) => item.title);
-            setServices(serviceData);
-          }
+            let { data, error } = await supabase.from('services').select("title");
+
+            if (data) {
+                const serviceData = data.map((item) => item.title);
+                setServices(serviceData);
+            }
         };
-    
+
         fetchServices();
-      }, []);
-      console.log(services)
+    }, []);
+    console.log(formData)
     return (
         <div>
             <button onClick={open_handle} className='text-lg bg-gray-300 px-5 py-2 rounded-md font-bold text-black'>
@@ -240,13 +336,13 @@ export const Add_Appointment_Modal = () => {
                             </div>
 
                             <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('email', e)} placeholder='Enter you current email address' label='Email' />
+                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('email_Address', e)} placeholder='Enter you current email address' label='Email' />
                             </div>
                             <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone_number', e)} placeholder='Enter you current email address' label='Phone number' />
+                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone', e)} placeholder='Enter you current email address' label='Phone number' />
                             </div>
                             <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone_number', e)} placeholder='Your date of birth' label='Your date of birth' />
+                                <Input_Component_Appointment type='date' onChange={(e: string) => select_change_handle('dob', e)} placeholder='Your date of birth' label='Your date of birth' />
                             </div>
                             <div className='flex flex-1 items-center gap-4'>
                                 <RadioButtons
@@ -286,8 +382,9 @@ export const Add_Appointment_Modal = () => {
 
                 <Modal.Footer>
                     <div className='flex w-full justify-end'>
-                        <button className='bg-[#0F172A] w-40 py-3 rounded-lg text-white'>
-                            Submit
+                        
+                        <button disabled={loading} onClick={submitHandle} className={`bg-[#0F172A] ${loading && 'opacity-70'} w-40 py-3 rounded-lg text-white`}>
+                          {loading ? 'Submitting...' : 'Submit'}  
                         </button>
                     </div>
                 </Modal.Footer>

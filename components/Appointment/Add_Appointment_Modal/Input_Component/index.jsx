@@ -1,7 +1,7 @@
 import { Label, Select } from 'flowbite-react'
 import React from 'react'
 
-export const Input_Component_Appointment = ({ label, onChange, placeholder }) => {
+export const Input_Component_Appointment = ({ label, onChange, placeholder, type='text' }) => {
     return (
         <div className='w-full flex flex-1 items-center space-x-2'>
             <Label htmlFor="section" value={label} className='font-bold break-words' />
@@ -9,7 +9,7 @@ export const Input_Component_Appointment = ({ label, onChange, placeholder }) =>
                 <input
                     placeholder={placeholder}
                     onChange={(e) => onChange(e.target.value)}
-                    type="text"
+                    type={type}
                     className={`w-full h-auto  rounded-lg py-3 px-3`}
                     id="section"
                 />

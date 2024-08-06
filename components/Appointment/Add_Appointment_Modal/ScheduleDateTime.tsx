@@ -93,7 +93,7 @@ const ScheduleDateTime: FC<Props> = ({ data, selectDateTimeSlotHandle }) => {
     }
 
     return (
-        <div className="flex justify-between w-full gap-x-5 items-center ">
+        <div className="flex justify-between flex-row-reverse w-full gap-x-5 items-center ">
             
 
             <div className="flex gap-x-3 items-center md:w-1/2 justify-center">
