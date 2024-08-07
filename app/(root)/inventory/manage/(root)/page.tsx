@@ -6,8 +6,10 @@ import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { delete_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { toast } from 'react-toastify';
+import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
+import { Input_Component } from '@/components/Input_Component';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -37,7 +39,11 @@ const tableHeader = [
   },
 ]
 
-
+const modalStateEnum = {
+  CREATE: "Create",
+  UPDATE: "Update",
+  EMPTY: ""
+}
 
 const Categories = () => {
   const [dataList, setDataList] = useState<DataListInterface[]>([])
@@ -45,6 +51,22 @@ const Categories = () => {
   const [loading, setLoading] = useState(true)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
+  const [modalEventLoading, setModalEventLoading] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [modalData, setModalData] = useState<DataListInterface>({})
+  const [modalState, setModalState] = useState('')
+
+
+  const openModalHandle = (state: string) => {
+    setOpenModal(true)
+    setModalState(state)
+
+  }
+  const closeModalHandle = () => {
+    setOpenModal(false)
+    setModalState(modalStateEnum.EMPTY)
+    setModalData({})
+  }
 
   const fetch_handle = async () => {
     setLoading(true)
@@ -77,7 +99,7 @@ const Categories = () => {
 
 
   const onClickHandle = async (id: number) => {
-    const { error } = await delete_content_service({ table: 'categories', keyByDelete:'category_id', id })
+    const { error } = await delete_content_service({ table: 'categories', keyByDelete: 'category_id', id })
     if (!error) {
       setDataList((elem) => elem.filter((data: any) => data.category_id !== id))
       setAllData((elem) => elem.filter((data: any) => data.category_id !== id))
@@ -90,6 +112,38 @@ const Categories = () => {
 
 
 
+  }
+
+
+
+  const createNewHandle = async () => {
+
+    setModalEventLoading(true)
+    const { data: res_data, error } = await create_content_service({ table: 'categories', language: '', post_data: modalData });
+    if (error) {
+      console.log(error.message);
+      toast.error(error.message);
+      // throw new Error(error.message);
+    }
+
+
+
+
+    if (res_data?.length) {
+      toast.success('Created successfully');
+      closeModalHandle()
+      dataList.push(res_data[0])
+      allData.push(res_data[0])
+      setAllData([...allData])
+      setDataList([...dataList])
+    }
+
+    setModalEventLoading(false)
+  }
+  const modalInputChangeHandle = (key: string, value: string) => {
+    setModalData((pre) => {
+      return { ...pre, [key]: value }
+    })
   }
 
 
@@ -112,7 +166,7 @@ const Categories = () => {
               <div className='flex items-center gap-x-3'>
 
                 <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
-                <button >
+                <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
                   <Image
                     className="w-9"
                     src={PlusIcon}
@@ -184,7 +238,12 @@ const Categories = () => {
       </div>
 
 
-    </main>
+      <Custom_Modal open_handle={() => openModalHandle(modalStateEnum.CREATE)} Title={`${modalState} Category`} loading={modalEventLoading} is_open={openModal} close_handle={closeModalHandle} create_new_handle={createNewHandle} buttonLabel={modalState} Trigger_Button={<></>}>
+        <Input_Component onChange={(e: string) => modalInputChangeHandle('category_name', e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label='Category' />
+      </Custom_Modal>
+
+
+    </main >
   )
 }
 

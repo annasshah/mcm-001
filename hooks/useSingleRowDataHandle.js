@@ -3,11 +3,6 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 function useSingleRowDataHandle({
-
-    // fetch_content_function,
-    // update_content_function,
-    // create_content_function,
-
     initial_language = '', list_data, default_selected_section = '', list_item_section = [], table, required_fields }) {
     const [default_data, set_default_data] = useState(null);
     console.log(default_selected_section, table)

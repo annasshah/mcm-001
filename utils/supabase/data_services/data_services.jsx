@@ -44,7 +44,7 @@ export async function fetchAppointmentsByLocation(locationId) {
 
 
 
-export async function fetch_content_service({ table, language, selectParam='' }) {
+export async function fetch_content_service({ table, language = '', selectParam = '' }) {
   let query = supabase
     .from(`${table}${language}`)
     .select(`*${selectParam ? selectParam : ''}`);
@@ -57,13 +57,15 @@ export async function fetch_content_service({ table, language, selectParam='' })
 }
 
 
-export async function update_content_service({ table, language, post_data }) {
+export async function update_content_service({ table, language, post_data, matchKey = 'id' }) {
   // console.log({ language, post_data, section })
+  const id = post_data[matchKey]
+  delete post_data[matchKey]
   const { data, error } = await supabase
 
     .from(`${table}${language}`)
     .update(post_data)
-    .eq('id', post_data.id)
+    .eq(matchKey, id)
     .select()
   if (error) {
     console.log(error.message);
@@ -106,7 +108,7 @@ export async function delete_appointment_service(id) {
 
 
 }
-export async function delete_content_service({table, keyByDelete='id',  id}) {
+export async function delete_content_service({ table, keyByDelete = 'id', id }) {
   const query = await supabase
     .from(table)
     .delete()
@@ -124,7 +126,7 @@ export async function delete_content_service({table, keyByDelete='id',  id}) {
 export async function update_appointment_service(id, value) {
   const query = await supabase
     .from('Appoinments')
-    .update({ date_and_time:value })
+    .update({ date_and_time: value })
     .eq('id', id)
     .select('*')
 

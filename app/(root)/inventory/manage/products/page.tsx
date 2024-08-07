@@ -1,18 +1,28 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Select, Spinner } from 'flowbite-react';
+import { Label, Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
+import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
+import { Input_Component } from '@/components/Input_Component';
+import { toast } from 'react-toastify';
+import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
 
+const modalStateEnum = {
+  CREATE: "Create",
+  UPDATE: "Update",
+  DELETE: "delete",
+  EMPTY: ""
+}
 
 const tableHeader = [
   {
@@ -38,17 +48,39 @@ const tableHeader = [
   {
     id: 'actions',
     label: 'Action',
-    align:'text-right',
-    render_value: (val: string) => {
+    align: 'text-right',
+    Render_Value: ({ clickHandle }: { clickHandle: (state: string) => void }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-      <Action_Button label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Delete' bg_color='bg-[#FF6363]' /> 
-    </div>
+        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Delete' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
+      </div>
 
     }
 
   },
 ]
+
+const requiredInputFields = [
+  {
+    id: 'category_id',
+    label: 'Category'
+  },
+  {
+    id: 'product_name',
+    label: 'Name'
+  },
+  {
+    id: 'price',
+    label: 'Price',
+    colSpan: 'col-span-1'
+  },
+  {
+    id: 'quantity_available',
+    label: 'Units',
+    colSpan: 'col-span-1'
+  },
+]
+
 
 
 
@@ -57,10 +89,31 @@ const Products = () => {
   const [allData, setAllData] = useState<DataListInterface[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [modalEventLoading, setModalEventLoading] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [modalData, setModalData] = useState<DataListInterface>({})
+  const [modalState, setModalState] = useState('')
+  const { categories } = useCategoriesClinica()
+
+
+
+
+  const openModalHandle = (state: string) => {
+    setOpenModal(true)
+    setModalState(state)
+
+  }
+  const closeModalHandle = () => {
+    setOpenModal(false)
+    setModalState(modalStateEnum.EMPTY)
+    setModalData({})
+  }
+
+
 
   const fetch_handle = async () => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam:',categories(category_name)' });
+    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)
@@ -88,6 +141,121 @@ const Products = () => {
   }, [])
 
 
+
+  // const createNewHandle = async () => {
+
+  //   setModalEventLoading(true)
+  //   const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
+  //   if (error) {
+  //     console.log(error.message);
+  //     toast.error(error.message);
+  //     // throw new Error(error.message);
+  //   }
+
+
+
+
+  //   if (res_data?.length) {
+  //     toast.success('Created successfully');
+  //     closeModalHandle()
+  //     dataList.push(res_data[0])
+  //     allData.push(res_data[0])
+  //     setAllData([...allData])
+  //     setDataList([...dataList])
+  //   }
+
+  //   setModalEventLoading(false)
+  // }
+  const modalInputChangeHandle = (key: string, value: string | number) => {
+    setModalData((pre) => {
+      return { ...pre, [key]: value }
+    })
+  }
+
+
+  const modalSubmitHandle = async () => {
+    setModalEventLoading(true)
+    console.log(modalData)
+    if (modalState === modalStateEnum.CREATE) {
+      
+      const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
+      if (error) {
+        console.log(error.message);
+        toast.error(error.message);
+        // throw new Error(error.message);
+      }
+      if (res_data?.length) {
+        toast.success('Created successfully');
+        closeModalHandle()
+        // dataList.push(res_data[0])
+        // allData.push(res_data[0])
+        // setAllData([...allData])
+        // setDataList([...dataList])
+      }
+    }
+    else {
+      try {
+        const postData = {
+          product_id:+modalData.product_id,
+          category_id:+modalData.category_id,
+          product_name:modalData.product_name,
+          price:+modalData.price,
+          quantity_available:+modalData.quantity_available,
+        }
+        const res_data = await update_content_service({ table: 'products', language: '', post_data: postData, matchKey: 'product_id' });
+        if (res_data?.length) {
+          toast.success('Created successfully');
+          closeModalHandle()
+        }
+
+      } catch (error: any) {
+
+        if (error && error?.message) {
+          toast.error(error?.message);
+          // throw new Error(error.message);
+        } else {
+          toast.error('Something went wrong!');
+        }
+      }
+
+
+    }
+    setModalEventLoading(false)
+  }
+
+
+
+  const onClickHandle = async (id: number) => {
+    const { error } = await delete_content_service({ table: 'products', keyByDelete: 'product_id', id })
+    if (!error) {
+      setDataList((elem) => elem.filter((data: any) => data.product_id !== id))
+      setAllData((elem) => elem.filter((data: any) => data.product_id !== id))
+      toast.success('Deleled successfully');
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+  }
+
+
+
+  const buttonClickActionHandle = (action: string, elem: any) => {
+    console.log({
+      action,
+      elem
+    })
+    if (action === modalStateEnum.DELETE) {
+      onClickHandle(elem.product_id)
+    }
+    else if (action === modalStateEnum.UPDATE) {
+      setModalData(elem)
+      openModalHandle(modalStateEnum.UPDATE)
+    }
+
+  }
+
+
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
 
@@ -106,7 +274,7 @@ const Products = () => {
               <div className='flex items-center gap-x-3'>
 
                 <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
-                <button >
+                <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
                   <Image
                     className="w-9"
                     src={PlusIcon}
@@ -156,8 +324,9 @@ const Products = () => {
                     const even_row = (index + 1) % 2
                     return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
                       {
-                        tableHeader.map(({ id, render_value, align }, ind) => {
-                          const content = render_value ? render_value(elem[id]) : elem[id]
+                        tableHeader.map((element, ind) => {
+                          const { id, Render_Value, align } = element
+                          const content = Render_Value ? <Render_Value clickHandle={(action: string) => buttonClickActionHandle(action, elem)} /> : elem[id]
                           return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
                             {id === 'category' ? elem.categories.category_name : content}
                           </h1>
@@ -176,6 +345,31 @@ const Products = () => {
 
 
       </div>
+
+
+      <Custom_Modal open_handle={() => openModalHandle(modalStateEnum.CREATE)} Title={`${modalState} Product`} loading={modalEventLoading} is_open={openModal} close_handle={closeModalHandle} create_new_handle={modalSubmitHandle} buttonLabel={modalState} Trigger_Button={<></>}>
+        <div className="w-full grid grid-cols-2 gap-4">
+
+          {
+            requiredInputFields.map((elem) => {
+              const { id, label, colSpan } = elem
+              return id === 'category_id' ? <div className='col-span-2 space-y-2' >
+                <Label htmlFor={id} value={label} className='font-bold' />
+                <Select value={modalData[id]} onChange={(e: any) => modalInputChangeHandle(id, e.target.value)} id={id} required>
+                  <option selected >{label}</option>
+                  {categories.map((elem: any, index: any) => <option key={index} value={elem[id]}>{elem.category_name}</option>)}
+                </Select>
+
+              </div> : <div className={`${colSpan || 'col-span-2'}`}>
+                <Input_Component value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} />
+              </div>
+            })
+          }
+
+
+
+        </div>
+      </Custom_Modal>
 
 
     </main>
