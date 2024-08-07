@@ -178,9 +178,9 @@ const Patients = () => {
 
 
             <div className='w-2/3 space-y-4'>
-              <Input_Component label='Name' />
-              <Input_Component label='Email Address' />
-              <Input_Component label='Phone Number' />
+              <Input_Component onChange={()=>''} label='Name' />
+              <Input_Component onChange={()=>''} label='Email Address' />
+              <Input_Component onChange={()=>''} label='Phone Number' />
 
               <Select_Dropdown bg_color='#fff' start_empty={true} options_arr={[]} required={true} on_change_handle={category_change_handle} label='Treatment Type' />
 
