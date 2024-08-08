@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { render } from "@react-email/components";
+import { VercelInviteUserEmail } from "@/components/EmailTemplate/Emailtemplate1";
 var nodemailer = require("nodemailer");
-
+const emailHtml = render(VercelInviteUserEmail({}));
 export async function POST(req: any) {
   try {
-    const { link, email } = await req.json();
+    const { subject, email } = await req.json();
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -17,9 +19,9 @@ export async function POST(req: any) {
     const info = await transporter.sendMail({
       from: process.env.EMAIL, // sender address
       to: email, // list of receivers
-      subject: "Email Verficiation", // Subject line
+      subject: subject, // Subject line
       text: "", // plain text body
-      html: `<b>Your verfication email link is ${link}</b>`, // html body
+      html: emailHtml, // html body
     });
 
     return NextResponse.json(
