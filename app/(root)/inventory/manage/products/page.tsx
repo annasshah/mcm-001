@@ -11,6 +11,7 @@ import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
+import { PiCaretUpDownBold } from "react-icons/pi";
 
 
 interface DataListInterface {
@@ -31,19 +32,23 @@ const tableHeader = [
   },
   {
     id: 'category',
-    label: 'Category'
+    label: 'Category',
+    can_sort: true
   },
   {
     id: 'product_name',
-    label: 'Name'
+    label: 'Name',
+    can_sort: true
   },
   {
     id: 'price',
-    label: 'Price'
+    label: 'Price',
+    can_sort: true
   },
   {
     id: 'quantity_available',
-    label: 'Units'
+    label: 'Units',
+    can_sort: true
   },
   {
     id: 'actions',
@@ -94,6 +99,7 @@ const Products = () => {
   const [modalData, setModalData] = useState<DataListInterface>({})
   const [modalState, setModalState] = useState('')
   const { categories } = useCategoriesClinica()
+  const [sortOrder, setSortOrder] = useState(-1)
 
 
 
@@ -129,7 +135,7 @@ const Products = () => {
     }
     else {
 
-      const filteredData = allData.filter((elem) => elem.categories.category_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+      const filteredData = allData.filter((elem) => elem.product_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
       setDataList([...filteredData])
     }
   }
@@ -141,31 +147,6 @@ const Products = () => {
   }, [])
 
 
-
-  // const createNewHandle = async () => {
-
-  //   setModalEventLoading(true)
-  //   const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
-  //   if (error) {
-  //     console.log(error.message);
-  //     toast.error(error.message);
-  //     // throw new Error(error.message);
-  //   }
-
-
-
-
-  //   if (res_data?.length) {
-  //     toast.success('Created successfully');
-  //     closeModalHandle()
-  //     dataList.push(res_data[0])
-  //     allData.push(res_data[0])
-  //     setAllData([...allData])
-  //     setDataList([...dataList])
-  //   }
-
-  //   setModalEventLoading(false)
-  // }
   const modalInputChangeHandle = (key: string, value: string | number) => {
     setModalData((pre) => {
       return { ...pre, [key]: value }
@@ -177,7 +158,7 @@ const Products = () => {
     setModalEventLoading(true)
     console.log(modalData)
     if (modalState === modalStateEnum.CREATE) {
-      
+
       const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
       if (error) {
         console.log(error.message);
@@ -196,11 +177,11 @@ const Products = () => {
     else {
       try {
         const postData = {
-          product_id:+modalData.product_id,
-          category_id:+modalData.category_id,
-          product_name:modalData.product_name,
-          price:+modalData.price,
-          quantity_available:+modalData.quantity_available,
+          product_id: +modalData.product_id,
+          category_id: +modalData.category_id,
+          product_name: modalData.product_name,
+          price: +modalData.price,
+          quantity_available: +modalData.quantity_available,
         }
         const res_data = await update_content_service({ table: 'products', language: '', post_data: postData, matchKey: 'product_id' });
         if (res_data?.length) {
@@ -256,6 +237,43 @@ const Products = () => {
   }
 
 
+  const sortHandle = (column: string) => {
+    console.log(column)
+    let sortedList: any = []
+    if (column === 'category') {
+      if (sortOrder === 1) {
+        sortedList = dataList.sort((a, b) => a.categories.category_name.localeCompare(b.categories.category_name))
+      } else {
+
+        sortedList = dataList.sort((a, b) => b.categories.category_name.localeCompare(a.categories.category_name))
+      }
+    }
+    else if (column === 'product_name') {
+      if (sortOrder === 1) {
+        sortedList = dataList.sort((a, b) => a.product_name.localeCompare(b.product_name))
+      } else {
+
+        sortedList = dataList.sort((a, b) => b.product_name.localeCompare(a.product_name))
+      }
+
+    }
+    else {
+      if (sortOrder === 1) {
+        sortedList = dataList.sort((a, b) => a[column] - b[column])
+      } else {
+
+        sortedList = dataList.sort((a, b) => b[column] - a[column])
+        
+      }
+    }
+
+    setSortOrder((order)=> order === -1 ? 1 : -1)
+    setDataList([...sortedList])
+
+
+
+  }
+
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
 
@@ -268,7 +286,7 @@ const Products = () => {
           <div className='space-y-6 px-3 pb-4 flex justify-between'>
             <div className='space-y-1'>
               <h1 className='text-lg font-bold'>
-                Search by Category
+                Search by Product
               </h1>
 
               <div className='flex items-center gap-x-3'>
@@ -301,10 +319,10 @@ const Products = () => {
             {/* Table goes here */}
 
             <div className='flex items-center flex-1 font-semibold pr-5'>
-              {tableHeader.map(({ label, align }, index) => {
+              {tableHeader.map(({ label, align, can_sort, id }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
-                  {label}
+                  {label} {can_sort && <button onClick={() => sortHandle(id)} className='active:opacity-50'><PiCaretUpDownBold className='inline' /></button>}
                 </h1>
               })}
             </div>
