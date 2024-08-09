@@ -1,8 +1,9 @@
+"use server";
 import { NextResponse } from "next/server";
 import { render } from "@react-email/components";
 import { VercelInviteUserEmail } from "@/components/EmailTemplate/Emailtemplate1";
 var nodemailer = require("nodemailer");
-const emailHtml = render(VercelInviteUserEmail({}));
+// const emailHtml = render(VercelInviteUserEmail({}));
 export async function POST(req: any) {
   try {
     const { subject, email } = await req.json();
@@ -21,7 +22,7 @@ export async function POST(req: any) {
       to: email, // list of receivers
       subject: subject, // Subject line
       text: "", // plain text body
-      html: emailHtml, // html body
+      html: "emailHtml", // html body
     });
 
     return NextResponse.json(

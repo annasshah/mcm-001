@@ -17,6 +17,7 @@
     "@react-email/components": "^0.0.22",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.42.0",
+    "@types/nodemailer": "^6.4.15",
     "antd": "^5.18.0",
     "axios": "^1.7.2",
     "flowbite": "^2.2.1",
