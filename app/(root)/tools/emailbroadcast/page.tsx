@@ -35,14 +35,8 @@ const EmailBroadcast: React.FC = () => {
     <main className="w-full h-full text-[#B6B6B6]  text-[20px] flex flex-row justify-center items-center space-y-4 p-4">
       <div className="w-[60%] flex items-start justify-start  flex-col ">
         <form>
-          <button
-            className="border-gray-800 bg-black cursor-pointer mb-3 text-white  text-sm px-4 py-2"
-            formAction={sendEmail}
-          >
-            Submit
-          </button>
           <div className="w-[70%] flex flex-col">
-            <select
+            {/* <select
               value={selectedOption}
               onChange={handleDropdownChange}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
@@ -51,17 +45,32 @@ const EmailBroadcast: React.FC = () => {
               <option value="option1">Option 1</option>
               <option value="option2">Option 2</option>
               <option value="option3">Option 3</option>
-            </select>
+            </select> */}
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
-                value={textInput}
-                onChange={handleTextInputChange}
-                placeholder="Your email subject"
+                id="email"
+                name="email"
+                placeholder="Your email "
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <TextEditor />
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="emailOption"
+                name="emailOption"
+                placeholder="Write number"
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            {/* <TextEditor /> */}
+            <button
+              className="border-gray-800 bg-black cursor-pointer mb-3 text-white  text-sm px-4 py-2"
+              formAction={sendEmail}
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>
