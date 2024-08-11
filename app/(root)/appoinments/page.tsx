@@ -27,7 +27,7 @@ interface RenderDetailKey {
 
 export interface Appointment {
   id: number;
-  email_Address: string;
+  email_address: string;
   date_and_time: string;
   address: string;
   location_id: number;
@@ -84,7 +84,7 @@ const render_detail_keys: RenderDetailFields[] = [
   },
   {
     label: 'Email Address',
-    key: 'email_Address',
+    key: 'email_address',
     can_sort: true
 
   },
