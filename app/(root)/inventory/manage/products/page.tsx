@@ -306,9 +306,9 @@ const Products = () => {
 
 
 
-            <div>
+            {/* <div>
               <HiMiniChevronUpDown size={30} />
-            </div>
+            </div> */}
 
 
 

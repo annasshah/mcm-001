@@ -5,6 +5,7 @@ import { CiFilter } from "react-icons/ci";
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 import moment from 'moment';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import InventoryCards from './InventoryCards';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -91,24 +92,7 @@ const StockPanel = () => {
 
 
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
-        <div className='py-3 space-x-20 my-5 flex flex-1 items-center'>
-          <div className='px-5 py-3 rounded-lg bg-[#EFEFEF] flex-1'>
-            <h1 className='text-5xl'>400</h1>
-            <h4 className='text-base'>Products</h4>
-          </div>
-          <div className='px-5 py-3 rounded-lg bg-[#EFEFEF] flex-1'>
-            <h1 className='text-5xl'>400</h1>
-            <h4 className='text-base'>Total Categories</h4>
-          </div>
-          <div className='px-5 py-3 rounded-lg bg-[#EFEFEF] flex-1'>
-            <h1 className='text-5xl'>400</h1>
-            <h4 className='text-base'>Stock Value</h4>
-          </div>
-          <div className='px-5 py-3 rounded-lg bg-[#EFEFEF] flex-1'>
-            <h1 className='text-5xl'>400</h1>
-            <h4 className='text-base'>low stock alerts</h4>
-          </div>
-        </div>
+        <InventoryCards />
         <div className='bg-[#D9DFE9] h-[100%]  col-span-2 rounded-md py-2   ' >
 
           <div className='space-y-6 px-3 pb-4 flex justify-between'>
@@ -121,9 +105,9 @@ const StockPanel = () => {
 
 
 
-            <div>
+            {/* <div>
               <CiFilter size={30} />
-            </div>
+            </div> */}
 
 
 
