@@ -70,7 +70,7 @@ const EmailBroadcast: React.FC = () => {
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <TextEditor />
+            {/* <TextEditor /> */}
           </div>
         </form>
       </div>
