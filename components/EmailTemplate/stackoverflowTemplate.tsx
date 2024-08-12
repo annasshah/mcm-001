@@ -80,8 +80,8 @@ export const StackOverflowTipsEmail = ({
             Searching for solutions
           </Heading>
           <Text style={paragraph}>
-            With more than 18 million questions, it's possible that someone has
-            already provided a solution to the problem you're facing.{" "}
+            With more than 18 million questions, it&apos;s possible that someone
+            has already provided a solution to the problem you&apos;re facing.{" "}
           </Text>
 
           <Hr style={divider} />
@@ -122,7 +122,7 @@ export const StackOverflowTipsEmail = ({
 
       <Section style={footer}>
         <Text style={footerText}>
-          You're receiving this email because your Stack Overflow activity
+          You&apos;re receiving this email because your Stack Overflow activity
           triggered this tip or reminder.
         </Text>
 

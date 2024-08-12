@@ -57,7 +57,7 @@ export const AirbnbReviewEmail = ({
           </Section>
           <Section style={{ paddingBottom: "20px" }}>
             <Row>
-              <Text style={heading}>Here's what {authorName} wrote</Text>
+              <Text style={heading}>Here&apos;s what {authorName} wrote</Text>
               <Text style={review}>{reviewText}</Text>
               <Text style={paragraph}>
                 Now that the review period is over, we’ve posted {authorName}
