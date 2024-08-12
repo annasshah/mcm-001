@@ -34,9 +34,15 @@ const EmailBroadcast: React.FC = () => {
   return (
     <main className="w-full h-full text-[#B6B6B6]  text-[20px] flex flex-row justify-center items-center space-y-4 p-4">
       <div className="w-[60%] flex items-start justify-start  flex-col ">
-        <form>
+        <form className="w-full">
           <div className="w-[70%] flex flex-col">
-            {/* <select
+            <button
+              className="border-gray-800 bg-black cursor-pointer mb-3 text-white  text-sm px-4 py-2"
+              formAction={sendEmail}
+            >
+              Submit
+            </button>
+            <select
               value={selectedOption}
               onChange={handleDropdownChange}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
@@ -45,7 +51,7 @@ const EmailBroadcast: React.FC = () => {
               <option value="option1">Option 1</option>
               <option value="option2">Option 2</option>
               <option value="option3">Option 3</option>
-            </select> */}
+            </select>
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
@@ -64,13 +70,7 @@ const EmailBroadcast: React.FC = () => {
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            {/* <TextEditor /> */}
-            <button
-              className="border-gray-800 bg-black cursor-pointer mb-3 text-white  text-sm px-4 py-2"
-              formAction={sendEmail}
-            >
-              Submit
-            </button>
+            <TextEditor />
           </div>
         </form>
       </div>
