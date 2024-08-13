@@ -123,7 +123,7 @@ const required_fields = {
     location_id: { required: true, label: 'Location' },
     first_name: { required: true, label: 'First Name' },
     last_name: { required: true, label: 'Last Name' },
-    email_Address: { required: true, label: 'Email Address' },
+    email_address: { required: true, label: 'Email Address' },
     dob: { required: true, label: 'Date of Birth' },
     sex: { required: true, label: 'Sex' },
     service: { required: true, label: 'Service' },
@@ -184,7 +184,7 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
             location_id,
             first_name,
             last_name,
-            email_Address,
+            email_address,
             address,
             in_office_patient,
             new_patient,
@@ -197,7 +197,7 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
             location_id,
             first_name,
             last_name,
-            email_Address,
+            email_address,
             address: address,
             in_office_patient: in_office_patient === 'true' || false,
             new_patient: new_patient === 'true' || false,
@@ -336,7 +336,7 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
                             </div>
 
                             <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('email_Address', e)} placeholder='Enter you current email address' label='Email' />
+                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('email_address', e)} placeholder='Enter you current email address' label='Email' />
                             </div>
                             <div className='w-full'>
                                 <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone', e)} placeholder='Enter you current email address' label='Phone number' />

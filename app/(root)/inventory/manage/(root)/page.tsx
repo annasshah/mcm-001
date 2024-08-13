@@ -165,7 +165,7 @@ const Categories = () => {
 
               <div className='flex items-center gap-x-3'>
 
-                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <input  onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
                 <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
                   <Image
                     className="w-9"
@@ -239,7 +239,7 @@ const Categories = () => {
 
 
       <Custom_Modal open_handle={() => openModalHandle(modalStateEnum.CREATE)} Title={`${modalState} Category`} loading={modalEventLoading} is_open={openModal} close_handle={closeModalHandle} create_new_handle={createNewHandle} buttonLabel={modalState} Trigger_Button={<></>}>
-        <Input_Component onChange={(e: string) => modalInputChangeHandle('category_name', e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label='Category' />
+        <Input_Component value={modalData['category_name']}  onChange={(e: string) => modalInputChangeHandle('category_name', e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label='Category' />
       </Custom_Modal>
 
 
