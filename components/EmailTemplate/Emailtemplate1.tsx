@@ -27,6 +27,8 @@ interface VercelInviteUserEmailProps {
   inviteLink?: string;
   inviteFromIp?: string;
   inviteFromLocation?: string;
+  height?: string;
+  width?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
@@ -43,15 +45,17 @@ export const VercelInviteUserEmail = ({
   inviteLink,
   inviteFromIp,
   inviteFromLocation,
+  height,
+  width,
 }: VercelInviteUserEmailProps) => {
   const previewText = `Join ${invitedByUsername} on Vercel`;
 
   return (
-    <Html>
+    <Html className={`height-[${height}] width=[${width}]`}>
       <Head />
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className="bg-white my-auto mx-auto font-sans px-2">
+        <Body className={`bg-white my-auto mx-auto font-sans px-2 `}>
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
             <Section className="mt-[32px]">
               <Img
