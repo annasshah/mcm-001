@@ -13,10 +13,14 @@ import template5 from "@/assets/images/Avatar/temp5.png";
 const EmailBroadcast: React.FC = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [subject, setSubject] = useState<string>("Hello");
-  const [email, setEmail] = useState<string>("ssameershah1200@gmail.com");
+  // const [email, setEmail] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>("");
-  const [selectedTemplate, setSelectedTemplate] = useState<any>();
-  const handleSubmit = async () => {};
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const handleSubmit = async () => {
+    {
+      sendEmail;
+    }
+  };
 
   const handleTextInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -96,10 +100,10 @@ const EmailBroadcast: React.FC = () => {
                   <div className="flex items-center ">
                     <input
                       type="radio"
-                      id="emailOption"
                       name="template"
-                      value={template.id}
-                      checked={selectedTemplate === template.id}
+                      id={`template-${template.id}`}
+                      value={template.id.toString()}
+                      checked={selectedTemplate === template.id.toString()}
                       onChange={handleRadioChange}
                       className="w-4 h-4 border-2 mr-2 border-gray-500 rounded-full checked:bg-blue-500"
                     />
@@ -127,7 +131,7 @@ const EmailBroadcast: React.FC = () => {
           </div>
           <button
             className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white  rounded text-sm px-4 py-2"
-            formAction={sendEmail}
+            formAction={handleSubmit}
           >
             Submit
           </button>
