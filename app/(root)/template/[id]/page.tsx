@@ -28,10 +28,10 @@ const Page: React.FC = () => {
       ComponentToRender = KoalaWelcomeEmail;
       break;
     case 4:
-      ComponentToRender = StackOverflowTipsEmail;
+      ComponentToRender = YelpRecentLoginEmail;
       break;
     case 5:
-      ComponentToRender = YelpRecentLoginEmail;
+      ComponentToRender = StackOverflowTipsEmail;
       break;
     default:
       ComponentToRender = () => <div>Component not found</div>;

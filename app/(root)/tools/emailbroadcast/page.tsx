@@ -8,8 +8,8 @@ import { sendEmail } from "@/actions/send-email/action";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
-import template4 from "@/assets/images/Avatar/temp3.png";
-import template5 from "@/assets/images/Avatar/temp3.png";
+import template4 from "@/assets/images/Avatar/temp4.png";
+import template5 from "@/assets/images/Avatar/temp5.png";
 const EmailBroadcast: React.FC = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [subject, setSubject] = useState<string>("Hello");
@@ -51,12 +51,6 @@ const EmailBroadcast: React.FC = () => {
       <div className="w-[60%] flex items-start justify-start  flex-col ">
         <form className="w-full">
           <div className="w-[70%] flex flex-col">
-            <button
-              className="border-gray-800 bg-black cursor-pointer mb-3 text-white  text-sm px-4 py-2"
-              formAction={sendEmail}
-            >
-              Submit
-            </button>
             <select
               value={selectedOption}
               onChange={handleDropdownChange}
@@ -74,6 +68,15 @@ const EmailBroadcast: React.FC = () => {
                 id="subject"
                 name="subject"
                 placeholder="Write Subject"
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="buttonLink"
+                name="buttonLink"
+                placeholder="Button Link"
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
@@ -111,7 +114,7 @@ const EmailBroadcast: React.FC = () => {
                   </div>
                   <div className="flex">
                     <Link href={`/template/${template.id}`} passHref>
-                      <button className="rounded-lg border border-gray-300 text-sm px-8 py-1 my-2">
+                      <button className="rounded border text-white bg-black border-gray-300 text-sm px-8 py-1 my-2">
                         <a target="_blank" rel="noopener noreferrer">
                           Preview
                         </a>
@@ -122,6 +125,12 @@ const EmailBroadcast: React.FC = () => {
               ))}
             </div>
           </div>
+          <button
+            className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white  rounded text-sm px-4 py-2"
+            formAction={sendEmail}
+          >
+            Submit
+          </button>
         </form>
       </div>
       <div className="w-[40%]  flex flex-col items-center justify-start space-y-2">
