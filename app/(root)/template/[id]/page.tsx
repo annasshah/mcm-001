@@ -9,7 +9,7 @@ import { KoalaWelcomeEmail } from "@/components/EmailTemplate/koalatemplate";
 import { StackOverflowTipsEmail } from "@/components/EmailTemplate/stackoverflowTemplate";
 import { YelpRecentLoginEmail } from "@/components/EmailTemplate/yelpTemplate";
 
-const Page: React.FC = () => {
+export const Page: React.FC = () => {
   const params = useParams<{ id: string }>();
   const id = params.id as string | undefined; // TypeScript type for id
 
@@ -40,5 +40,5 @@ const Page: React.FC = () => {
 
   return <div>{ComponentToRender ? <ComponentToRender /> : null}</div>;
 };
-
+Page.displayName = "Template";
 export default Page;
