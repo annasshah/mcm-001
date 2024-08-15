@@ -23,13 +23,14 @@ interface Route {
   children?: Route[];
 }
 
+
 export const routeList: Route[] = [
   {
     id: 1,
     name: "Home",
     icon: home,
     children: [
-      { id: 1, name: "Dashboard", route: "/dashboard" },
+      { id: 1, name: "Dashboard", route: "/" },
       { id: 2, name: "Profiles", route: "/profiles" },
       { id: 3, name: "Paid Ads", route: "/paidads" },
       { id: 4, name: "SEO", route: "/seo" },

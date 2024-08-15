@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Select, Spinner } from 'flowbite-react';
+import { Button, Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
 import Image from 'next/image';
@@ -55,6 +55,7 @@ const Categories = () => {
   const [openModal, setOpenModal] = useState(false)
   const [modalData, setModalData] = useState<DataListInterface>({})
   const [modalState, setModalState] = useState('')
+  const [activeDeleteId, setActiveDeleteId] = useState(0)
 
 
   const openModalHandle = (state: string) => {
@@ -99,19 +100,24 @@ const Categories = () => {
 
 
   const onClickHandle = async (id: number) => {
-    const { error } = await delete_content_service({ table: 'categories', keyByDelete: 'category_id', id })
+    setActiveDeleteId(id)
+  }
+
+
+  const deleteHandle = async () => {
+    setDeleteLoading(true)
+    const { error } = await delete_content_service({ table: 'categories', keyByDelete: 'category_id', id: activeDeleteId })
     if (!error) {
-      setDataList((elem) => elem.filter((data: any) => data.category_id !== id))
-      setAllData((elem) => elem.filter((data: any) => data.category_id !== id))
+      setDataList((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
+      setAllData((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
+      setActiveDeleteId(0)
       toast.success('Deleled successfully');
     }
     else if (error) {
       console.log(error.message)
       toast.error(error.message);
     }
-
-
-
+    setDeleteLoading(false)
   }
 
 
@@ -165,7 +171,7 @@ const Categories = () => {
 
               <div className='flex items-center gap-x-3'>
 
-                <input  onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
                 <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
                   <Image
                     className="w-9"
@@ -239,8 +245,33 @@ const Categories = () => {
 
 
       <Custom_Modal open_handle={() => openModalHandle(modalStateEnum.CREATE)} Title={`${modalState} Category`} loading={modalEventLoading} is_open={openModal} close_handle={closeModalHandle} create_new_handle={createNewHandle} buttonLabel={modalState} Trigger_Button={<></>}>
-        <Input_Component value={modalData['category_name']}  onChange={(e: string) => modalInputChangeHandle('category_name', e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label='Category' />
+        <Input_Component value={modalData['category_name']} onChange={(e: string) => modalInputChangeHandle('category_name', e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label='Category' />
       </Custom_Modal>
+
+
+
+      {activeDeleteId ? <div className='fixed bg-black/75 h-screen w-screen top-0 left-0 right-0 bottom-0 z-20'>
+        <div className='flex justify-center items-center w-full h-full'>
+
+          <div className='bg-white w-full max-w-xl px-4 py-3 rounded-lg'>
+
+            <h1 className='font-bold text-xl text-black mb-5'>Confirmation</h1>
+            <p className='text-lg'>Do you really want to delete this category</p>
+            <p className='text-sm'>Remember All of the associated products will also be deleted with the category</p>
+
+
+            <div className='mt-4 flex items-center space-x-3 justify-end'>
+              <Button disabled={deleteLoading} onClick={() => setActiveDeleteId(0)} color="gray">Cancel</Button>
+              <Button isProcessing={deleteLoading} color="failure" onClick={deleteHandle}>
+                Delete
+              </Button>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div> : null}
 
 
     </main >
