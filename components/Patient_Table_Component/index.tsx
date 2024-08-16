@@ -11,6 +11,7 @@ interface DataListInterface {
   id: number;
   onsite: boolean;
   firstname: string;
+  locationid: number;
   lastname: string;
   phone: string;
   email: string;
@@ -26,19 +27,19 @@ interface Props {
 
 
 interface QueriesInterface {
-    all: null,
-    onsite: {
-      key: string,
-      value: boolean
-    },
-    offsite: {
-      key: string,
-      value: boolean
-    },
+  all: null,
+  onsite: {
+    key: string,
+    value: boolean
+  },
+  offsite: {
+    key: string,
+    value: boolean
+  },
 
 }
 
-const queries:QueriesInterface =  {
+const queries: QueriesInterface = {
   all: null,
   onsite: {
     key: 'onsite',
@@ -63,7 +64,7 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
   const [patientDetails, setPatientDetails] = useState<DataListInterface | null>(null)
   const [loading, setLoading] = useState(true)
   const [sortOrder, setSortOrder] = useState(-1)
-
+  const [sortColumn, setSortColumn] = useState('')
 
   const onChangeHandle = (e: any) => {
     const val = e.target.value
@@ -149,8 +150,23 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
 
     setSortOrder((order) => order === -1 ? 1 : -1)
     setDataList([...sortedList])
+    setSortColumn(column)
 
 
+  }
+
+
+  const select_change_handle = (e: any) => {
+    const selectedId = e.target.value
+
+    setDataList(() => {
+      if (!selectedId) {
+        return allData
+      }
+      else {
+        return allData.filter(({ locationid }) => locationid === +selectedId)
+      }
+    })
 
   }
 
@@ -163,13 +179,13 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
           All pateints
         </h1>
 
-        {/* <div >
+        <div >
           <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-            <option disabled selected value=''>All locations</option>
+            <option selected value=''>All locations</option>
             {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
           </Select>
 
-        </div> */}
+        </div>
       </div>
 
 
@@ -200,13 +216,13 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
 
             <div className='flex items-center flex-1 font-semibold'>
               <h1 className='flex-1 text-start'>
-                Patient ID <button onClick={() => sortHandle('id')} className='active:opacity-50'><PiCaretUpDownBold className='inline' /></button>
+                Patient ID <button onClick={() => sortHandle('id')} className='active:opacity-50'><PiCaretUpDownBold className={`inline ${sortColumn === 'id' ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} /></button>
               </h1>
               <h1 className='flex-1 text-center'>
-                Patient Name <button onClick={() => sortHandle('name')} className='active:opacity-50'><PiCaretUpDownBold className='inline' /></button>
+                Patient Name <button onClick={() => sortHandle('name')} className='active:opacity-50'><PiCaretUpDownBold className={`inline ${sortColumn === 'name' ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} /></button>
               </h1>
               <h1 className='flex-1 text-end'>
-                Created at <button onClick={() => sortHandle('date')} className='active:opacity-50'><PiCaretUpDownBold className='inline' /></button>
+                Created at <button onClick={() => sortHandle('date')} className='active:opacity-50'><PiCaretUpDownBold className={`inline ${sortColumn === 'date' ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} /></button>
               </h1>
             </div>
 
@@ -266,7 +282,7 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
                   Patient ID
                 </dt>
               </dl>
-             {renderType === 'all' && <div>
+              {renderType === 'all' && <div>
                 <p className='px-2 py-[2px] text-[16px] rounded-md  bg-text_primary_color text-white'>{patientDetails?.onsite ? 'On-site' : 'Off-site'} Patient</p>
               </div>}
             </div>

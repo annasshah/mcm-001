@@ -100,6 +100,7 @@ const Products = () => {
   const [modalState, setModalState] = useState('')
   const { categories } = useCategoriesClinica()
   const [sortOrder, setSortOrder] = useState(-1)
+  const [sortColumn, setSortColumn] = useState('')
 
 
 
@@ -271,7 +272,7 @@ const Products = () => {
     setDataList([...sortedList])
 
 
-
+    setSortColumn(column)
   }
 
   return (
@@ -322,7 +323,7 @@ const Products = () => {
               {tableHeader.map(({ label, align, can_sort, id }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
-                  {label} {can_sort && <button onClick={() => sortHandle(id)} className='active:opacity-50'><PiCaretUpDownBold className='inline' /></button>}
+                  {label} {can_sort && <button onClick={() => sortHandle(id)} className='active:opacity-50'><PiCaretUpDownBold className={`inline ${sortColumn === id ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} /></button>}
                 </h1>
               })}
             </div>

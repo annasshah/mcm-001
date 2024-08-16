@@ -275,7 +275,7 @@ const Render_Data = ({ data }) => {
 
                 <div className="flex items-center space-x-3 flex-wrap">
                   {
-                    request?.regions?.map((region,index) => <dd key={index}> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-sm ">{region}</span></dd>)
+                    request?.regions?.map((region, index) => <dd key={index}> <span className="rounded-md bg-slate-700 px-3 py-1 text-white text-sm ">{region}</span></dd>)
                   }
                 </div>
 
@@ -300,31 +300,19 @@ const Page = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const username = '40317b2ffb7c4fdfa9618c8345c8b0e4';
-    const password = ''; // Leave this empty if there's no password
-    const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-  //  " https://cronitor.io/api/monitors/YnJGeQ?env=production&sort=-created&time=7d"
-
-    axios.get('/api/monitors/YnJGeQ', {
-      // proxy: {
-      //   host: "https://new.clinicsanmiguel.com/",
-      //   port: 8001
-      // },
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
-        
-      },
-      withCredentials: true,
-      
+    axios.get('https://cronitor.io/api/monitors/YnJGeQ?env=production&format=api&sort=-created&time=24h',
+       {
+      auth: {
+        password: '',
+        username: 'd58be4b77cb54e2abd02e5940d030016'
+      }
     }).then((response) => {
       setData(response.data)
       setLoading(false)
-      }).catch((err) => {
-        console.log(err)
-        setLoading(false)
+    }).catch((err) => {
+      console.log(err)
+      setLoading(false)
     })
-
   }, [])
 
   // console.log(data)
@@ -336,7 +324,7 @@ const Page = () => {
       <h1 className="text-red-500 text-xl">
         Somethig Went wrong!
       </h1>
-      </div>}
+    </div>}
 
   </>
 };
