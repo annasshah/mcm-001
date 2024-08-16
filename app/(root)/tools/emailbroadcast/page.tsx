@@ -28,14 +28,14 @@ const EmailBroadcast: React.FC = () => {
     const fetchEmailList = async () => {
       try {
         const email = await getUserEmail();
-        setEmailList([email]); // Assuming getUserEmail returns a single email
+        setEmailList(email); // Assuming getUserEmail returns a single email
       } catch (error) {
         console.error("Failed to fetch email:", error);
       }
     };
 
     fetchEmailList();
-  }, []);
+  }, [emailList]);
   const templates = [
     { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
