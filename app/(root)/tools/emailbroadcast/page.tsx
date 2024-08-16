@@ -1,10 +1,10 @@
 // pages/EmailBroadcast.tsx
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import TextEditor from "@/components/Text_Editor/TextEditor";
-import { sendEmail } from "@/actions/send-email/action";
+import { sendEmail, getUserEmail } from "@/actions/send-email/action";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
@@ -12,22 +12,9 @@ import template4 from "@/assets/images/Avatar/temp4.png";
 import template5 from "@/assets/images/Avatar/temp5.png";
 const EmailBroadcast: React.FC = () => {
   const [textInput, setTextInput] = useState<string>("");
-  const [subject, setSubject] = useState<string>("Hello");
-  // const [email, setEmail] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const handleSubmit = async () => {
-    {
-      sendEmail;
-    }
-  };
-
-  const handleTextInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setTextInput(event.target.value);
-  };
-
+  const [emailList, setEmailList] = useState<any[]>([]);
   const handleDropdownChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -37,12 +24,18 @@ const EmailBroadcast: React.FC = () => {
     setSelectedTemplate(event.target.value);
   };
   // Sample email list
-  const emailList = [
-    "raheelhussainco@gmail.com",
-    "raheelofficialco@gmail.com",
-    "raheelandcompany@gmail.com",
-    "raheelconnect@gmail.com",
-  ];
+  useEffect(() => {
+    const fetchEmailList = async () => {
+      try {
+        const email = await getUserEmail();
+        setEmailList([email]); // Assuming getUserEmail returns a single email
+      } catch (error) {
+        console.error("Failed to fetch email:", error);
+      }
+    };
+
+    fetchEmailList();
+  }, []);
   const templates = [
     { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
@@ -131,7 +124,7 @@ const EmailBroadcast: React.FC = () => {
           </div>
           <button
             className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white  rounded text-sm px-4 py-2"
-            formAction={handleSubmit}
+            formAction={sendEmail}
           >
             Submit
           </button>
@@ -146,7 +139,7 @@ const EmailBroadcast: React.FC = () => {
             key={index}
             className="p-2 border bg-[#F8F8F8] w-[90%] border-gray-300 rounded "
           >
-            <p className="text-sm"> {email} </p>
+            <p className="text-sm"> {email.email} </p>
           </div>
         ))}
       </div>

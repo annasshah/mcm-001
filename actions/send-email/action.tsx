@@ -5,6 +5,7 @@ import { AirbnbReviewEmail } from "@/components/EmailTemplate/airbnbtemplate";
 import { KoalaWelcomeEmail } from "@/components/EmailTemplate/koalatemplate";
 import { StackOverflowTipsEmail } from "@/components/EmailTemplate/stackoverflowTemplate";
 import { YelpRecentLoginEmail } from "@/components/EmailTemplate/yelpTemplate";
+import { supabase } from "@/services/supabase";
 const nodemailer = require("nodemailer");
 const emailList = [
   "raheelhussainco@gmail.com",
@@ -12,11 +13,34 @@ const emailList = [
   "raheelandcompany@gmail.com",
   "raheelconnect@gmail.com",
 ];
+// lib/getUserEmail.ts
+
+interface User {
+  email: string;
+}
+
+export async function getUserEmail(): Promise<any> {
+  try {
+    const { data, error } = await supabase
+      .from("allpatients") // Replace 'user' with the actual name of your table
+      .select("email");
+
+    console.log("user", data);
+
+    return data;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return null;
+  }
+}
+
 export async function sendEmail(formData: FormData) {
-  // console.log("Email :", email);
+  console.log("Submitted");
   let subject = formData.get("subject") as string;
   let template = formData.get("template") as string;
   let buttonLink = formData.get("buttonLink") as string;
+  const useremail = await getUserEmail();
+
   try {
     // Choose the email HTML based on the emailOption
     let emailHtml;
@@ -50,15 +74,15 @@ export async function sendEmail(formData: FormData) {
       },
     });
     {
-      emailList.map(async (email: any, index: any) => {
+      useremail.map(async (email: any, index: any) => {
         await transporter.sendMail({
           from: process.env.EMAIL, // sender address
-          to: email, // list of receivers
+          to: email.email, // list of receivers
           subject: subject, // Subject line
           text: "", // plain text body
           html: emailHtml, // html body
         });
-        console.log(`Email sent successfully ${email}`);
+        console.log(`Email sent successfully ${email.email}`);
       });
     }
   } catch (error) {
