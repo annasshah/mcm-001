@@ -134,7 +134,7 @@ const EmailBroadcast: React.FC = () => {
         <h1 className="text-left  font-bold text-sm text-black ">
           Email Broadcasts
         </h1>
-        {emailList.map((email, index) => (
+        {emailList?.map((email, index) => (
           <div
             key={index}
             className="p-2 border bg-[#F8F8F8] w-[90%] border-gray-300 rounded "
