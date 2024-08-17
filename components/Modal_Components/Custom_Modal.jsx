@@ -5,12 +5,12 @@ import { Button, Modal } from "flowbite-react";
 import Image from "next/image";
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 
-export function Custom_Modal({children, submit_button_color='info', Title='Modal Title', loading=false, is_open,close_handle, open_handle, create_new_handle, buttonLabel='Create', Trigger_Button=false, disabled = false}) {
+export function Custom_Modal({children, submit_button_color='info', Title='Modal Title', loading=false, is_open,close_handle, open_handle, create_new_handle, buttonLabel='Create', Trigger_Button=null, disabled = false}) {
 
     return (
         <>
 
-           {Trigger_Button ?  Trigger_Button : Trigger_Button !== false ? <button onClick={open_handle}>
+           {Trigger_Button ?  Trigger_Button : Trigger_Button !== null ? <button onClick={open_handle}>
                 <Image
                     className="w-12"
                     src={PlusIcon}

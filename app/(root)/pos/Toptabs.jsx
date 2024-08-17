@@ -36,9 +36,9 @@ const TopTabs = () => {
                 ))}
             </ul>
 
-         <div className="bg-[#D9DFE9] w-1/3 py-2 rounded-md flex items-center px-3 " >
+         {/* <div className="bg-[#D9DFE9] w-1/3 py-2 rounded-md flex items-center px-3 " >
             <input value='Sarah S.' className="bg-transparent flex-1" /> <EditIcon />
-         </div>
+         </div> */}
         </nav>
     );
 }
