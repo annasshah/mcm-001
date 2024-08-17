@@ -6,6 +6,11 @@ import { useLocationClinica } from '@/hooks/useLocationClinica';
 import moment from 'moment';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
+import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
+import { Input } from 'antd';
+import { Input_Component } from '@/components/Input_Component';
+import { Action_Button } from '@/components/Action_Button';
+import { supabase } from '@/services/supabase';
 
 const fields = [
   {
@@ -20,20 +25,20 @@ const fields = [
 
   },
   {
-    id: 'used',
+    id: 'active',
     label: 'Active',
     type: 'boolean',
     editable: false,
     table_column: true,
     details_section: true,
-    render_value: (val: boolean) => val ? 'False' : 'True',
+    render_value: (val: boolean) => val ? 'True' : 'False' ,
     align: 'text-start',
     details_order: 3
   },
   {
-    id: 'code',
+    id: 'typename',
     label: 'Name',
-    details_label:'Promo Code Title',
+    details_label: 'Promo Code Title',
     type: 'text',
     editable: true,
     table_column: true,
@@ -41,12 +46,14 @@ const fields = [
     details_order: 1
   },
   {
-    id: 'description',
-    label: 'Description',
-    type: 'text',
+    id: 'multiple',
+    label: 'Multiple',
+    type: 'boolean',
     editable: true,
     table_column: false,
     details_section: true,
+    render_value: (val: boolean) => val ? 'True' : 'False' ,
+    details_order: 4
   },
   {
     id: 'percentage',
@@ -56,10 +63,11 @@ const fields = [
     table_column: true,
     details_section: true,
     render_value: (val: number) => `${val}%`,
-    details_order: 2
+    details_order: 2,
+    col_span_01_modal: true
   },
   {
-    id: 'expiry',
+    id: 'Expiry',
     label: 'Expiry',
     type: 'date',
     editable: true,
@@ -67,7 +75,7 @@ const fields = [
     details_section: true,
     render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MM/DD/YYYY'),
     align: 'text-end',
-    details_order: 4,
+    details_order: 5,
     col_span_01: true
   },
   {
@@ -78,7 +86,7 @@ const fields = [
     table_column: false,
     details_section: true,
     render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm:s').utc().format('MM/DD/YYYY'),
-    details_order: 5,
+    details_order: 6,
     col_span_01: true
   },
 ]
@@ -88,51 +96,63 @@ const fields = [
 interface DataListInterface {
   [x: string]: any;
   id: number;
-  used: boolean;
-  code: string;
-  description: string;
+  typename: string;
+  active: boolean;
+  multiple: boolean;
   percentage: number;
   expiry: string;
+  created_at: string;
 }
 
 
 
-interface QueriesInterface {
-  all: null,
-  onsite: {
-    key: string,
-    value: boolean
+const modal_titles:any = {
+  create:{
+    modalLabel:'Create New Promocode',
+    button:{
+      label:'Create Promocode',
+      color:'info'
+    }
   },
-  offsite: {
-    key: string,
-    value: boolean
+  edit:{
+    modalLabel:'Edit Promocode',
+    button:{
+      label:'Update Promocode',
+      color:'info'
+    }
   },
-
+  delete:{
+    modalLabel:'Delete Promocode Confirmation',
+    button:{
+      label:'Delete Promocode',
+      color:'failure'
+    }
+  },
 }
-
-const queries: QueriesInterface = {
-  all: null,
-  onsite: {
-    key: 'onsite',
-    value: true
-  },
-  offsite: {
-    key: 'onsite',
-    value: false
-  },
-
-}
-
 const Page = () => {
 
 
 
   const [dataList, setDataList] = useState<DataListInterface[]>([])
   const [allData, setAllData] = useState<DataListInterface[]>([])
-  const [patientDetails, setPatientDetails] = useState<DataListInterface | null>(null)
+  const [detailsView, setDetailsView] = useState<DataListInterface | null>(null)
   const [loading, setLoading] = useState(true)
   const [sortOrder, setSortOrder] = useState(-1)
   const [sortColumn, setSortColumn] = useState('')
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const [activeModalMode, setActiveModalMode] = useState<'edit' | 'delete' | 'create' | ''>('')
+  const [newDetails, setNewDetails] = useState<any>({})
+  const [modalLoading, setModalLoading] = useState(false)
+
+
+  const openModalHandle = () => {
+    setIsOpenModal(true)
+  }
+  const closeModalHandle = () => {
+    setIsOpenModal(false)
+    setNewDetails({})
+    setActiveModalMode('')
+  }
 
   const onChangeHandle = (e: any) => {
     const val = e.target.value
@@ -152,7 +172,7 @@ const Page = () => {
 
   const detailsViewHandle = (param_data: DataListInterface) => {
 
-    setPatientDetails(param_data)
+    setDetailsView(param_data)
   }
 
 
@@ -160,7 +180,7 @@ const Page = () => {
   const fetch_handle = async () => {
     setLoading(true)
     // @ts-ignore
-    const fetched_data: any = await fetch_content_service({ table: 'promocodes' });
+    const fetched_data: any = await fetch_content_service({ table: 'promotype' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)
@@ -224,17 +244,28 @@ const Page = () => {
   }
 
 
-  const select_change_handle = (e: any) => {
-    const selectedId = e.target.value
+  const modalInputChangeHandle = (e: string, id: string) => {
+    setNewDetails((pre: any) => ({ ...pre, [id]: e }))
 
-    setDataList(() => {
-      if (!selectedId) {
-        return allData
-      }
-      else {
-        return allData.filter(({ locationid }) => locationid === +selectedId)
-      }
-    })
+
+  }
+
+
+  const addNewHandle = () => {
+    openModalHandle()
+    setActiveModalMode('create')
+
+  }
+  const editHandle = () => {
+    openModalHandle()
+    setNewDetails(detailsView)
+    setActiveModalMode('edit')
+
+  }
+
+  const deleteHandle = () => {
+    openModalHandle()
+    setActiveModalMode('delete')
 
   }
 
@@ -247,7 +278,7 @@ const Page = () => {
           <h1 className='text-xl font-bold'>
             Promo Codes
           </h1>
-          <button className='bg-black text-sm text-white px-5 py-2 rounded-md hover:opacity-70 active:opacity-90'>
+          <button onClick={addNewHandle} className='bg-black text-sm text-white px-5 py-2 rounded-md hover:opacity-70 active:opacity-90'>
             Add new
           </button>
         </div>
@@ -277,8 +308,8 @@ const Page = () => {
 
             <div className='flex items-center flex-1 font-semibold px-4'>
               {
-                fields.filter(({ table_column }) => table_column).map(({ id, label, align, type }) => {
-                  return <h1 className={`flex-1 ${align || "text-center"} text-[#71717A] font-medium text-base`}>
+                fields.filter(({ table_column }) => table_column).map(({ id, label, align, type }, ind) => {
+                  return <h1 key={ind} className={`flex-1 ${align || "text-center"} text-[#71717A] font-medium text-base`}>
                     {label} <button onClick={() => sortHandle(id, type)} className='active:opacity-50'><PiCaretUpDownBold className={`inline ${sortColumn === id ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} /></button>
                   </h1>
                 })
@@ -310,7 +341,7 @@ const Page = () => {
                   </div>
                 }) : <div className="flex h-full flex-1 flex-col justify-center items-center">
                   <h1>
-                    No patient found!
+                    No Data found!
                   </h1>
                 </div>}
             </div>
@@ -330,27 +361,34 @@ const Page = () => {
           {/* Right side content goes here */}
 
 
-          {patientDetails && <div className='overflow-auto h-[100%] px-4 py-4'>
+          {detailsView && <div className='overflow-auto h-[100%] px-4 py-4 flex flex-col'>
 
-            <div className='grid grid-cols-2 space-y-6'>
-              {
-                // @ts-ignore
-                fields.filter(({ details_section }) => details_section).sort((a, b) => a.details_order - b.details_order).map(({ id, label, render_value, col_span_01, details_label}) => {
+            <div className='flex-1'>
+              <div className='grid grid-cols-2 space-y-6'>
+                {
                   // @ts-ignore
-                  const extract_val = render_value ? render_value(patientDetails[id]) : patientDetails[id]
+                  fields.filter(({ details_section }) => details_section).sort((a, b) => a.details_order - b.details_order).map(({ id, label, render_value, col_span_01, details_label }, ind) => {
+                    // @ts-ignore
+                    const extract_val = render_value ? render_value(detailsView[id]) : detailsView[id]
 
-                  return <div className={`${col_span_01 ? 'col-span-1' : 'col-span-2'}`}>
-                    <div >
-                      <h1 className='text-sm text-black'>
-                        {details_label || label}
-                      </h1>
-                      <p className='font-bold text-lg'>
-                        {extract_val}
-                      </p>
+                    return <div key={ind} className={`${col_span_01 ? 'col-span-1' : 'col-span-2'}`}>
+                      <div >
+                        <h1 className='text-sm text-black'>
+                          {details_label || label}
+                        </h1>
+                        <p className='font-bold text-lg'>
+                          {extract_val}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                })
-              }
+                  })
+                }
+
+              </div>
+            </div>
+            <div className=' flex items-center space-x-6'>
+              <Action_Button onClick={editHandle} width='w-full' height='h-12' label='Edit' bg_color='bg-[#B6B6B6]' />
+              <Action_Button onClick={deleteHandle} width='w-full' height='h-12' label='Delete' bg_color='bg-[#EF4343]' />
             </div>
 
 
@@ -368,17 +406,29 @@ const Page = () => {
 
 
 
+
+
           </div>}
-
-
-
-
-
         </div>
-
       </div>
+      <Custom_Modal submit_button_color={modal_titles[activeModalMode]?.button?.color} loading={modalLoading} buttonLabel={modal_titles[activeModalMode]?.button?.label} is_open={isOpenModal} Title={activeModalMode && modal_titles[activeModalMode]?.modalLabel} close_handle={closeModalHandle} open_handle={openModalHandle} create_new_handle={() => ''} >
+
+        {activeModalMode === 'delete' ? <div>
+          <h1>
+            Are you sure you want to delete this Promocode?
+          </h1>
 
 
+        </div> : <div className='grid grid-cols-2 gap-4'>
+          {
+            fields.filter(({ editable }) => editable).map(({ id, label, type, col_span_01, col_span_01_modal }) => {
+              return <div className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
+                <Input_Component value={newDetails ? newDetails[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
+              </div>
+            })
+          }
+        </div>}
+      </Custom_Modal>
     </main>
   )
 }

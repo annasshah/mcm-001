@@ -159,7 +159,7 @@ const Patients = () => {
 
           <div className='px-4 py-4 bg-[#11252C80]  border-b-[1px] border-b-[#817B7B] flex items-center'>
             <h1 className='text-xl font-normal text-white text-center w-full'>
-              Add new customer
+              Add new Patient
             </h1>
           </div>
 
