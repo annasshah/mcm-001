@@ -286,7 +286,10 @@ const EmailBroadcast: React.FC = () => {
                               <SelectGroup>
                                 {/* <SelectLabel>Fruits</SelectLabel> */}
                                 {locationList?.map((location, index) => (
-                                  <SelectItem value={`${location.locationid}`}>
+                                  <SelectItem
+                                    key={index}
+                                    value={`${location.locationid}`}
+                                  >
                                     {location.Locations.title}
                                   </SelectItem>
                                 ))}

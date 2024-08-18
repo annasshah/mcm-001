@@ -41,7 +41,7 @@ export const KoalaWelcomeEmail = ({
         <Text style={paragraph}>Dear {userFirstname},</Text>
         <Text style={paragraph}>
           Please note that [Clinic Name] will be closed from [Start Date] to
-          [End Date] due to [Reason]. We'll contact you to reschedule any
+          [End Date] due to [Reason]. We will contact you to reschedule any
           affected appointments. Thank you for your understanding.
         </Text>
         <Section style={btnContainer}>
