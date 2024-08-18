@@ -47,14 +47,15 @@ const EmailBroadcast: React.FC = () => {
     const fetchEmailList = async () => {
       try {
         const email = await getUserEmail();
-        setEmailList(email); // Assuming getUserEmail returns a single email
+        setEmailList(email);
+        console.table(email);
       } catch (error) {
         console.error("Failed to fetch email:", error);
       }
     };
 
     fetchEmailList();
-  }, [emailList]);
+  }, []);
 
   const handleDropdownChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -262,6 +263,8 @@ const EmailBroadcast: React.FC = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        <br />
+                        <Button>Apply</Button>
                       </div>
                     )}
                   </AlertDialogDescription>
@@ -294,45 +297,32 @@ const EmailBroadcast: React.FC = () => {
               {templates.map((template, index) => (
                 <div
                   key={index}
-                  className="flex flex-col w-full p-2 m-3 border border-gray-300 items-center mb-4"
+                  className="flex flex-col w-[400px] rounded p-2 justify-center m-3 border border-gray-300 items-center mb-4"
                 >
                   <Image
                     src={template.src}
                     alt={template.name}
-                    className=" h-[100px] w-[200px] "
+                    className=" h-[100px]  w-[100px] "
                   />
-                  <div className="flex items-center ">
-                    <input
-                      type="radio"
-                      name="template"
-                      id={`template-${template.id}`}
-                      value={template.id.toString()}
-                      checked={selectedTemplate === template.id.toString()}
-                      onChange={handleRadioChange}
-                      className="w-4 h-4 border-2 mr-2 border-gray-500 rounded-full checked:bg-blue-500"
-                    />
-                    <label
-                      htmlFor={`template-${index}`}
-                      className="flex items-center"
-                    >
-                      <span className="text-gray-800 my-2 text-sm">
+                  <RadioGroup className="my-5">
+                    <div className="flex w-full items-center justify-center ">
+                      <RadioGroupItem value="default" id="r1" />
+                      <Label htmlFor="r1" className="ml-1">
                         {template.name}
-                      </span>
-                    </label>
-                  </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
                   <div className="flex">
                     <Link href={`/template/${template.id}`} passHref>
-                      <button className="rounded border text-white bg-black border-gray-300 text-sm px-8 py-1 my-2">
-                        <a target="_blank" rel="noopener noreferrer">
-                          Preview
-                        </a>
-                      </button>
+                      <Button>Preview</Button>
                     </Link>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+          <br />
           <Button
             // className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
             formAction={sendEmail}
