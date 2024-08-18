@@ -406,7 +406,7 @@ const Patients = () => {
         </div> : <div className='grid grid-cols-2 gap-4'>
           {
             fields.filter(({ editable }) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }) => {
-              return <div className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
+              return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
                 <Input_Component value={actionData ? actionData[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
               </div>
             })

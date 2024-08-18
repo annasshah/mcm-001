@@ -148,7 +148,7 @@ const Orders = () => {
 
                             <div className='space-y-6'>
                                 <div className='w-1/3'>
-                                    <Select_Dropdown initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ id, category_name }) => ({ id: id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
+                                    <Select_Dropdown initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ id, category_name }:any) => ({ id: id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
                                 </div>
                                 <div className='w-1/3'>
                                     {loadingProducts ? <div className='text-sm text-gray-400'>

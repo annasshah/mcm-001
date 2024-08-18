@@ -1,16 +1,13 @@
 'use client'
-import React, { FC, useEffect, useState } from 'react'
-import { Select, Spinner } from 'flowbite-react';
-import { CiFilter } from "react-icons/ci";
-import { useLocationClinica } from '@/hooks/useLocationClinica';
+import React, { useEffect, useState } from 'react'
+import { Spinner } from 'flowbite-react';
 import moment from 'moment';
-import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
-import { Input } from 'antd';
 import { Input_Component } from '@/components/Input_Component';
 import { Action_Button } from '@/components/Action_Button';
-import { supabase } from '@/services/supabase';
+import { toast } from 'react-toastify';
 
 const fields = [
   {
@@ -31,7 +28,7 @@ const fields = [
     editable: false,
     table_column: true,
     details_section: true,
-    render_value: (val: boolean) => val ? 'True' : 'False' ,
+    render_value: (val: boolean) => val ? 'True' : 'False',
     align: 'text-start',
     details_order: 3
   },
@@ -52,7 +49,7 @@ const fields = [
     editable: true,
     table_column: false,
     details_section: true,
-    render_value: (val: boolean) => val ? 'True' : 'False' ,
+    render_value: (val: boolean) => val ? 'True' : 'False',
     details_order: 4
   },
   {
@@ -104,28 +101,37 @@ interface DataListInterface {
   created_at: string;
 }
 
+function removeDuplicates(array: DataListInterface[]): DataListInterface[] {
+  const seenIds = new Set<number>();
+  return array.filter(element => {
+    if (!seenIds.has(element.id)) {
+      seenIds.add(element.id);
+      return true;
+    }
+    return false;
+  });
+}
 
-
-const modal_titles:any = {
-  create:{
-    modalLabel:'Create New Promocode',
-    button:{
-      label:'Create Promocode',
-      color:'info'
+const modal_titles: any = {
+  create: {
+    modalLabel: 'Create New Promocode',
+    button: {
+      label: 'Create Promocode',
+      color: 'info'
     }
   },
-  edit:{
-    modalLabel:'Edit Promocode',
-    button:{
-      label:'Update Promocode',
-      color:'info'
+  edit: {
+    modalLabel: 'Edit Promocode',
+    button: {
+      label: 'Update Promocode',
+      color: 'info'
     }
   },
-  delete:{
-    modalLabel:'Delete Promocode Confirmation',
-    button:{
-      label:'Delete Promocode',
-      color:'failure'
+  delete: {
+    modalLabel: 'Delete Promocode Confirmation',
+    button: {
+      label: 'Delete Promocode',
+      color: 'failure'
     }
   },
 }
@@ -163,7 +169,7 @@ const Page = () => {
     else {
 
       const filteredData = allData.filter((elem) => {
-        const concatName = elem.code
+        const concatName = elem.typename
         return concatName.toLocaleLowerCase().includes(val.toLocaleLowerCase())
       })
       setDataList([...filteredData])
@@ -217,16 +223,7 @@ const Page = () => {
       })
 
     }
-    else if (type === 'number') {
-      if (sortOrder === 1) {
-        sortedList = dataList.sort((a, b) => a[column] - b[column])
-      } else {
-
-        sortedList = dataList.sort((a, b) => b[column] - a[column])
-      }
-
-    }
-    else {
+    else if (type === 'date') {
       if (sortOrder === 1) {
         sortedList = dataList.sort((a, b) => new Date(a[column]).getTime() - new Date(b[column]).getTime())
       } else {
@@ -234,6 +231,15 @@ const Page = () => {
         sortedList = dataList.sort((a, b) => new Date(b[column]).getTime() - new Date(a[column]).getTime())
 
       }
+    }
+    else {
+      if (sortOrder === 1) {
+        sortedList = dataList.sort((a, b) => a[column] - b[column])
+      } else {
+
+        sortedList = dataList.sort((a, b) => b[column] - a[column])
+      }
+
     }
 
     setSortOrder((order) => order === -1 ? 1 : -1)
@@ -249,6 +255,120 @@ const Page = () => {
 
 
   }
+
+
+
+
+  const createNewDataHandle = async () => {
+    setModalLoading(true)
+    const { data: res_data, error } = await create_content_service({ table: 'promotype', language: '', post_data: newDetails });
+    if (error) {
+      console.log(error.message);
+      toast.error(error.message);
+      // throw new Error(error.message);
+    }
+
+
+
+
+    if (res_data?.length) {
+      toast.success('Created successfully');
+      closeModalHandle()
+      // @ts-ignore
+      dataList.unshift(res_data[0])
+      const newDataSetDataList = removeDuplicates(dataList)
+      // @ts-ignore
+      allData.unshift(res_data[0])
+      const newDataSetAllData = removeDuplicates(allData)
+      setAllData([...newDataSetAllData])
+      setDataList([...newDataSetDataList])
+    }
+
+    setModalLoading(false)
+  }
+
+  const deleteDataHandle = async () => {
+    setModalLoading(true)
+    const selectedId = detailsView?.id
+    const { data: res_data, error } = await delete_content_service({ table: 'promotype', id:selectedId});
+    if (!error) {
+      setDataList((elem) => elem.filter((data: any) => data.id !== selectedId))
+      setAllData((elem) => elem.filter((data: any) => data.id !== selectedId))
+      setDetailsView(null)
+      toast.success('Deleled successfully');
+      closeModalHandle()
+
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+
+    setModalLoading(false)
+  }
+
+  const editDataHandle = async () => {
+    setModalLoading(true)
+    try {
+      const data = await update_content_service({ table: 'promotype', language: '', post_data: newDetails });
+      if (data?.length) {
+        toast.success('Updated successfully');
+        closeModalHandle()
+
+        const newData = data[0]
+        // @ts-ignore
+        const newDataSetDataList = allData.map((elem) => newData.id === elem.id ? newData : elem)
+        // @ts-ignore
+        const newDataSetAllData = dataList.map((elem) => newData.id === elem.id ? newData : elem)
+        // @ts-ignore
+        setAllData([...newDataSetAllData])
+        // @ts-ignore
+        setDataList([...newDataSetDataList])
+        
+        // @ts-ignore
+        setDetailsView(newData)
+      }
+
+
+    } catch (error: any) {
+
+      if (error && error?.message) {
+        toast.error(error?.message);
+        // throw new Error(error.message);
+      } else {
+        toast.error('Something went wrong!');
+      }
+    }
+    setModalLoading(false)
+  }
+
+
+  const modalSubmitHandle = async () => {
+
+    switch (activeModalMode) {
+      case 'create':
+        createNewDataHandle()
+        break;
+      case 'edit':
+        editDataHandle()
+        break;
+      case 'delete':
+        deleteDataHandle()
+        break
+
+    }
+    // if(activeModalMode === ){
+    // }
+    // else if(activeModalMode === 'edit'){
+
+    // }
+    // else if()
+
+  }
+
+
+
+
 
 
   const addNewHandle = () => {
@@ -333,7 +453,7 @@ const Page = () => {
                       fields.filter(({ table_column }) => table_column).map(({ id, label, align, type, render_value }) => {
                         // @ts-ignore
                         const extract_val = render_value ? render_value(elem[id]) : elem[id]
-                        return <h1 className={`flex-1 ${align || "text-center"} font-normal text-base`}>
+                        return <h1 key={id} className={`flex-1 ${align || "text-center"} font-normal text-base`}>
                           {extract_val}
                         </h1>
                       })
@@ -411,7 +531,7 @@ const Page = () => {
           </div>}
         </div>
       </div>
-      <Custom_Modal submit_button_color={modal_titles[activeModalMode]?.button?.color} loading={modalLoading} buttonLabel={modal_titles[activeModalMode]?.button?.label} is_open={isOpenModal} Title={activeModalMode && modal_titles[activeModalMode]?.modalLabel} close_handle={closeModalHandle} open_handle={openModalHandle} create_new_handle={() => ''} >
+      <Custom_Modal submit_button_color={modal_titles[activeModalMode]?.button?.color} loading={modalLoading} buttonLabel={modal_titles[activeModalMode]?.button?.label} is_open={isOpenModal} Title={activeModalMode && modal_titles[activeModalMode]?.modalLabel} close_handle={closeModalHandle} open_handle={openModalHandle} create_new_handle={modalSubmitHandle} >
 
         {activeModalMode === 'delete' ? <div>
           <h1>
@@ -422,7 +542,7 @@ const Page = () => {
         </div> : <div className='grid grid-cols-2 gap-4'>
           {
             fields.filter(({ editable }) => editable).map(({ id, label, type, col_span_01, col_span_01_modal }) => {
-              return <div className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
+              return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
                 <Input_Component value={newDetails ? newDetails[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
               </div>
             })
