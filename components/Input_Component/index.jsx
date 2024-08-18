@@ -1,24 +1,6 @@
 import { Label } from 'flowbite-react'
 import React from 'react'
 
-// export const Input_Component = ({label, bg_color= 'bg-white', border = '', py='py-2', onChange, value='', placeholder='', type='text'}) => {
-//     return (
-//         <div className='w-full space-y-2'>
-//             {label && <Label htmlFor="section" value={label} className='font-bold' />}
-//             <div className={`${border}`}>
-//             <input
-//                 value={value}
-//                 onChange={(e)=>onChange(e.target.value)}
-//                 type={type}
-//                 placeholder={placeholder}
-//                 className={`w-full h-auto p-3 rounded-lg ${bg_color} ${py} px-3`}
-//                 id="section"
-//             />
-//             </div>
-//         </div>
-//     )
-// }
-
 
 export const Input_Component = ({
     label,
@@ -28,8 +10,11 @@ export const Input_Component = ({
     onChange,
     value = '',
     placeholder = '',
-    type = 'text'
+    type = 'text',
+    min = '',
+    max = ''
 }) => {
+    console.log({ min, max })
     return (
         <div className='w-full space-y-2'>
             {label && <Label htmlFor="section" value={label} className='font-bold' />}
@@ -61,6 +46,8 @@ export const Input_Component = ({
                     </div>
                 ) : (
                     <input
+                        min={min}
+                        max={100}
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         type={type}

@@ -23,12 +23,12 @@ const fields = [
   },
   {
     id: 'active',
-    label: 'Active',
+    label: 'Stauts',
     type: 'boolean',
     editable: false,
     table_column: true,
     details_section: true,
-    render_value: (val: boolean) => val ? 'True' : 'False',
+    render_value: (val: boolean) => val ? 'Active' : 'In-active',
     align: 'text-start',
     details_order: 3
   },
@@ -61,16 +61,18 @@ const fields = [
     details_section: true,
     render_value: (val: number) => `${val}%`,
     details_order: 2,
-    col_span_01_modal: true
+    col_span_01_modal: true,
+    max:100
   },
   {
-    id: 'Expiry',
+    id: 'expiry',
     label: 'Expiry',
     type: 'date',
     editable: true,
     table_column: true,
     details_section: true,
     render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MM/DD/YYYY'),
+    min: moment(new Date()).format('YYYY-MM-DD') ,
     align: 'text-end',
     details_order: 5,
     col_span_01: true
@@ -290,7 +292,7 @@ const Page = () => {
   const deleteDataHandle = async () => {
     setModalLoading(true)
     const selectedId = detailsView?.id
-    const { data: res_data, error } = await delete_content_service({ table: 'promotype', id:selectedId});
+    const { data: res_data, error } = await delete_content_service({ table: 'promotype', id: selectedId });
     if (!error) {
       setDataList((elem) => elem.filter((data: any) => data.id !== selectedId))
       setAllData((elem) => elem.filter((data: any) => data.id !== selectedId))
@@ -324,7 +326,7 @@ const Page = () => {
         setAllData([...newDataSetAllData])
         // @ts-ignore
         setDataList([...newDataSetDataList])
-        
+
         // @ts-ignore
         setDetailsView(newData)
       }
@@ -448,7 +450,7 @@ const Page = () => {
               </div> :
                 dataList.length > 0 ? dataList.map((elem) => {
                   const { id, firstname, lastname, created_at } = elem
-                  return <div key={id} onClick={() => detailsViewHandle(elem)} className='cursor-pointer hover:bg-[#B8C8E1] flex items-center flex-1 font-semibold px-5 py-5'>
+                  return <div key={id} onClick={() => detailsViewHandle(elem)} className={`cursor-pointer hover:bg-[#B8C8E1] flex items-center flex-1 font-semibold px-5 py-5 ${id === detailsView?.id ? 'bg-[#B8C8E1]' : ''}`}>
                     {
                       fields.filter(({ table_column }) => table_column).map(({ id, label, align, type, render_value }) => {
                         // @ts-ignore
@@ -539,15 +541,16 @@ const Page = () => {
           </h1>
 
 
-        </div> : <div className='grid grid-cols-2 gap-4'>
+        </div> : <form className='grid grid-cols-2 gap-4'>
           {
-            fields.filter(({ editable }) => editable).map(({ id, label, type, col_span_01, col_span_01_modal }) => {
+            fields.filter(({ editable }) => editable).map(({ id, label, type, col_span_01, col_span_01_modal, min, max }) => {
               return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
-                <Input_Component value={newDetails ? newDetails[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
+                {/* @ts-ignore */}
+                <Input_Component min={min || ''} max={max || ''} value={newDetails ? newDetails[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
               </div>
             })
           }
-        </div>}
+        </form>}
       </Custom_Modal>
     </main>
   )
