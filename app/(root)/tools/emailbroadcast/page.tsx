@@ -196,17 +196,15 @@ const EmailBroadcast: React.FC = () => {
                           </div>
                         ) : (
                           emailList?.map((email, index) => (
-                            <ScrollArea>
-                              <div
-                                key={index}
-                                className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="all" id="" />
-                                  <Label htmlFor="">{email.email}</Label>
-                                </div>
+                            <div
+                              key={index}
+                              className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="all" id="" />
+                                <Label htmlFor="">{email.email}</Label>
                               </div>
-                            </ScrollArea>
+                            </div>
                           ))
                         )}
                       </RadioGroup>
@@ -349,7 +347,7 @@ const EmailBroadcast: React.FC = () => {
 
                   <div className="flex">
                     <Link href={`/template/${template.id}`} passHref>
-                      <Button>Preview</Button>
+                      <Button className="w-[90%]">Preview</Button>
                     </Link>
                   </div>
                 </div>
