@@ -195,17 +195,23 @@ const EmailBroadcast: React.FC = () => {
                             ))}
                           </div>
                         ) : (
-                          emailList?.map((email, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="all" id="" />
-                                <Label htmlFor="">{email.email}</Label>
+                          emailList
+                            ?.filter(
+                              (email, index, self) =>
+                                index ===
+                                self.findIndex((e) => e.email === email.email)
+                            )
+                            .map((email, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="all" id="" />
+                                  <Label htmlFor="">{email.email}</Label>
+                                </div>
                               </div>
-                            </div>
-                          ))
+                            ))
                         )}
                       </RadioGroup>
                     )}
@@ -245,11 +251,21 @@ const EmailBroadcast: React.FC = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {emailList?.map((patient: any, index) => (
-                                  <SelectItem value={`${index}`} key={index}>
-                                    {patient.treatmenttype}
-                                  </SelectItem>
-                                ))}
+                                {emailList
+                                  ?.filter(
+                                    (patient, index, self) =>
+                                      index ===
+                                      self.findIndex(
+                                        (e) =>
+                                          e.treatmenttype ===
+                                          patient.treatmenttype
+                                      )
+                                  )
+                                  .map((patient: any, index) => (
+                                    <SelectItem value={`${index}`} key={index}>
+                                      {patient.treatmenttype}
+                                    </SelectItem>
+                                  ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>
@@ -283,14 +299,23 @@ const EmailBroadcast: React.FC = () => {
                             <SelectContent>
                               <SelectGroup>
                                 {/* <SelectLabel>Fruits</SelectLabel> */}
-                                {locationList?.map((location, index) => (
-                                  <SelectItem
-                                    key={index}
-                                    value={`${location.locationid}`}
-                                  >
-                                    {location.Locations.title}
-                                  </SelectItem>
-                                ))}
+                                {locationList
+                                  ?.filter(
+                                    (location, index, self) =>
+                                      index ===
+                                      self.findIndex(
+                                        (loc) =>
+                                          loc.locationid === location.locationid
+                                      )
+                                  )
+                                  .map((location, index) => (
+                                    <SelectItem
+                                      key={index}
+                                      value={`${location.locationid}`}
+                                    >
+                                      {location.Locations.title}
+                                    </SelectItem>
+                                  ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>
