@@ -9,6 +9,7 @@ import {
   getUserEmail,
   getUserLocations,
 } from "@/actions/send-email/action";
+import { cn } from "@/lib/utils";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
@@ -18,7 +19,14 @@ import { TabContext } from "@/context/ActiveTabContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ChevronLeft, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -51,6 +59,7 @@ const EmailBroadcast: React.FC = () => {
   const [locationList, setLocationList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<any>(false);
+  const [date, setDate] = React.useState<Date>();
   const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
     const fetchEmailList = async () => {
@@ -96,9 +105,9 @@ const EmailBroadcast: React.FC = () => {
   ];
 
   return (
-    <main className="w-full h-full text-[#B6B6B6] text-[20px] flex flex-row justify-start overflow-hidden items-center space-y-4 p-4">
-      <div className=" w-[80%] flex items-start justify-start flex-col ">
-        <form className="w-full">
+    <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start overflow-hidden items-center space-y-4 p-4">
+      <div className=" w-[80%] h-full flex items-start justify-start flex-col ">
+        <form className="w-full h-full mt-[80px]">
           <div className="w-[70%] flex flex-col">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -335,7 +344,7 @@ const EmailBroadcast: React.FC = () => {
                 id="subject"
                 name="subject"
                 placeholder="Write Subject"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2  rounded"
               />
             </div>
             <div className="border-gray-300 mb-2 border w-full rounded">
@@ -344,7 +353,88 @@ const EmailBroadcast: React.FC = () => {
                 id="buttonLink"
                 name="buttonLink"
                 placeholder="Button Link"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2  rounded"
+              />
+            </div>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="clinicName"
+                name="clinicName"
+                placeholder="Clinic Name"
+                className="w-full p-2  rounded"
+              />
+            </div>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="Reason"
+                name="Reason"
+                placeholder="Reason"
+                className="w-full p-2  rounded"
+              />
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[100%] justify-start py-6 mb-2 text-left text-xl font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Start date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[100%] justify-start py-6 mb-2 text-left text-xl  font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>End date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="buttonText"
+                name="buttonText"
+                placeholder="Button Text"
+                className="w-full p-2  rounded"
+              />
+            </div>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Name"
+                className="w-full p-2  rounded"
               />
             </div>
             {/* <TextEditor /> */}
