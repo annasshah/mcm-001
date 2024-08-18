@@ -59,7 +59,9 @@ const EmailBroadcast: React.FC = () => {
   const [locationList, setLocationList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<any>(false);
-  const [date, setDate] = React.useState<Date>();
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+
   const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
     const fetchEmailList = async () => {
@@ -380,18 +382,22 @@ const EmailBroadcast: React.FC = () => {
                   variant={"outline"}
                   className={cn(
                     "w-[100%] justify-start py-6 mb-2 text-left text-xl font-normal",
-                    !date && "text-muted-foreground"
+                    !startDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Start date</span>}
+                  {startDate ? (
+                    format(startDate, "PPP")
+                  ) : (
+                    <span>Start date</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={startDate}
+                  onSelect={setStartDate}
                   initialFocus
                 />
               </PopoverContent>
@@ -403,18 +409,18 @@ const EmailBroadcast: React.FC = () => {
                   variant={"outline"}
                   className={cn(
                     "w-[100%] justify-start py-6 mb-2 text-left text-xl  font-normal",
-                    !date && "text-muted-foreground"
+                    !endDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>End date</span>}
+                  {endDate ? format(endDate, "PPP") : <span>End date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={endDate}
+                  onSelect={setEndDate}
                   initialFocus
                 />
               </PopoverContent>
