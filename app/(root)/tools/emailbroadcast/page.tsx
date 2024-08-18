@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import TextEditor from "@/components/Text_Editor/TextEditor";
 import Filter from "@/assets/images/icons/Filterwhite.png";
+import Filterblack from "@/assets/images/icons/Filterblack.png";
 import { sendEmail, getUserEmail } from "@/actions/send-email/action";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
@@ -11,6 +11,18 @@ import template3 from "@/assets/images/Avatar/temp3.png";
 import template4 from "@/assets/images/Avatar/temp4.png";
 import template5 from "@/assets/images/Avatar/temp5.png";
 import { TabContext } from "@/context/ActiveTabContext";
+import { Label } from "@/components/ui/label";
+import { ChevronLeft, X } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +35,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+
 const EmailBroadcast: React.FC = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [emailList, setEmailList] = useState<any[]>([]);
-  // const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [filter, setFilter] = useState<any>(false);
   const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
     const fetchEmailList = async () => {
@@ -41,7 +54,7 @@ const EmailBroadcast: React.FC = () => {
     };
 
     fetchEmailList();
-  }, []);
+  }, [emailList]);
 
   const handleDropdownChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -84,60 +97,176 @@ const EmailBroadcast: React.FC = () => {
       <div className="w-[60%] flex items-start justify-start flex-col ">
         <form className="w-full">
           <div className="w-[70%] flex flex-col">
-            <select
-              value={selectedOption}
-              onChange={handleDropdownChange}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            >
-              <option value="">Select an option</option>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </select>
-
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline">Show Dialog</Button>
+                <button className="w-full p-2 mb-2 border text-left border-gray-300 rounded">
+                  Select Option
+                </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Select Patients</AlertDialogTitle>
-                  <div className="flex items-center justify-between ">
-                    <div className="flex items-center ">
-                      <h1>Search</h1>
-                      <input
-                        placeholder="Search by name"
-                        className="p-2 ml-2 border border-gray-200 rounded-lg "
-                      />
+                  {!filter ? (
+                    <>
+                      <div className="flex items-center cursor-pointer justify-between">
+                        <div className="flex items-center">
+                          <AlertDialogTitle>Select Patients</AlertDialogTitle>
+                        </div>
+                        <AlertDialogCancel>
+                          {" "}
+                          <X />{" "}
+                        </AlertDialogCancel>
+                      </div>
+                      <div className="flex items-center justify-between ">
+                        <div className="flex items-center ">
+                          <h1>Search</h1>
+                          <input
+                            placeholder="Search by name"
+                            className="p-2 ml-2 border border-gray-200 rounded-lg "
+                          />
+                        </div>
+                        {!filter ? (
+                          <Image
+                            src={Filter}
+                            alt=""
+                            height={25}
+                            width={25}
+                            onClick={() => {
+                              setFilter(true);
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            src={Filterblack}
+                            alt=""
+                            height={25}
+                            width={25}
+                            onClick={() => {
+                              setFilter(false);
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between  ">
+                        <h2>Name/Email</h2>
+                        <h2>Gender</h2>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center cursor-pointer justify-between">
+                      <div className="flex items-center">
+                        <ChevronLeft
+                          onClick={() => {
+                            setFilter(false);
+                          }}
+                        />
+                        <AlertDialogTitle>Filter Patients</AlertDialogTitle>
+                      </div>
+                      <AlertDialogCancel>
+                        {" "}
+                        <X />{" "}
+                      </AlertDialogCancel>
                     </div>
-                    <Image src={Filter} alt="" height={25} width={25} />
-                  </div>
-                  <div className="flex items-center justify-between  ">
-                    <h2>Name/Email</h2>
-                    <h2>Gender</h2>
-                  </div>
+                  )}
                   <hr />
                   <AlertDialogDescription>
-                    {emailList?.map((email, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-4  bg-[#F8F8F8] w-[98%] my-2  rounded"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedEmails.includes(email.email)}
-                          onChange={() => handleSelectEmail(email.email)}
-                          className="mr-2"
-                        />
-                        <p className="text-sm"> {email.email} </p>
+                    {!filter && (
+                      <RadioGroup defaultValue="comfortable">
+                        {emailList?.map((email, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center p-4  bg-[#F8F8F8] w-[98%] my-2  rounded"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="all" id="" />
+                              <Label htmlFor="">{email.email}</Label>
+                            </div>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    )}
+
+                    {filter && (
+                      <div>
+                        <br />
+                        <br />
+                        <RadioGroup defaultValue="comfortable">
+                          <div className="flex ">
+                            {" "}
+                            <h1 className="mr-2  font-bold text-black">
+                              Gender
+                            </h1>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="comfortable" id="r2" />
+                              <Label htmlFor="r2">Male</Label>
+                            </div>
+                            <div className="flex ml-2 items-center space-x-2">
+                              <RadioGroupItem value="compact" id="r3" />
+                              <Label htmlFor="r3">Female</Label>
+                            </div>
+                            <div className="flex ml-2 items-center space-x-2">
+                              <RadioGroupItem value="compact" id="r3" />
+                              <Label htmlFor="r3">Other</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                        <br />
+                        <div className="flex items-center  ">
+                          <h1 className="mr-2 font-bold text-black">
+                            Treatment Type
+                          </h1>
+                          <Select>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {/* <SelectLabel>Fruits</SelectLabel> */}
+                                <SelectItem value="apple">Apple</SelectItem>
+                                <SelectItem value="banana">Banana</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <br />
+                        <RadioGroup defaultValue="comfortable">
+                          <div className="flex ">
+                            {" "}
+                            <h1 className="mr-2 font-bold text-black">
+                              Visit Type
+                            </h1>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="comfortable" id="r2" />
+                              <Label htmlFor="r2">On-site</Label>
+                            </div>
+                            <div className="flex ml-2 items-center space-x-2">
+                              <RadioGroupItem value="compact" id="r3" />
+                              <Label htmlFor="r3">Off-site</Label>
+                            </div>
+                          </div>
+                        </RadioGroup>
+                        <br />
+                        <div className="flex items-center  ">
+                          <h1 className="mr-2  font-bold text-black ">
+                            Location
+                          </h1>
+                          <Select>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Select a location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {/* <SelectLabel>Fruits</SelectLabel> */}
+                                <SelectItem value="apple">Apple</SelectItem>
+                                <SelectItem value="banana">Banana</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
+                <AlertDialogFooter></AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
 
@@ -204,19 +333,15 @@ const EmailBroadcast: React.FC = () => {
               ))}
             </div>
           </div>
-          <button
-            className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
+          <Button
+            // className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
             formAction={sendEmail}
           >
             Submit
-          </button>
+          </Button>
         </form>
       </div>
-      <div className="w-[40%] flex flex-col items-center justify-start space-y-2">
-        <h1 className="text-left font-bold text-sm text-black">
-          Email Broadcasts
-        </h1>
-      </div>
+      <div className="w-[40%] flex flex-col items-center justify-start space-y-2"></div>
     </main>
   );
 };
