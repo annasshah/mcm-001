@@ -4,14 +4,21 @@ import Image from "next/image";
 import Link from "next/link";
 import Filter from "@/assets/images/icons/Filterwhite.png";
 import Filterblack from "@/assets/images/icons/Filterblack.png";
-import { sendEmail, getUserEmail } from "@/actions/send-email/action";
+import {
+  sendEmail,
+  getUserEmail,
+  getUserLocations,
+} from "@/actions/send-email/action";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
 import template4 from "@/assets/images/Avatar/temp4.png";
 import template5 from "@/assets/images/Avatar/temp5.png";
 import { TabContext } from "@/context/ActiveTabContext";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { ChevronLeft, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -41,6 +48,8 @@ const EmailBroadcast: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [emailList, setEmailList] = useState<any[]>([]);
+  const [locationList, setLocationList] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<any>(false);
   const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
@@ -48,9 +57,12 @@ const EmailBroadcast: React.FC = () => {
       try {
         const email = await getUserEmail();
         setEmailList(email);
-        console.table(email);
+        const location = await getUserLocations();
+        setLocationList(location);
       } catch (error) {
         console.error("Failed to fetch email:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -94,8 +106,8 @@ const EmailBroadcast: React.FC = () => {
   ];
 
   return (
-    <main className="w-full h-full text-[#B6B6B6] text-[20px] flex flex-row justify-center items-center space-y-4 p-4">
-      <div className="w-[60%] flex items-start justify-start flex-col ">
+    <main className="w-full h-full text-[#B6B6B6] text-[20px] flex flex-row justify-start overflow-hidden items-center space-y-4 p-4">
+      <div className=" w-[80%] flex items-start justify-start flex-col ">
         <form className="w-full">
           <div className="w-[70%] flex flex-col">
             <AlertDialog>
@@ -104,6 +116,7 @@ const EmailBroadcast: React.FC = () => {
                   Select Option
                 </button>
               </AlertDialogTrigger>
+
               <AlertDialogContent>
                 <AlertDialogHeader>
                   {!filter ? (
@@ -172,17 +185,30 @@ const EmailBroadcast: React.FC = () => {
                   <AlertDialogDescription>
                     {!filter && (
                       <RadioGroup defaultValue="comfortable">
-                        {emailList?.map((email, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center p-4  bg-[#F8F8F8] w-[98%] my-2  rounded"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="all" id="" />
-                              <Label htmlFor="">{email.email}</Label>
-                            </div>
+                        {loading ? (
+                          <div className="space-y-2">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <Skeleton
+                                key={index}
+                                className="h-10 w-full rounded"
+                              />
+                            ))}
                           </div>
-                        ))}
+                        ) : (
+                          emailList?.map((email, index) => (
+                            <ScrollArea>
+                              <div
+                                key={index}
+                                className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="all" id="" />
+                                  <Label htmlFor="">{email.email}</Label>
+                                </div>
+                              </div>
+                            </ScrollArea>
+                          ))
+                        )}
                       </RadioGroup>
                     )}
 
@@ -223,7 +249,6 @@ const EmailBroadcast: React.FC = () => {
                               <SelectGroup>
                                 {/* <SelectLabel>Fruits</SelectLabel> */}
                                 <SelectItem value="apple">Apple</SelectItem>
-                                <SelectItem value="banana">Banana</SelectItem>
                               </SelectGroup>
                             </SelectContent>
                           </Select>
@@ -257,8 +282,11 @@ const EmailBroadcast: React.FC = () => {
                             <SelectContent>
                               <SelectGroup>
                                 {/* <SelectLabel>Fruits</SelectLabel> */}
-                                <SelectItem value="apple">Apple</SelectItem>
-                                <SelectItem value="banana">Banana</SelectItem>
+                                {locationList?.map((location, index) => (
+                                  <SelectItem value={`${location.locationid}`}>
+                                    {location.Locations.title}
+                                  </SelectItem>
+                                ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>
@@ -297,7 +325,7 @@ const EmailBroadcast: React.FC = () => {
               {templates.map((template, index) => (
                 <div
                   key={index}
-                  className="flex flex-col w-[400px] rounded p-2 justify-center m-3 border border-gray-300 items-center mb-4"
+                  className="flex flex-col w-[20%] rounded p-2 justify-center m-3 border border-gray-300 items-center mb-4"
                 >
                   <Image
                     src={template.src}
@@ -331,7 +359,7 @@ const EmailBroadcast: React.FC = () => {
           </Button>
         </form>
       </div>
-      <div className="w-[40%] flex flex-col items-center justify-start space-y-2"></div>
+      {/* <div className="w-[40%] flex flex-col items-center justify-start space-y-2"></div> */}
     </main>
   );
 };
