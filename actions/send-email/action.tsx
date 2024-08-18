@@ -67,25 +67,26 @@ export async function sendEmail(formData: FormData) {
   try {
     // Choose the email HTML based on the emailOption
     let emailHtml;
-    switch (template) {
-      case "1":
-        emailHtml = render(<VercelInviteUserEmail />);
-        break;
-      case "2":
-        emailHtml = render(<AirbnbReviewEmail />);
-        break;
-      case "3":
-        emailHtml = render(<KoalaWelcomeEmail />);
-        break;
-      case "4":
-        emailHtml = render(<StackOverflowTipsEmail />);
-        break;
-      case "5":
-        emailHtml = render(<YelpRecentLoginEmail />);
-        break;
-      default:
-        emailHtml = render(<YelpRecentLoginEmail />);
-    }
+    emailHtml = render(<KoalaWelcomeEmail />);
+    // switch (template) {
+    //   case "1":
+    //     emailHtml = render(<VercelInviteUserEmail />);
+    //     break;
+    //   case "2":
+    //     emailHtml = render(<AirbnbReviewEmail />);
+    //     break;
+    //   case "3":
+    //     emailHtml = render(<KoalaWelcomeEmail />);
+    //     break;
+    //   case "4":
+    //     emailHtml = render(<StackOverflowTipsEmail />);
+    //     break;
+    //   case "5":
+    //     emailHtml = render(<YelpRecentLoginEmail />);
+    //     break;
+    //   default:
+    //     emailHtml = render(<YelpRecentLoginEmail />);
+    // }
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,

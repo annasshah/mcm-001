@@ -79,16 +79,6 @@ const EmailBroadcast: React.FC = () => {
     setSelectedTemplate(event.target.value);
   };
 
-  const handleSelectEmail = (email: string) => {
-    setSelectedEmails((prevSelectedEmails: any) =>
-      prevSelectedEmails.includes(email)
-        ? prevSelectedEmails.filter(
-            (selectedEmail: any) => selectedEmail !== email
-          )
-        : [...prevSelectedEmails, email]
-    );
-  };
-
   const handleSelectAll = () => {
     if (selectedEmails.length === emailList.length) {
       setSelectedEmails([]);
@@ -101,8 +91,8 @@ const EmailBroadcast: React.FC = () => {
     { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
     { id: 3, src: template3, name: "Template 3" },
-    { id: 4, src: template4, name: "Template 4" },
-    { id: 5, src: template5, name: "Template 5" },
+    // { id: 4, src: template4, name: "Template 4" },
+    // { id: 5, src: template5, name: "Template 5" },
   ];
 
   return (
@@ -184,7 +174,7 @@ const EmailBroadcast: React.FC = () => {
                   <hr />
                   <AlertDialogDescription>
                     {!filter && (
-                      <RadioGroup defaultValue="comfortable">
+                      <>
                         {loading ? (
                           <div className="space-y-2">
                             {Array.from({ length: 5 }).map((_, index) => (
@@ -199,21 +189,30 @@ const EmailBroadcast: React.FC = () => {
                             ?.filter(
                               (email, index, self) =>
                                 index ===
-                                self.findIndex((e) => e.email === email.email)
+                                  self.findIndex(
+                                    (e) => e.email === email.email
+                                  ) && !selectedEmails.includes(email.email)
                             )
                             .map((email, index) => (
                               <div
                                 key={index}
                                 className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
                               >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="all" id="" />
-                                  <Label htmlFor="">{email.email}</Label>
-                                </div>
+                                <RadioGroup>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="comfortable"
+                                      id={`${email.email}`}
+                                    />
+                                    <Label htmlFor={email.email}>
+                                      {email.email}
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
                               </div>
                             ))
                         )}
-                      </RadioGroup>
+                      </>
                     )}
 
                     {filter && (
