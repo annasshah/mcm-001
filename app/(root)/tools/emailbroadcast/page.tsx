@@ -1,29 +1,35 @@
-// pages/EmailBroadcast.tsx
 "use client";
+import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import TextEditor from "@/components/Text_Editor/TextEditor";
+import Filter from "@/assets/images/icons/Filterwhite.png";
 import { sendEmail, getUserEmail } from "@/actions/send-email/action";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
 import template4 from "@/assets/images/Avatar/temp4.png";
 import template5 from "@/assets/images/Avatar/temp5.png";
+import { TabContext } from "@/context/ActiveTabContext";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 const EmailBroadcast: React.FC = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [emailList, setEmailList] = useState<any[]>([]);
-  const handleDropdownChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedOption(event.target.value);
-  };
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedTemplate(event.target.value);
-  };
-  // Sample email list
+  // const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
     const fetchEmailList = async () => {
       try {
@@ -35,7 +41,36 @@ const EmailBroadcast: React.FC = () => {
     };
 
     fetchEmailList();
-  }, [emailList]);
+  }, []);
+
+  const handleDropdownChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTemplate(event.target.value);
+  };
+
+  const handleSelectEmail = (email: string) => {
+    setSelectedEmails((prevSelectedEmails: any) =>
+      prevSelectedEmails.includes(email)
+        ? prevSelectedEmails.filter(
+            (selectedEmail: any) => selectedEmail !== email
+          )
+        : [...prevSelectedEmails, email]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedEmails.length === emailList.length) {
+      setSelectedEmails([]);
+    } else {
+      setSelectedEmails(emailList.map((email) => email.email));
+    }
+  };
+
   const templates = [
     { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
@@ -43,9 +78,10 @@ const EmailBroadcast: React.FC = () => {
     { id: 4, src: template4, name: "Template 4" },
     { id: 5, src: template5, name: "Template 5" },
   ];
+
   return (
-    <main className="w-full h-full text-[#B6B6B6]  text-[20px] flex flex-row justify-center items-center space-y-4 p-4">
-      <div className="w-[60%] flex items-start justify-start  flex-col ">
+    <main className="w-full h-full text-[#B6B6B6] text-[20px] flex flex-row justify-center items-center space-y-4 p-4">
+      <div className="w-[60%] flex items-start justify-start flex-col ">
         <form className="w-full">
           <div className="w-[70%] flex flex-col">
             <select
@@ -58,6 +94,52 @@ const EmailBroadcast: React.FC = () => {
               <option value="option2">Option 2</option>
               <option value="option3">Option 3</option>
             </select>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">Show Dialog</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Select Patients</AlertDialogTitle>
+                  <div className="flex items-center justify-between ">
+                    <div className="flex items-center ">
+                      <h1>Search</h1>
+                      <input
+                        placeholder="Search by name"
+                        className="p-2 ml-2 border border-gray-200 rounded-lg "
+                      />
+                    </div>
+                    <Image src={Filter} alt="" height={25} width={25} />
+                  </div>
+                  <div className="flex items-center justify-between  ">
+                    <h2>Name/Email</h2>
+                    <h2>Gender</h2>
+                  </div>
+                  <hr />
+                  <AlertDialogDescription>
+                    {emailList?.map((email, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center p-4  bg-[#F8F8F8] w-[98%] my-2  rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedEmails.includes(email.email)}
+                          onChange={() => handleSelectEmail(email.email)}
+                          className="mr-2"
+                        />
+                        <p className="text-sm"> {email.email} </p>
+                      </div>
+                    ))}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
@@ -123,25 +205,17 @@ const EmailBroadcast: React.FC = () => {
             </div>
           </div>
           <button
-            className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white  rounded text-sm px-4 py-2"
+            className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
             formAction={sendEmail}
           >
             Submit
           </button>
         </form>
       </div>
-      <div className="w-[40%]  flex flex-col items-center justify-start space-y-2">
-        <h1 className="text-left  font-bold text-sm text-black ">
+      <div className="w-[40%] flex flex-col items-center justify-start space-y-2">
+        <h1 className="text-left font-bold text-sm text-black">
           Email Broadcasts
         </h1>
-        {emailList?.map((email, index) => (
-          <div
-            key={index}
-            className="p-2 border bg-[#F8F8F8] w-[90%] border-gray-300 rounded "
-          >
-            <p className="text-sm"> {email.email} </p>
-          </div>
-        ))}
       </div>
     </main>
   );

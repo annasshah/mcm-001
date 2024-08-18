@@ -6,6 +6,7 @@ import { KoalaWelcomeEmail } from "@/components/EmailTemplate/koalatemplate";
 import { StackOverflowTipsEmail } from "@/components/EmailTemplate/stackoverflowTemplate";
 import { YelpRecentLoginEmail } from "@/components/EmailTemplate/yelpTemplate";
 import { supabase } from "@/services/supabase";
+import { useSelectedEmails } from "@/utils/email";
 const nodemailer = require("nodemailer");
 const emailList = [
   "raheelhussainco@gmail.com",
@@ -25,7 +26,7 @@ export async function getUserEmail(): Promise<any> {
       .from("allpatients") // Replace 'user' with the actual name of your table
       .select("email");
 
-    console.log("user", data);
+    // console.log("user", data);
 
     return data;
   } catch (error) {
@@ -40,6 +41,8 @@ export async function sendEmail(formData: FormData) {
   let template = formData.get("template") as string;
   let buttonLink = formData.get("buttonLink") as string;
   const useremail = await getUserEmail();
+  const selectedEmails = useSelectedEmails();
+  console.log(selectedEmails);
 
   try {
     // Choose the email HTML based on the emailOption
