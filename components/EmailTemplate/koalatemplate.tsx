@@ -15,6 +15,11 @@ import * as React from "react";
 
 interface KoalaWelcomeEmailProps {
   userFirstname?: string;
+  reason?: string;
+  clinicName?: string;
+  name?: string;
+  buttonText?: string;
+  buttonLink?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
@@ -23,6 +28,11 @@ const baseUrl = process.env.VERCEL_URL
 
 export const KoalaWelcomeEmail = ({
   userFirstname,
+  reason,
+  clinicName,
+  name,
+  buttonText,
+  buttonLink,
 }: KoalaWelcomeEmailProps) => (
   <Html>
     <Head />
@@ -40,19 +50,19 @@ export const KoalaWelcomeEmail = ({
         />
         <Text style={paragraph}>Dear {userFirstname},</Text>
         <Text style={paragraph}>
-          Please note that [Clinic Name] will be closed from [Start Date] to
-          [End Date] due to [Reason]. We will contact you to reschedule any
-          affected appointments. Thank you for your understanding.
+          Please note that {clinicName} will be closed from [Start Date] to [End
+          Date] due to {reason}. We will contact you to reschedule any affected
+          appointments. Thank you for your understanding.
         </Text>
         <Section style={btnContainer}>
-          <Button style={button} href="https://getkoala.com">
-            Updated Timings
+          <Button style={button} href={`${buttonLink}`}>
+            {buttonText}
           </Button>
         </Section>
         <Text style={paragraph}>
           Best,
           <br />
-          [Your Name]
+          {name}
         </Text>
         <Hr style={hr} />
       </Container>

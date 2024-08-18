@@ -60,6 +60,10 @@ export async function sendEmail(formData: FormData) {
   let subject = formData.get("subject") as string;
   let template = formData.get("template") as string;
   let buttonLink = formData.get("buttonLink") as string;
+  let buttonText = formData.get("buttonText") as string;
+  let name = formData.get("name") as string;
+  let clinicName = formData.get("clinicName") as string;
+  let reason = formData.get("Reason") as string;
   const useremail = await getUserEmail();
   // const selectedEmails = useSelectedEmails();
   // console.tables(selectedEmails);
@@ -67,7 +71,15 @@ export async function sendEmail(formData: FormData) {
   try {
     // Choose the email HTML based on the emailOption
     let emailHtml;
-    emailHtml = render(<KoalaWelcomeEmail />);
+    emailHtml = render(
+      <KoalaWelcomeEmail
+        reason={reason}
+        clinicName={clinicName}
+        name={name}
+        buttonText={buttonText}
+        buttonLink={buttonLink}
+      />
+    );
     // switch (template) {
     //   case "1":
     //     emailHtml = render(<VercelInviteUserEmail />);
