@@ -247,8 +247,11 @@ const EmailBroadcast: React.FC = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {/* <SelectLabel>Fruits</SelectLabel> */}
-                                <SelectItem value="apple">Apple</SelectItem>
+                                {emailList?.map((patient: any, index) => (
+                                  <SelectItem value={`${index}`} key={index}>
+                                    {patient.treatmenttype}
+                                  </SelectItem>
+                                ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>

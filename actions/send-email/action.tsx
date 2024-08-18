@@ -24,9 +24,9 @@ export async function getUserEmail(): Promise<any> {
   try {
     const { data, error } = await supabase
       .from("allpatients") // Replace 'user' with the actual name of your table
-      .select("email");
+      .select("email,treatmenttype");
 
-    // console.table(data);
+    console.log(data);
 
     return data;
   } catch (error) {
@@ -46,7 +46,7 @@ export async function getUserLocations(): Promise<any> {
       throw error;
     }
 
-    console.log(data);
+    // console.log(data);
 
     return data;
   } catch (error) {
