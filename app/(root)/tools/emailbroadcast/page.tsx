@@ -577,7 +577,7 @@ const EmailBroadcast: React.FC = () => {
               />
             </div>
             {/* <TextEditor /> */}
-            <h2 className="font-bold text-lg mb-2">Select Template</h2>
+            {/* <h2 className="font-bold text-lg mb-2">Select Template</h2> */}
             <div className="mt-4 flex w-full">
               {/* {templates.map((template, index) => (
                 <div
