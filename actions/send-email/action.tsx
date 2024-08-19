@@ -24,7 +24,7 @@ export async function getUserEmail(): Promise<any> {
   try {
     const { data, error } = await supabase
       .from("allpatients") // Replace 'user' with the actual name of your table
-      .select("email,treatmenttype");
+      .select("email,treatmenttype,firstname");
 
     console.log(data);
 
@@ -58,28 +58,33 @@ export async function getUserLocations(): Promise<any> {
 export async function sendEmail(formData: FormData) {
   console.log("Submitted");
   let subject = formData.get("subject") as string;
-  let template = formData.get("template") as string;
-  let buttonLink = formData.get("buttonLink") as string;
-  let buttonText = formData.get("buttonText") as string;
-  let name = formData.get("name") as string;
-  let clinicName = formData.get("clinicName") as string;
-  let reason = formData.get("Reason") as string;
+  // let template = formData.get("template") as string;
+  // let buttonLink = formData.get("buttonLink") as string;
+  // let buttonText = formData.get("buttonText") as string;
+  // let name = formData.get("name") as string;
+  // let clinicName = formData.get("clinicName") as string;
+  // let reason = formData.get("Reason") as string;
+  let startDate = formData.get("startDate");
+  let endDate = formData.get("endDate");
   const useremail = await getUserEmail();
   // const selectedEmails = useSelectedEmails();
   // console.tables(selectedEmails);
+  console.log(startDate, endDate);
 
   try {
     // Choose the email HTML based on the emailOption
     let emailHtml;
-    emailHtml = render(
-      <KoalaWelcomeEmail
-        reason={reason}
-        clinicName={clinicName}
-        name={name}
-        buttonText={buttonText}
-        buttonLink={buttonLink}
-      />
-    );
+    // emailHtml = render(
+    //   <KoalaWelcomeEmail
+    //     reason={reason}
+    //     clinicName={clinicName}
+    //     name={name}
+    //     buttonText={buttonText}
+    //     buttonLink={buttonLink}
+    //     endDate={endDate}
+    //     startDate={startDate}
+    //   />
+    // );
     // switch (template) {
     //   case "1":
     //     emailHtml = render(<VercelInviteUserEmail />);
@@ -109,18 +114,18 @@ export async function sendEmail(formData: FormData) {
         pass: process.env.EMAIL_PASS_KEY,
       },
     });
-    {
-      useremail.map(async (email: any, index: any) => {
-        await transporter.sendMail({
-          from: process.env.EMAIL, // sender address
-          to: email.email, // list of receivers
-          subject: subject, // Subject line
-          text: "", // plain text body
-          html: emailHtml, // html body
-        });
-        console.log(`Email sent successfully ${email.email}`);
-      });
-    }
+    // {
+    //   useremail.map(async (email: any, index: any) => {
+    //     await transporter.sendMail({
+    //       from: process.env.EMAIL, // sender address
+    //       to: email.email, // list of receivers
+    //       subject: subject, // Subject line
+    //       text: "", // plain text body
+    //       html: emailHtml, // html body
+    //     });
+    //     console.log(`Email sent successfully ${email.email}`);
+    //   });
+    // }
   } catch (error) {
     console.log(error);
   }

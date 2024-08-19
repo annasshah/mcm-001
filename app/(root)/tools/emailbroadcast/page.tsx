@@ -4,11 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Filter from "@/assets/images/icons/Filterwhite.png";
 import Filterblack from "@/assets/images/icons/Filterblack.png";
-import {
-  sendEmail,
-  getUserEmail,
-  getUserLocations,
-} from "@/actions/send-email/action";
+import { getUserEmail, getUserLocations } from "@/actions/send-email/action";
 import { cn } from "@/lib/utils";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
@@ -18,7 +14,6 @@ import template5 from "@/assets/images/Avatar/temp5.png";
 import { TabContext } from "@/context/ActiveTabContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -50,18 +45,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-
+import { toast } from "react-toastify";
 const EmailBroadcast: React.FC = () => {
-  const [textInput, setTextInput] = useState<string>("");
-  const [selectedOption, setSelectedOption] = useState<string>("");
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<any>(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
-
+  const [subject, setSubject] = React.useState<any>();
+  const [reason, setReason] = React.useState<any>();
+  const [buttonText, setButtonText] = React.useState<any>();
+  const [buttonLink, setButtonLink] = React.useState<any>();
+  const [clinicName, setClinicName] = React.useState<any>();
+  const [name, setName] = React.useState<any>();
   const { selectedEmails, setSelectedEmails } = useContext(TabContext);
   useEffect(() => {
     const fetchEmailList = async () => {
@@ -80,21 +77,58 @@ const EmailBroadcast: React.FC = () => {
     fetchEmailList();
   }, []);
 
-  const handleDropdownChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedTemplate(event.target.value);
-  };
-
-  const handleSelectAll = () => {
-    if (selectedEmails.length === emailList.length) {
-      setSelectedEmails([]);
-    } else {
-      setSelectedEmails(emailList.map((email) => email.email));
+  const sendEmail = async () => {
+    try {
+      // if (
+      //   !subject ||
+      //   !name ||
+      //   !clinicName ||
+      //   !buttonText ||
+      //   !buttonLink ||
+      //   !startDate ||
+      //   !endDate ||
+      //   !reason
+      // ) {
+      //   toast.error("All fields are necessary.", { position: "top-center" });
+      //   return;
+      // }
+      const toastId = toast.loading("Loading...");
+      const res = await fetch("http://localhost:3000/api/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject,
+          template: 1,
+          buttonLink,
+          buttonText,
+          name,
+          clinicName,
+          reason,
+          startDate,
+          endDate,
+          email: emailList,
+        }),
+      });
+      if (res.ok) {
+        toast.update(toastId, {
+          render: "Success! Email sent.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000, // Dismiss after 3 seconds
+        });
+      } else {
+        toast.update(toastId, {
+          render: "Error",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000, // Dismiss after 3 seconds
+        });
+        // console.log(res.error);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -109,7 +143,7 @@ const EmailBroadcast: React.FC = () => {
   return (
     <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start overflow-hidden items-center space-y-4 p-4">
       <div className=" w-[80%] h-full flex items-start justify-start flex-col ">
-        <form className="w-full h-full mt-[80px]">
+        <div className="w-full h-full mt-[80px]">
           <div className="w-[70%] flex flex-col">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -345,6 +379,8 @@ const EmailBroadcast: React.FC = () => {
                 type="text"
                 id="subject"
                 name="subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 placeholder="Write Subject"
                 className="w-full p-2  rounded"
               />
@@ -355,6 +391,8 @@ const EmailBroadcast: React.FC = () => {
                 id="buttonLink"
                 name="buttonLink"
                 placeholder="Button Link"
+                value={buttonLink}
+                onChange={(e) => setButtonLink(e.target.value)}
                 className="w-full p-2  rounded"
               />
             </div>
@@ -365,6 +403,8 @@ const EmailBroadcast: React.FC = () => {
                 name="clinicName"
                 placeholder="Clinic Name"
                 className="w-full p-2  rounded"
+                value={clinicName}
+                onChange={(e) => setClinicName(e.target.value)}
               />
             </div>
             <div className="border-gray-300 mb-2 border w-full rounded">
@@ -374,6 +414,8 @@ const EmailBroadcast: React.FC = () => {
                 name="Reason"
                 placeholder="Reason"
                 className="w-full p-2  rounded"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
               />
             </div>
             <Popover>
@@ -398,6 +440,7 @@ const EmailBroadcast: React.FC = () => {
                   mode="single"
                   selected={startDate}
                   onSelect={setStartDate}
+                  id="startDate"
                   initialFocus
                 />
               </PopoverContent>
@@ -421,6 +464,7 @@ const EmailBroadcast: React.FC = () => {
                   mode="single"
                   selected={endDate}
                   onSelect={setEndDate}
+                  id="endDate"
                   initialFocus
                 />
               </PopoverContent>
@@ -432,6 +476,8 @@ const EmailBroadcast: React.FC = () => {
                 name="buttonText"
                 placeholder="Button Text"
                 className="w-full p-2  rounded"
+                value={buttonText}
+                onChange={(e) => setButtonText(e.target.value)}
               />
             </div>
             <div className="border-gray-300 mb-2 border w-full rounded">
@@ -441,6 +487,8 @@ const EmailBroadcast: React.FC = () => {
                 name="name"
                 placeholder="Name"
                 className="w-full p-2  rounded"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             {/* <TextEditor /> */}
@@ -477,11 +525,11 @@ const EmailBroadcast: React.FC = () => {
           <br />
           <Button
             // className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
-            formAction={sendEmail}
+            onClick={sendEmail}
           >
             Submit
           </Button>
-        </form>
+        </div>
       </div>
       {/* <div className="w-[40%] flex flex-col items-center justify-start space-y-2"></div> */}
     </main>
