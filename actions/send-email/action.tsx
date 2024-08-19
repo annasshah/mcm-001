@@ -6,7 +6,7 @@ export async function getUserEmail(): Promise<any> {
     const { data, error } = await supabase
       .from("allpatients") // Replace 'user' with the actual name of your table
       .select(
-        "email,treatmenttype,firstname,gender, onsite, locationid, Locations (title)"
+        "email,treatmenttype,firstname,gender,onsite,locationid,Locations (title)"
       );
 
     console.log(data);
