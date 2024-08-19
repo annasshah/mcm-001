@@ -156,49 +156,49 @@ const EmailBroadcast: React.FC = () => {
       console.log(selectedGender, onsite, location, treatmentType);
 
       const toastId = toast.loading("Loading...");
-      // const res = await fetch("http://localhost:3000/api/sendEmail", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     subject,
-      //     template: 1,
-      //     buttonLink,
-      //     buttonText,
-      //     name,
-      //     clinicName,
-      //     reason,
-      //     startDate,
-      //     endDate,
-      //     email: checkedItems,
-      //   }),
-      // });
-      // if (res.ok) {
-      //   toast.update(toastId, {
-      //     render: "Success! Email sent.",
-      //     type: "success",
-      //     isLoading: false,
-      //     autoClose: 3000, // Dismiss after 3 seconds
-      //   });
-      // } else {
-      //   toast.update(toastId, {
-      //     render: "Error",
-      //     type: "error",
-      //     isLoading: false,
-      //     autoClose: 3000, // Dismiss after 3 seconds
-      //   });
-      //   // console.log(res.error);
-      // }
+      const res = await fetch("http://localhost:3000/api/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject,
+          template: 1,
+          buttonLink,
+          buttonText,
+          name,
+          clinicName,
+          reason,
+          startDate,
+          endDate,
+          email: checkedItems,
+        }),
+      });
+      if (res.ok) {
+        toast.update(toastId, {
+          render: "Success! Email sent.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000, // Dismiss after 3 seconds
+        });
+      } else {
+        toast.update(toastId, {
+          render: "Error",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000, // Dismiss after 3 seconds
+        });
+        // console.log(res.error);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const templates = [
-    { id: 1, src: template1, name: "Template 1" },
+    // { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
-    { id: 3, src: template3, name: "Template 3" },
+    // { id: 3, src: template3, name: "Template 3" },
     // { id: 4, src: template4, name: "Template 4" },
     // { id: 5, src: template5, name: "Template 5" },
   ];
@@ -579,7 +579,7 @@ const EmailBroadcast: React.FC = () => {
             {/* <TextEditor /> */}
             <h2 className="font-bold text-lg mb-2">Select Template</h2>
             <div className="mt-4 flex w-full">
-              {templates.map((template, index) => (
+              {/* {templates.map((template, index) => (
                 <div
                   key={index}
                   className="flex flex-col w-[20%] rounded p-2 justify-center m-3 border border-gray-300 items-center mb-4"
@@ -604,7 +604,7 @@ const EmailBroadcast: React.FC = () => {
                     </Link>
                   </div>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
           <br />
