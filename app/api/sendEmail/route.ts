@@ -36,44 +36,44 @@ export async function POST(req: any) {
       endDate,
       email
     );
-    {
-      email.map(async (email: any, index: any) => {
-        const emailHtml = await render(
-          KoalaWelcomeEmail({
-            reason: reason,
-            clinicName: clinicName,
-            userFirstname: email.firstname,
-            name: name,
-            buttonText: buttonText,
-            buttonLink: buttonLink,
-            endDate: endDate,
-            startDate: startDate,
-          })
-        );
+    // {
+    //   email.map(async (email: any, index: any) => {
+    //     const emailHtml = await render(
+    //       KoalaWelcomeEmail({
+    //         reason: reason,
+    //         clinicName: clinicName,
+    //         userFirstname: email.firstname,
+    //         name: name,
+    //         buttonText: buttonText,
+    //         buttonLink: buttonLink,
+    //         endDate: endDate,
+    //         startDate: startDate,
+    //       })
+    //     );
 
-        // Ensure that the required props are passed correctly
+    //     // Ensure that the required props are passed correctly
 
-        const transporter = nodemailer.createTransport({
-          host: process.env.EMAIL_HOST,
-          port: process.env.EMAIL_PORT,
-          secure: false,
-          requireTLS: true,
-          auth: {
-            user: process.env.EMAIL,
-            pass: process.env.EMAIL_PASS_KEY,
-          },
-        });
+    //     const transporter = nodemailer.createTransport({
+    //       host: process.env.EMAIL_HOST,
+    //       port: process.env.EMAIL_PORT,
+    //       secure: false,
+    //       requireTLS: true,
+    //       auth: {
+    //         user: process.env.EMAIL,
+    //         pass: process.env.EMAIL_PASS_KEY,
+    //       },
+    //     });
 
-        await transporter.sendMail({
-          from: process.env.EMAIL, // sender address
-          to: email.email, // list of receivers
-          subject: subject, // Subject line
-          text: "", // plain text body
-          html: emailHtml, // html body
-        });
-        console.log(`Email sent successfully ${email.email}`);
-      });
-    }
+    //     await transporter.sendMail({
+    //       from: process.env.EMAIL, // sender address
+    //       to: email.email, // list of receivers
+    //       subject: subject, // Subject line
+    //       text: "", // plain text body
+    //       html: emailHtml, // html body
+    //     });
+    //     console.log(`Email sent successfully ${email.email}`);
+    //   });
+    // }
     return NextResponse.json(
       { message: "Email sent successfully" },
       { status: 201 }

@@ -59,7 +59,58 @@ const EmailBroadcast: React.FC = () => {
   const [buttonLink, setButtonLink] = React.useState<any>();
   const [clinicName, setClinicName] = React.useState<any>();
   const [name, setName] = React.useState<any>();
-  const { selectedEmails, setSelectedEmails } = useContext(TabContext);
+  const [checkedItems, setCheckedItems] = useState<any>([]);
+  const [selectedGender, setSelectedGender] = useState("");
+  const [onsite, setOnsite] = useState<boolean | undefined>();
+  const [location, setLocation] = useState<any>("");
+  const [treatmentType, setTreatmentType] = useState<any>("");
+  const handleGenderChange = (gender: any) => {
+    setSelectedGender(selectedGender === gender ? "" : gender);
+  };
+  const handleVisitChange = (type: any) => {
+    setOnsite(onsite === type ? "" : type);
+  };
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    emailObj: any
+  ) => {
+    const isChecked = event.target.checked;
+
+    setCheckedItems(
+      (prevCheckedItems: any[]) =>
+        isChecked
+          ? [...prevCheckedItems, emailObj] // Add the whole object if checked
+          : prevCheckedItems.filter((item) => item.email !== emailObj.email) // Remove the object if unchecked by comparing the email
+    );
+  };
+
+  const filterByGenderAndTreatment = (
+    data: any,
+    gender: string,
+    treatmentType: string,
+    location: string,
+    onsite: boolean | undefined
+  ) => {
+    return data.filter(
+      (item: any) =>
+        item.gender === gender &&
+        item.treatmenttype === treatmentType &&
+        item.location === location &&
+        item.onsite === onsite
+    );
+  };
+
+  // Example usage
+  const handleFilter = async () => {
+    const filteredData = filterByGenderAndTreatment(
+      checkedItems,
+      selectedGender,
+      treatmentType,
+      location,
+      onsite
+    );
+  };
+
   useEffect(() => {
     const fetchEmailList = async () => {
       try {
@@ -78,6 +129,10 @@ const EmailBroadcast: React.FC = () => {
   }, []);
 
   const sendEmail = async () => {
+    if (!checkedItems && checkedItems.length == 0) {
+      toast.error("No email selected .", { position: "top-center" });
+      return;
+    }
     try {
       // if (
       //   !subject ||
@@ -92,41 +147,44 @@ const EmailBroadcast: React.FC = () => {
       //   toast.error("All fields are necessary.", { position: "top-center" });
       //   return;
       // }
+
+      console.log(selectedGender, onsite, location, treatmentType);
+
       const toastId = toast.loading("Loading...");
-      const res = await fetch("http://localhost:3000/api/sendEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subject,
-          template: 1,
-          buttonLink,
-          buttonText,
-          name,
-          clinicName,
-          reason,
-          startDate,
-          endDate,
-          email: emailList,
-        }),
-      });
-      if (res.ok) {
-        toast.update(toastId, {
-          render: "Success! Email sent.",
-          type: "success",
-          isLoading: false,
-          autoClose: 3000, // Dismiss after 3 seconds
-        });
-      } else {
-        toast.update(toastId, {
-          render: "Error",
-          type: "error",
-          isLoading: false,
-          autoClose: 3000, // Dismiss after 3 seconds
-        });
-        // console.log(res.error);
-      }
+      // const res = await fetch("http://localhost:3000/api/sendEmail", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     subject,
+      //     template: 1,
+      //     buttonLink,
+      //     buttonText,
+      //     name,
+      //     clinicName,
+      //     reason,
+      //     startDate,
+      //     endDate,
+      //     email: checkedItems,
+      //   }),
+      // });
+      // if (res.ok) {
+      //   toast.update(toastId, {
+      //     render: "Success! Email sent.",
+      //     type: "success",
+      //     isLoading: false,
+      //     autoClose: 3000, // Dismiss after 3 seconds
+      //   });
+      // } else {
+      //   toast.update(toastId, {
+      //     render: "Error",
+      //     type: "error",
+      //     isLoading: false,
+      //     autoClose: 3000, // Dismiss after 3 seconds
+      //   });
+      //   // console.log(res.error);
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -230,32 +288,27 @@ const EmailBroadcast: React.FC = () => {
                             ))}
                           </div>
                         ) : (
-                          emailList
-                            ?.filter(
-                              (email, index, self) =>
-                                index ===
-                                  self.findIndex(
-                                    (e) => e.email === email.email
-                                  ) && !selectedEmails.includes(email.email)
-                            )
-                            .map((email, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
-                              >
-                                <RadioGroup>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value="comfortable"
-                                      id={`${email.email}`}
-                                    />
-                                    <Label htmlFor={email.email}>
-                                      {email.email}
-                                    </Label>
-                                  </div>
-                                </RadioGroup>
+                          emailList.map((email: any, index: any) => (
+                            <div
+                              key={index}
+                              className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`checkbox-${index}`}
+                                  value={email.email} // Keep this as the email for rendering
+                                  checked={checkedItems.some(
+                                    (item: any) => item.email === email.email
+                                  )} // Check if the object is in the checkedItems array
+                                  onChange={(e) =>
+                                    handleCheckboxChange(e, email)
+                                  } // Pass the whole object
+                                />
+                                <Label>{email.email}</Label>
                               </div>
-                            ))
+                            </div>
+                          ))
                         )}
                       </>
                     )}
@@ -271,15 +324,27 @@ const EmailBroadcast: React.FC = () => {
                               Gender
                             </h1>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="comfortable" id="r2" />
+                              <input
+                                type="checkbox"
+                                checked={selectedGender === "male"}
+                                onChange={() => handleGenderChange("male")}
+                              />
                               <Label htmlFor="r2">Male</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
-                              <RadioGroupItem value="compact" id="r3" />
+                              <input
+                                type="checkbox"
+                                checked={selectedGender === "female"}
+                                onChange={() => handleGenderChange("female")}
+                              />
                               <Label htmlFor="r3">Female</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
-                              <RadioGroupItem value="compact" id="r3" />
+                              <input
+                                type="checkbox"
+                                checked={selectedGender === "others"}
+                                onChange={() => handleGenderChange("others")}
+                              />
                               <Label htmlFor="r3">Other</Label>
                             </div>
                           </div>
@@ -289,7 +354,9 @@ const EmailBroadcast: React.FC = () => {
                           <h1 className="mr-2 font-bold text-black">
                             Treatment Type
                           </h1>
-                          <Select>
+                          <Select
+                            onValueChange={(value) => setTreatmentType(value)}
+                          >
                             <SelectTrigger className="w-[180px]">
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -306,7 +373,10 @@ const EmailBroadcast: React.FC = () => {
                                       )
                                   )
                                   .map((patient: any, index) => (
-                                    <SelectItem value={`${index}`} key={index}>
+                                    <SelectItem
+                                      value={patient.treatmenttype}
+                                      key={index}
+                                    >
                                       {patient.treatmenttype}
                                     </SelectItem>
                                   ))}
@@ -322,11 +392,19 @@ const EmailBroadcast: React.FC = () => {
                               Visit Type
                             </h1>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="comfortable" id="r2" />
+                              <input
+                                type="checkbox"
+                                checked={onsite}
+                                onChange={() => handleVisitChange(true)}
+                              />
                               <Label htmlFor="r2">On-site</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
-                              <RadioGroupItem value="compact" id="r3" />
+                              <input
+                                type="checkbox"
+                                checked={!onsite}
+                                onChange={() => handleVisitChange(false)}
+                              />
                               <Label htmlFor="r3">Off-site</Label>
                             </div>
                           </div>
@@ -336,7 +414,7 @@ const EmailBroadcast: React.FC = () => {
                           <h1 className="mr-2  font-bold text-black ">
                             Location
                           </h1>
-                          <Select>
+                          <Select onValueChange={(value) => setLocation(value)}>
                             <SelectTrigger className="w-[180px]">
                               <SelectValue placeholder="Select a location" />
                             </SelectTrigger>
@@ -355,7 +433,7 @@ const EmailBroadcast: React.FC = () => {
                                   .map((location, index) => (
                                     <SelectItem
                                       key={index}
-                                      value={`${location.locationid}`}
+                                      value={location.Locations.title}
                                     >
                                       {location.Locations.title}
                                     </SelectItem>
