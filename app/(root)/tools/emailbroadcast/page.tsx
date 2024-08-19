@@ -64,6 +64,7 @@ const EmailBroadcast: React.FC = () => {
   const [onsite, setOnsite] = useState<boolean | undefined>();
   const [location, setLocation] = useState<any>("");
   const [treatmentType, setTreatmentType] = useState<any>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const handleGenderChange = (gender: any) => {
     setSelectedGender(selectedGender === gender ? "" : gender);
   };
@@ -110,6 +111,10 @@ const EmailBroadcast: React.FC = () => {
       onsite
     );
   };
+
+  const filteredEmails = emailList.filter((email) =>
+    email.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchEmailList = async () => {
@@ -227,8 +232,10 @@ const EmailBroadcast: React.FC = () => {
                         <div className="flex items-center ">
                           <h1>Search</h1>
                           <input
-                            placeholder="Search by name"
-                            className="p-2 ml-2 border border-gray-200 rounded-lg "
+                            placeholder="Search by email"
+                            className="p-2 ml-2 border border-gray-200 rounded-lg"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                           />
                         </div>
                         {!filter ? (
@@ -288,7 +295,7 @@ const EmailBroadcast: React.FC = () => {
                             ))}
                           </div>
                         ) : (
-                          emailList.map((email: any, index: any) => (
+                          filteredEmails.map((email: any, index: any) => (
                             <div
                               key={index}
                               className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
