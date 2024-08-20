@@ -139,19 +139,19 @@ const EmailBroadcast: React.FC = () => {
       return;
     }
     try {
-      // if (
-      //   !subject ||
-      //   !name ||
-      //   !clinicName ||
-      //   !buttonText ||
-      //   !buttonLink ||
-      //   !startDate ||
-      //   !endDate ||
-      //   !reason
-      // ) {
-      //   toast.error("All fields are necessary.", { position: "top-center" });
-      //   return;
-      // }
+      if (
+        !subject ||
+        !name ||
+        !clinicName ||
+        !buttonText ||
+        !buttonLink ||
+        !startDate ||
+        !endDate ||
+        !reason
+      ) {
+        toast.error("All fields are necessary.", { position: "top-center" });
+        return;
+      }
 
       console.log(selectedGender, onsite, location, treatmentType);
 
@@ -576,8 +576,7 @@ const EmailBroadcast: React.FC = () => {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            {/* <TextEditor /> */}
-            {/* <h2 className="font-bold text-lg mb-2">Select Template</h2> */}
+
             <div className="mt-4 flex w-full">
               {/* {templates.map((template, index) => (
                 <div
@@ -608,15 +607,9 @@ const EmailBroadcast: React.FC = () => {
             </div>
           </div>
           <br />
-          <Button
-            // className="border-gray-800 bg-black cursor-pointer mb-3 mt-3 text-white rounded text-sm px-4 py-2"
-            onClick={sendEmail}
-          >
-            Submit
-          </Button>
+          <Button onClick={sendEmail}>Submit</Button>
         </div>
       </div>
-      {/* <div className="w-[40%] flex flex-col items-center justify-start space-y-2"></div> */}
     </main>
   );
 };
