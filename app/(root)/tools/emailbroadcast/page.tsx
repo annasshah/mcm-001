@@ -370,24 +370,24 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "male"}
-                                onChange={() => handleGenderChange("male")}
+                                checked={selectedGender === "Male"}
+                                onChange={() => handleGenderChange("Male")}
                               />
                               <Label htmlFor="r2">Male</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "female"}
-                                onChange={() => handleGenderChange("female")}
+                                checked={selectedGender === "Female"}
+                                onChange={() => handleGenderChange("Female")}
                               />
                               <Label htmlFor="r3">Female</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "others"}
-                                onChange={() => handleGenderChange("others")}
+                                checked={selectedGender === "Others"}
+                                onChange={() => handleGenderChange("Others")}
                               />
                               <Label htmlFor="r3">Other</Label>
                             </div>
