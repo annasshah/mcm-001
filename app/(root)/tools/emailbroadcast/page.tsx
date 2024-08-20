@@ -104,33 +104,53 @@ const EmailBroadcast: React.FC = () => {
 
   // Example usage
   const handleFilter = async () => {
-    // const filteredData = filterByGenderAndTreatment(
-    //   checkedItems,
-    //   selectedGender,
-    //   treatmentType,
-    //   location,
-    //   onsite
-    // );
+    const filteredData = filterByGenderAndTreatment(
+      checkedItems,
+      selectedGender,
+      treatmentType,
+      location,
+      onsite
+    );
     toast.success("Filter Applied.", { position: "top-center" });
     setIsFilterOn(true);
   };
 
   const handlecancelFilter = async () => {
-    // const filteredData = filterByGenderAndTreatment(
-    //   checkedItems,
-    //   selectedGender,
-    //   treatmentType,
-    //   location,
-    //   onsite
-    // );
     toast.success("Filter Removed.", { position: "top-center" });
     setIsFilterOn(false);
+    setSelectedGender("");
+    setOnsite(undefined);
+    setLocation("");
+    setTreatmentType("");
   };
 
-  const filteredEmails = emailList.filter((email) =>
-    email.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+  const filterEmails = () => {
+    let filteredEmails = emailList;
+    if (selectedGender) {
+      filteredEmails = filteredEmails.filter(
+        (item: any) => item.gender === selectedGender
+      );
+    }
+    if (treatmentType) {
+      filteredEmails = filteredEmails.filter(
+        (item: any) => item.treatmenttype === treatmentType
+      );
+    }
+    if (location) {
+      filteredEmails = filteredEmails.filter(
+        (item: any) => item.location === location
+      );
+    }
+    if (onsite !== undefined) {
+      filteredEmails = filteredEmails.filter(
+        (item: any) => item.onsite === onsite
+      );
+    }
+    return filteredEmails.filter((email) =>
+      email.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+  const filteredEmails = filterEmails();
   useEffect(() => {
     const fetchEmailList = async () => {
       try {
