@@ -50,6 +50,7 @@ const EmailBroadcast: React.FC = () => {
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isFilterOn, setIsFilterOn] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>(false);
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
@@ -103,13 +104,27 @@ const EmailBroadcast: React.FC = () => {
 
   // Example usage
   const handleFilter = async () => {
-    const filteredData = filterByGenderAndTreatment(
-      checkedItems,
-      selectedGender,
-      treatmentType,
-      location,
-      onsite
-    );
+    // const filteredData = filterByGenderAndTreatment(
+    //   checkedItems,
+    //   selectedGender,
+    //   treatmentType,
+    //   location,
+    //   onsite
+    // );
+    toast.success("Filter Applied.", { position: "top-center" });
+    setIsFilterOn(true);
+  };
+
+  const handlecancelFilter = async () => {
+    // const filteredData = filterByGenderAndTreatment(
+    //   checkedItems,
+    //   selectedGender,
+    //   treatmentType,
+    //   location,
+    //   onsite
+    // );
+    toast.success("Filter Removed.", { position: "top-center" });
+    setIsFilterOn(false);
   };
 
   const filteredEmails = emailList.filter((email) =>
@@ -238,7 +253,7 @@ const EmailBroadcast: React.FC = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                           />
                         </div>
-                        {!filter ? (
+                        {!isFilterOn ? (
                           <Image
                             src={Filter}
                             alt=""
@@ -450,7 +465,13 @@ const EmailBroadcast: React.FC = () => {
                           </Select>
                         </div>
                         <br />
-                        <Button>Apply</Button>
+                        {isFilterOn ? (
+                          <Button onClick={() => handlecancelFilter()}>
+                            Remove Filter
+                          </Button>
+                        ) : (
+                          <Button onClick={() => handleFilter()}>Apply</Button>
+                        )}
                       </div>
                     )}
                   </AlertDialogDescription>
