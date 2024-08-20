@@ -262,6 +262,7 @@ const EmailBroadcast: React.FC = () => {
                             onClick={() => {
                               setFilter(true);
                             }}
+                            className="cursor-pointer"
                           />
                         ) : (
                           <Image
@@ -270,8 +271,9 @@ const EmailBroadcast: React.FC = () => {
                             height={25}
                             width={25}
                             onClick={() => {
-                              setFilter(false);
+                              setFilter(true);
                             }}
+                            className="cursor-pointer"
                           />
                         )}
                       </div>
