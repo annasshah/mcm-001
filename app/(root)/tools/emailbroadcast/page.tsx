@@ -138,7 +138,7 @@ const EmailBroadcast: React.FC = () => {
     }
     if (location) {
       filteredEmails = filteredEmails.filter(
-        (item: any) => item.location === location
+        (item: any) => item.Locationa.title === location
       );
     }
     if (onsite !== undefined) {
