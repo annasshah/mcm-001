@@ -1,12 +1,21 @@
 import { Label, Select } from 'flowbite-react'
-import React from 'react'
+import React, { FC } from 'react'
 
-export const Input_Component_Appointment = ({ label, onChange, placeholder, type='text' }) => {
+interface Props {
+    label?: string;
+    placeholder: string;
+    type?: string;
+    onChange: (e: string) => void;
+    max?: number | undefined;
+}
+
+export const Input_Component_Appointment: FC<Props> = ({ label, onChange, placeholder, type = 'text', max=undefined }) => {
     return (
         <div className='w-full flex flex-1 items-center space-x-2'>
-            <Label htmlFor="section" value={label} className='font-bold break-words' />
+            {label && <Label htmlFor="section" value={label} className='font-bold break-words' />}
             <div className='border-[1px] border-[#CBD5E1] flex-1 rounded-lg'>
                 <input
+                    maxLength={max || undefined}
                     placeholder={placeholder}
                     onChange={(e) => onChange(e.target.value)}
                     type={type}

@@ -2,11 +2,12 @@ import { Input_Component_Appointment } from '@/components/Appointment/Add_Appoin
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { Label, Modal, Radio, Select } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
-import { IoCloseOutline } from "react-icons/io5";
 import ScheduleDateTime from './ScheduleDateTime';
 import { supabase } from '@/services/supabase';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import { usStates } from '@/us-states';
+import { validateFormData } from '@/utils/validationCheck';
 
 interface RadioButtonOptionsInterface {
     label: string;
@@ -60,28 +61,6 @@ const RadioButtons = ({
         </div>
     </div>
 );
-
-// {
-//     "id": 53,
-//     "created_at": "2024-08-03T21:09:47.443957+00:00",
-//     "location_id": 12,
-//     "first_name": "Test",
-//     "last_name": "User",
-//     "email_Address": "mail@mail.com",
-//     "dob": "2024-08-14",
-//     "sex": "Male",
-//     "service": "Thyroid Care",
-//     "in_office_patient": true,
-//     "new_patient": true,
-//     "address": "123 street",
-//     "phone": null,
-//     "date_and_time": "12|31-08-2024 - 3:00 PM",
-//     "location": {
-//         "id": 12,
-//         "title": "Clinica San Miguel Houston, TX Office",
-//         "address": "12741 East Frwy, Houston, TX 77015"
-//     }
-// }
 
 
 const in_office_patient_options: RadioButtonOptionsInterface[] = [
@@ -198,7 +177,7 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
             first_name,
             last_name,
             email_address,
-            address: address,
+
             in_office_patient: in_office_patient === 'true' || false,
             new_patient: new_patient === 'true' || false,
             dob: dob,
@@ -212,25 +191,36 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
             "location_id",
             "first_name",
             "last_name",
-            "email_Address",
-            "address",
+            "email_address",
             "dob",
             "sex",
             "phone",
-            "date_and_time",
+            'state',
+            'zipcode',
+            'street_address',
             "service",
+            "date_and_time",
         ];
 
+        const validateData = validateFormData({ ...formData, email: email_address }, true)
+
+        if (!validateData) {
+            setLoading(false)
+            return
+        }
+
         for (const field of requiredFields) {
-            if (!appointmentDetails[field]) {
+            if (!formData[field]) {
                 toast.warning(`Please fill in the ${field}`);
                 setLoading(false)
                 return;
             }
         }
 
+
         const postData = {
             ...appointmentDetails,
+            address: `${formData.street_address}, ${formData.state}, ${formData.zipcode}`,
             date_and_time,
         }
         const { data, error } = await supabase
@@ -339,7 +329,7 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
                                 <Input_Component_Appointment onChange={(e: string) => select_change_handle('email_address', e)} placeholder='Enter you current email address' label='Email' />
                             </div>
                             <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone', e)} placeholder='Enter you current email address' label='Phone number' />
+                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('phone', e)} placeholder='Enter you phone number' label='Phone number' />
                             </div>
                             <div className='w-full'>
                                 <Input_Component_Appointment type='date' onChange={(e: string) => select_change_handle('dob', e)} placeholder='Your date of birth' label='Your date of birth' />
@@ -355,8 +345,22 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
                                 />
                             </div>
 
-                            <div className='w-full'>
-                                <Input_Component_Appointment onChange={(e: string) => select_change_handle('address', e)} placeholder='Enter your address with zipcode' label='Address' />
+                            <div className='w-full grid grid-cols-2 gap-4'>
+                                <div className='flex items-center space-x-2'>
+                                    <Label htmlFor='locations' className='font-bold'>
+                                        State
+                                    </Label>
+                                    <Select style={{ paddingBottom: '13px', paddingTop: '13px' }} className='flex-1' sizing='md' onChange={(e) => select_change_handle('state', e.target.value)} id="state" required>
+                                        <option selected disabled value=''>State</option>
+                                        {usStates?.map(({ value, name }, index: any) => <option key={index} value={name}>{`${name} - ${value}`}</option>)}
+                                    </Select>
+                                </div>
+                                <div className=''>
+                                    <Input_Component_Appointment max={5} label='Zipcode' onChange={(e: string) => select_change_handle('zipcode', e)} placeholder='Enter zipcode' />
+                                </div>
+                                <div className='col-span-2'>
+                                    <Input_Component_Appointment label='Street Address' onChange={(e: string) => select_change_handle('street_address', e)} placeholder='Enter your address with zipcode' />
+                                </div>
                             </div>
 
 
@@ -382,9 +386,9 @@ export const Add_Appointment_Modal = ({ newAddedRow }: { newAddedRow: (e: any) =
 
                 <Modal.Footer>
                     <div className='flex w-full justify-end'>
-                        
+
                         <button disabled={loading} onClick={submitHandle} className={`bg-[#0F172A] ${loading && 'opacity-70'} w-40 py-3 rounded-lg text-white`}>
-                          {loading ? 'Submitting...' : 'Submit'}  
+                            {loading ? 'Submitting...' : 'Submit'}
                         </button>
                     </div>
                 </Modal.Footer>

@@ -172,10 +172,10 @@ const List_Item = ({ data, click_handle, is_selected }: { data: any, click_handl
       <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-lg`}>
         {sex || '-'}
       </h3>
-      {data.date_and_time && <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-xs`}>
+      <h3 className={`${is_selected ? 'text-white' : 'text-text_primary_color'} font-normal text-xs`}>
         {/* 2024-06-28 21:28:52.532542+00 */}
-        Appointment: {moment(formattedDateTime(), 'DD-MM-YYYY h:mm A').fromNow()}
-      </h3>}
+        {data.date_and_time ? `Appointment: ${moment(formattedDateTime(), 'DD-MM-YYYY h:mm A').format('DD/MM/YYYY - hh:mm A')}` : '---'}
+      </h3>
     </div>
   </div>
 }
