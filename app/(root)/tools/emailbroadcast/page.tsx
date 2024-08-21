@@ -349,7 +349,14 @@ const EmailBroadcast: React.FC = () => {
                                     handleCheckboxChange(e, email)
                                   } // Pass the whole object
                                 />
-                                <Label>{email.email}</Label>
+                                <div className="flex flex-col">
+                                  <Label>{email.firstName}</Label>
+                                  <Label>{email.email}</Label>
+                                </div>
+                              </div>
+                              <div>
+                                {" "}
+                                <Label>{email.gender}</Label>
                               </div>
                             </div>
                           ))
