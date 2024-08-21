@@ -29,8 +29,6 @@ export async function getUserLocations(): Promise<any> {
       throw error;
     }
 
-    // console.log(data);
-
     return data;
   } catch (error) {
     console.error("Unexpected error:", error);

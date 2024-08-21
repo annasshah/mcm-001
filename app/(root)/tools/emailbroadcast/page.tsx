@@ -350,7 +350,7 @@ const EmailBroadcast: React.FC = () => {
                                   } // Pass the whole object
                                 />
                                 <div className="flex flex-col">
-                                  <Label>{email.firstName}</Label>
+                                  <Label>{email.firstname}</Label>
                                   <Label>{email.email}</Label>
                                 </div>
                               </div>
