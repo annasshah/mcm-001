@@ -18,6 +18,35 @@ export async function getUserEmail(): Promise<any> {
   }
 }
 
+export async function getServices(): Promise<any> {
+  try {
+    const { data, error } = await supabase
+      .from("services") // Replace 'user' with the actual name of your table
+      .select("title");
+
+    console.log(data);
+
+    return data;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return null;
+  }
+}
+export async function getLocations(): Promise<any> {
+  try {
+    const { data, error } = await supabase
+      .from("Locations") // Replace 'user' with the actual name of your table
+      .select("title");
+
+    console.log(data);
+
+    return data;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return null;
+  }
+}
+
 export async function getUserLocations(): Promise<any> {
   try {
     const { data, error } = await supabase.from("allpatients").select(`

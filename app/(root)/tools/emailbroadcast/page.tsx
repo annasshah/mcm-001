@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import Filter from "@/assets/images/icons/Filterwhite.png";
 import Filterblack from "@/assets/images/icons/Filterblack.png";
-import { getUserEmail, getUserLocations } from "@/actions/send-email/action";
+import {
+  getUserEmail,
+  getLocations,
+  getServices,
+} from "@/actions/send-email/action";
 import { cn } from "@/lib/utils";
 import template1 from "@/assets/images/Avatar/temp1.png";
 import template2 from "@/assets/images/Avatar/temp2.png";
@@ -49,6 +53,7 @@ import { toast } from "react-toastify";
 const EmailBroadcast: React.FC = () => {
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
+  const [serviceList, setServiceList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFilterOn, setIsFilterOn] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>(false);
@@ -156,8 +161,10 @@ const EmailBroadcast: React.FC = () => {
       try {
         const email = await getUserEmail();
         setEmailList(email);
-        const location = await getUserLocations();
+        const location = await getLocations();
         setLocationList(location);
+        const services = await getServices();
+        setServiceList(services);
       } catch (error) {
         console.error("Failed to fetch email:", error);
       } finally {
@@ -424,24 +431,11 @@ const EmailBroadcast: React.FC = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {emailList
-                                  ?.filter(
-                                    (patient, index, self) =>
-                                      index ===
-                                      self.findIndex(
-                                        (e) =>
-                                          e.treatmenttype ===
-                                          patient.treatmenttype
-                                      )
-                                  )
-                                  .map((patient: any, index) => (
-                                    <SelectItem
-                                      value={patient.treatmenttype}
-                                      key={index}
-                                    >
-                                      {patient.treatmenttype}
-                                    </SelectItem>
-                                  ))}
+                                {serviceList.map((patient: any, index) => (
+                                  <SelectItem value={patient.title} key={index}>
+                                    {patient.title}
+                                  </SelectItem>
+                                ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>
@@ -488,16 +482,15 @@ const EmailBroadcast: React.FC = () => {
                                     (location, index, self) =>
                                       index ===
                                       self.findIndex(
-                                        (loc) =>
-                                          loc.locationid === location.locationid
+                                        (loc) => loc.title === location.title
                                       )
                                   )
                                   .map((location, index) => (
                                     <SelectItem
                                       key={index}
-                                      value={location.Locations.title}
+                                      value={location.title}
                                     >
-                                      {location.Locations.title}
+                                      {location.title}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
