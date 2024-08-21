@@ -298,7 +298,10 @@ const EmailBroadcast: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center justify-between  ">
-                        <h2>Name/Email</h2>
+                        <div className="flex ">
+                          <input type="checkbox" id={`checkbox`} />
+                          <h2 className="ml-2">Name/Email</h2>
+                        </div>
                         <h2>Gender</h2>
                       </div>
                     </>
@@ -335,7 +338,7 @@ const EmailBroadcast: React.FC = () => {
                           filteredEmails.map((email: any, index: any) => (
                             <div
                               key={index}
-                              className="flex items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
+                              className="flex justify-between items-center p-4 bg-[#F8F8F8] w-[98%] my-2 rounded"
                             >
                               <div className="flex items-center space-x-2">
                                 <input
@@ -350,13 +353,21 @@ const EmailBroadcast: React.FC = () => {
                                   } // Pass the whole object
                                 />
                                 <div className="flex flex-col">
-                                  <Label>{email.firstname}</Label>
+                                  <Label className="mb-1 text-black font-bold">
+                                    {email.firstname}
+                                  </Label>
                                   <Label>{email.email}</Label>
                                 </div>
                               </div>
                               <div>
                                 {" "}
-                                <Label>{email.gender}</Label>
+                                <Label>
+                                  {email.gender === "Male"
+                                    ? "M"
+                                    : email.gender === "Female"
+                                    ? "F"
+                                    : "O"}
+                                </Label>
                               </div>
                             </div>
                           ))
