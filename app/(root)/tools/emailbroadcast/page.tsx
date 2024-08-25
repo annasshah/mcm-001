@@ -129,6 +129,16 @@ const EmailBroadcast: React.FC = () => {
     setTreatmentType("");
   };
 
+  const handleSelectAndDeselectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      // Select all: Add all items to checkedItems
+      setCheckedItems(emailList);
+    } else {
+      // Deselect all: Clear checkedItems
+      setCheckedItems([]);
+    }
+  };
+
   const filterEmails = () => {
     let filteredEmails = emailList;
     if (selectedGender) {
@@ -143,7 +153,7 @@ const EmailBroadcast: React.FC = () => {
     }
     if (location) {
       filteredEmails = filteredEmails.filter(
-        (item: any) => item.Locationa.title === location
+        (item: any) => item.Locations.title === location
       );
     }
     if (onsite !== undefined) {
@@ -306,7 +316,16 @@ const EmailBroadcast: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between  ">
                         <div className="flex ">
-                          <input type="checkbox" id={`checkbox`} />
+                          <input
+                            type="checkbox"
+                            checked={
+                              checkedItems.length === emailList.length &&
+                              emailList.length > 0
+                            }
+                            onChange={(e) =>
+                              handleSelectAndDeselectAll(e.target.checked)
+                            }
+                          />
                           <h2 className="ml-2">Name/Email</h2>
                         </div>
                         <h2>Gender</h2>
