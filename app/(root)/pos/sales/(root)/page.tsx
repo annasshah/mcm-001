@@ -1,6 +1,6 @@
 'use client'
 import { Select_Dropdown } from '@/components/Select_Dropdown';
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Quantity_Field } from '@/components/Quantity_Field';
 import { RxReload } from "react-icons/rx";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -11,20 +11,29 @@ import { useCategoriesClinica } from '@/hooks/useCategoriesClinica';
 import { useProductsClinica } from '@/hooks/useProductsClinica';
 import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
+import { currencyFormatHandle } from '@/helper/common_functions'
+// interface PatientDetailsInterface {
+//     name: string;
+//     phone_number: string;
+//     email: string;
+//     treatment_category: string;
+// }
 
-interface PatientDetailsInterface {
-    name: string;
-    phone_number: string;
-    email: string;
-    treatment_category: string;
+interface CartItemComponentInterface {
+    data: CartArrayInterface,
+    index: number;
+    controllProductQtyHandle: (product_id: number, qty: number, price: number, index: number) => void
+}
+interface CartArrayInterface {
+    product_id: number;
+    quantity: number;
+    product_name: string;
+    category_name: string;
+    category_id: number;
+    price: number;
+    quantity_available: number;
 }
 
-const patient_details: PatientDetailsInterface = {
-    name: "Sarah S.",
-    phone_number: "+1 436 793 8493",
-    email: "Sarahsilk@gmail.com",
-    treatment_category: "Family Medicine"
-};
 
 const render_details = [
     {
@@ -71,24 +80,102 @@ const Payment_Method_Select = () => {
         </div>)
 }
 
+
+const grandTotalHandle = (ProductArray: CartArrayInterface[]) => {
+
+    const totalQty = ProductArray.reduce((a, b) => a + b.quantity, 0)
+    const totalAmount = ProductArray.reduce((a, b) => a + (b.quantity * b.price), 0)
+
+    return { qty: totalQty, amount: currencyFormatHandle(totalAmount) }
+
+}
+
+
+const calcTotalAmount = (perItemAmount: number, qty: number) => {
+
+
+    return currencyFormatHandle(perItemAmount * qty)
+
+}
+
+const CartItemComponent: FC<CartItemComponentInterface> = ({ data, controllProductQtyHandle, index }) => {
+
+    const { product_name, category_name, quantity, quantity_available, product_id, price } = data
+
+
+    const qtyHandle = (type: string) => {
+        let newQty = quantity
+        if (type === 'inc') {
+            newQty += 1
+        }
+        else {
+            newQty -= 1
+
+        }
+        controllProductQtyHandle(product_id, newQty, price, index)
+    }
+
+    return <div className='bg-[#AFB8C6] py-2 px-3 rounded-lg'>
+
+        <div className='flex items-center '>
+            <div className='flex-1 flex items-center space-x-4'>
+                <div className='flex flex-col items-center text-[#121111] '><button onClick={() => qtyHandle('inc')} className='disabled:opacity-60' disabled={quantity_available === quantity}>
+                    <IoIosArrowUp size={20} className=' text-primary_color' /></button>
+                    <span className='block text-lg font-bold text-[#121111]'>{quantity}</span>
+                    <button disabled={quantity === 0} className='disabled:opacity-60'  onClick={() => qtyHandle('dec')} > <IoIosArrowDown size={20} className=' text-primary_color' /></button>
+                </div>
+                <dl>
+                    <dt className='text-lg '>
+                        {product_name}
+                    </dt>
+
+                    <dd className='text-[15px] text-gray-700'>
+                        {category_name}
+                    </dd>
+                </dl>
+            </div>
+            <div className='flex items-center space-x-4'>
+                <p className='font-bold text-[#121111] '>
+                    {calcTotalAmount(price, quantity)}
+                </p>
+
+                <div>
+                    <button>
+                        <IoCloseOutline size={20} className=' text-primary_color' />
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+}
+
+
 const Orders = () => {
 
-   
+
     const { categories } = useCategoriesClinica()
-    const { selectedCategory, products, getCategoriesByLocationId , loadingProducts, selectedProduct, selectProductHandle} = useProductsClinica()
     const [selectedPatient, setSelectedPatient] = useState(null)
+    const { selectedCategory, products, getCategoriesByLocationId, loadingProducts, selectedProduct, selectProductHandle } = useProductsClinica()
     const [fetchingDataLoading, setfetchingDataLoading] = useState(true)
+    const [cartArray, setCartArray] = useState<CartArrayInterface[]>([])
+    const [productQty, setProductQty] = useState<number>(0)
+
 
     const router = useRouter()
 
-    const category_change_handle = (e:any) => {
+    const category_change_handle = (e: any) => {
         const value = e.target.value
         getCategoriesByLocationId(value)
+        setProductQty(0)
     }
 
-    const select_product_change_handle = (e:any) => {
+    const select_product_change_handle = (e: any) => {
         const value = e.target.value
+        console.log(value)
         selectProductHandle(value)
+        setProductQty(0)
     }
 
 
@@ -110,12 +197,59 @@ const Orders = () => {
 
 
 
+    const quantityHandle = (qty: number) => {
+        setProductQty(qty)
+
+    }
+
+
+
+    const addToCartHandle = () => {
+        const findCategory: any = categories.find(({ category_id }:any) => +selectedProduct.category_id === +category_id)
+
+        let addProduct: CartArrayInterface | null = null
+        if (findCategory) {
+            addProduct = {
+                product_id: selectedProduct.product_id,
+                product_name: selectedProduct.product_name,
+                quantity: productQty,
+                category_name: findCategory.category_name,
+                category_id: findCategory.category_id,
+                quantity_available: selectedProduct.quantity_available,
+                price: selectedProduct.price,
+            }
+            if (addProduct) {
+                cartArray.push(addProduct)
+                setCartArray([...cartArray])
+                selectProductHandle(0)
+                setProductQty(0)
+                getCategoriesByLocationId(0)
+            }
+        }
+    }
+
+    console.log(cartArray, selectedProduct)
+
+
+
+    const controllProductQtyHandle = (product_id: number, qty: number, price: number, index: number) => {
+        if (qty === 0) {
+            cartArray.splice(index, 1)
+        } else {
+            cartArray[index].quantity = qty
+            console.log({ product_id, qty })
+        }
+        setCartArray([...cartArray])
+
+    }
+
+
 
     return (
         <main className="w-full  h-full font-[500] text-[20px]">
 
 
-            <div className='w-full min-h-[81.5dvh] h-[100%] py-2 px-2 grid grid-cols-3 gap-2'>
+            <div className='w-full min-h-[78dvh] h-[100%] py-2 px-2 grid grid-cols-3 gap-2'>
                 <div className='bg-[#B8C8E1] h-[100%]  col-span-2 rounded-md py-2   ' >
 
                     <span>
@@ -148,27 +282,27 @@ const Orders = () => {
 
                             <div className='space-y-6'>
                                 <div className='w-1/3'>
-                                    <Select_Dropdown initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ id, category_name }:any) => ({ id: id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
+                                    <Select_Dropdown initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ id, category_name }: any) => ({ id: id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
                                 </div>
                                 <div className='w-1/3'>
                                     {loadingProducts ? <div className='text-sm text-gray-400'>
                                         Loading Products...
                                     </div> : <Select_Dropdown initialValue={0} bg_color='#fff' start_empty={true}
                                         // @ts-ignore
-                                        options_arr={products.map(({ product_id, product_name }) => ({ id: product_id, label: product_name }))}
+                                        options_arr={products.map(({ product_id, product_name }:any) => ({ value: product_id, label: product_name }))}
 
-                                        required={true} value={selectedProduct} on_change_handle={select_product_change_handle} label='Select Product' />}
+                                        required={true} value={selectedProduct ? selectedProduct.product_id : 0} on_change_handle={select_product_change_handle} label='Select Product' />}
                                 </div>
 
 
 
                                 <div className='flex'>
-                                    <Quantity_Field />
+                                    <Quantity_Field maxAvailability={selectedProduct ? selectedProduct.quantity_available : 0} quantity={productQty} quantityHandle={quantityHandle} />
                                 </div>
 
 
                                 <div className='flex'>
-                                    <button className='bg-[#8CB3F0] text-[#fff] font-bold py-3 px-9 rounded-md hover:opacity-80 active:opacity-50' type='submit'>
+                                    <button disabled={!productQty} onClick={addToCartHandle} className='bg-[#8CB3F0] text-[#fff] font-bold py-3 px-9 rounded-md hover:opacity-80 active:opacity-50 disabled:opacity-60' type='submit'>
                                         Add to cart
                                     </button>
                                 </div>
@@ -188,53 +322,20 @@ const Orders = () => {
                             <h1 className='text-xl '>
                                 Cart Items
                             </h1>
-                            <p className='text-sm'>Order # 14651</p>
+                            <p className='text-sm'>Order # 01</p>
                         </div>
 
-                        <RxReload size={30} />
+                        {/* <RxReload size={30} /> */}
                     </div>
 
 
-                    <div className='overflow-auto h-[100%] px-4 py-4'>
+                    <div className='overflow-auto h-[37.5vh] px-4 py-4'>
 
                         <div className='space-y-3 '>
-                            {Array(0).fill(null).map((val, ind) => {
-                                return <div key={ind} className='bg-[#AFB8C6] py-2 px-3 rounded-lg'>
-
-                                    <div className='flex items-center '>
-                                        <div className='flex-1 flex items-center space-x-4'>
-                                            <div className='flex flex-col items-center text-[#121111] '>
-                                                <IoIosArrowUp size={20} className=' text-primary_color' />
-                                                <span className='block text-lg font-bold text-[#121111]'>2</span>
-                                                <IoIosArrowDown size={20} className=' text-primary_color' />
-                                            </div>
-                                            <dl>
-                                                <dt className='text-lg '>
-                                                    Office Visit
-                                                </dt>
-
-                                                <dd className='text-[15px] text-gray-700'>
-                                                    Procedures
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                        <div className='flex items-center space-x-4'>
-                                            <p className='font-bold text-[#121111] '>
-                                                $0
-                                            </p>
-
-                                            <div>
-                                                <IoCloseOutline size={20} className=' text-primary_color' />
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                </div>
+                            {cartArray.map((data: CartArrayInterface, ind) => {
+                                return <CartItemComponent index={ind} data={data} key={ind} controllProductQtyHandle={controllProductQtyHandle} />
                             })}
                         </div>
-
-
                     </div>
 
 
@@ -274,7 +375,7 @@ const Orders = () => {
                                 </h1>
                                 <div className='flex items-center space-x-1'>
                                     <p className='text-start'>
-                                        $0
+                                        {grandTotalHandle(cartArray).amount}
                                     </p>
                                     <IoCloseOutline color='transparent' />
                                 </div>
@@ -285,10 +386,10 @@ const Orders = () => {
                                 <div className='bg-[#11252C] w-44 py-1 px-3 text-white rounded-md flex items-center justify-between'>
                                     <dl  >
                                         <dt>
-                                            $0
+                                            {grandTotalHandle(cartArray).amount}
                                         </dt>
                                         <dd className='text-sm font-normal'>
-                                            0 items
+                                            {grandTotalHandle(cartArray).qty} items
                                         </dd>
                                     </dl>
 

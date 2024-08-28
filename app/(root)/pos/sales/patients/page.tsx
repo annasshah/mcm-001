@@ -11,10 +11,13 @@ import { PiCaretCircleRightFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { Edit_Modal } from './EditModal';
 import { Action_Button } from '@/components/Action_Button';
-import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import moment from 'moment';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { useRouter } from 'next/navigation';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { supabase } from '@/services/supabase';
+import { toast } from 'react-toastify';
 
 interface PatientDetailsInterface {
   firstname: string;
@@ -106,7 +109,7 @@ const fields = [
     // details_section: true,
     // render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm:s').utc().format('MM/DD/YYYY'),
     details_order: 7,
-    col_span_01: true
+    col_span_01: false
   },
 ]
 
@@ -163,6 +166,7 @@ const Payment_Method_Select = () => {
 
 const Patients = () => {
   const [modalOpen, setModalOpen] = useState(false)
+  const { locations } = useLocationClinica()
   const [dataList, setDataList] = useState<PatientDetailsInterface[]>([])
   const [allData, setAllData] = useState<PatientDetailsInterface[]>([])
   const [detailsView, setDetailsView] = useState<PatientDetailsInterface | null>(null)
@@ -172,7 +176,9 @@ const Patients = () => {
   const [activeModalMode, setActiveModalMode] = useState<'edit' | 'delete' | 'create' | ''>('')
   const [modalLoading, setModalLoading] = useState(false)
   const [isOpenModal, setIsOpenModal] = useState(false)
-
+  const [services, setServices] = useState<string[] | null | undefined>([]);
+  const [canModalSubmit, setCanModalSubmit] = useState(false)
+  const [canAddPatient, setCanAddPatient] = useState(false)
 
 
   const category_change_handle = () => {
@@ -198,14 +204,18 @@ const Patients = () => {
     fetch_handle()
   }, [])
 
-  // const close_modal_handle = () => {
-  //   setModalOpen(false)
-  // }
+  useEffect(() => {
+    const fetchServices = async () => {
+      let { data, error } = await supabase.from('services').select("title");
 
-  // const openModal_handle = () => {
-  //   setModalOpen(true)
-  // }
+      if (data) {
+        const serviceData = data.map((item) => item.title);
+        setServices(serviceData);
+      }
+    };
 
+    fetchServices();
+  }, []);
 
 
 
@@ -217,6 +227,7 @@ const Patients = () => {
     setIsOpenModal(false)
     setActionData({})
     setActiveModalMode('')
+    setCanModalSubmit(false)
   }
 
 
@@ -237,19 +248,29 @@ const Patients = () => {
     openModalHandle()
     setActionData(data)
     setActiveModalMode('delete')
+    setCanModalSubmit(true)
 
   }
 
 
   const selectHandle = (data: any) => {
-      localStorage.setItem('@pos-patient', JSON.stringify(data))
-      router.push('/pos/sales')
+    localStorage.setItem('@pos-patient', JSON.stringify(data))
+    router.push('/pos/sales')
 
   }
 
 
-  const modalInputChangeHandle = (e: string, id: string) => {
+  const modalInputChangeHandle = (e: any, id: string) => {
     setActionData((pre: any) => ({ ...pre, [id]: e }))
+    setCanModalSubmit(true)
+
+
+  }
+  const addPatientFieldsChange = (e: any, id: string) => {
+    setActionData((pre: any) => ({ ...pre, [id]: e }))
+
+
+    // setCanAddPatient(true)
 
 
   }
@@ -273,6 +294,88 @@ const Patients = () => {
 
 
 
+  const deleteDataHandle = async () => {
+    setModalLoading(true)
+    const selectedId = actionData?.id
+    const { data: res_data, error } = await delete_content_service({ table: 'pos', id: selectedId });
+    if (!error) {
+      setDataList((elem) => elem.filter((data: any) => data.id !== selectedId))
+      setAllData((elem) => elem.filter((data: any) => data.id !== selectedId))
+      setDetailsView(null)
+      toast.success('Deleled successfully');
+      closeModalHandle()
+
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+
+    setModalLoading(false)
+  }
+
+  const editDataHandle = async () => {
+    setModalLoading(true)
+    try {
+      const data = await update_content_service({ table: 'pos', language: '', post_data: actionData });
+      if (data?.length) {
+        toast.success('Updated successfully');
+        closeModalHandle()
+
+        const newData = data[0]
+        // @ts-ignore
+        const newDataSetDataList = allData.map((elem) => newData.id === elem.id ? newData : elem)
+        // @ts-ignore
+        const newDataSetAllData = dataList.map((elem) => newData.id === elem.id ? newData : elem)
+        // @ts-ignore
+        setAllData([...newDataSetAllData])
+        // @ts-ignore
+        setDataList([...newDataSetDataList])
+
+        // @ts-ignore
+        setDetailsView(newData)
+      }
+
+
+    } catch (error: any) {
+
+      if (error && error?.message) {
+        toast.error(error?.message);
+        // throw new Error(error.message);
+      } else {
+        toast.error('Something went wrong!');
+      }
+    }
+    setModalLoading(false)
+  }
+
+
+
+  const modalSubmitHandle = async () => {
+
+    switch (activeModalMode) {
+      case 'create':
+        // createNewDataHandle()
+        break;
+      case 'edit':
+        editDataHandle()
+        break;
+      case 'delete':
+        deleteDataHandle()
+        break
+
+    }
+    // if(activeModalMode === ){
+    // }
+    // else if(activeModalMode === 'edit'){
+
+    // }
+    // else if()
+
+  }
+
+
+
   return (
     <main className="w-full  font-[500] text-[20px]">
 
@@ -290,9 +393,9 @@ const Patients = () => {
 
 
 
-            <div>
+            {/* <div>
               <CiFilter size={30} />
-            </div>
+            </div> */}
 
 
 
@@ -354,23 +457,29 @@ const Patients = () => {
           <div className='overflow-auto h-[100%] px-4 py-4'>
 
 
-            <div className='space-x-3'>
+            {/* <div className='space-x-3'>
               <button className='bg-[#202B40] py-2 px-3 text-white text-sm rounded-lg'>
                 New Patient
               </button>
               <button className='bg-white py-2 px-3 text-[#202B40] text-sm rounded-lg'>
                 Returning patient
               </button>
-            </div>
+            </div> */}
 
 
             <div className='w-2/3 space-y-4'>
-              <Input_Component onChange={() => ''} label='Name' />
-              <Input_Component onChange={() => ''} label='Name' />
-              <Input_Component onChange={() => ''} label='Email Address' />
-              <Input_Component onChange={() => ''} label='Phone Number' />
+              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'first_name')} label='First Name' />
+              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'last_name')} label='Last Name' />
+              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'email')} label='Email Address' />
+              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' />
 
-              <Select_Dropdown bg_color='#fff' start_empty={true} options_arr={[]} required={true} on_change_handle={category_change_handle} label='Treatment Type' />
+
+              <Select_Dropdown bg_color='#fff' start_empty={true} options_arr={services?.map((service) => ({ value: service, label: service }))} required={true} on_change_handle={category_change_handle} label='Treatment Type' />
+              <Select_Dropdown
+                bg_color='#fff'
+                value={0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }:any) => ({ value: id, label: title }))}
+                // on_change_handle={select_location_handle}
+                required={true} />
 
             </div>
 
@@ -381,7 +490,7 @@ const Patients = () => {
 
 
           <div>
-            <button className='bg-[#11252C] py-3 w-full text-center text-white'>
+            <button onClick={addNewHandle} className='bg-[#11252C] py-3 w-full text-center text-white'>
               Add Patient
             </button>
           </div>
@@ -395,7 +504,7 @@ const Patients = () => {
 
 
 
-      <Custom_Modal submit_button_color={modal_titles[activeModalMode]?.button?.color} loading={modalLoading} buttonLabel={modal_titles[activeModalMode]?.button?.label} is_open={isOpenModal} Title={activeModalMode && modal_titles[activeModalMode]?.modalLabel} close_handle={closeModalHandle} open_handle={openModalHandle} create_new_handle={() => ''} >
+      <Custom_Modal disabled={!canModalSubmit} submit_button_color={modal_titles[activeModalMode]?.button?.color} loading={modalLoading} buttonLabel={modal_titles[activeModalMode]?.button?.label} is_open={isOpenModal} Title={activeModalMode && modal_titles[activeModalMode]?.modalLabel} close_handle={closeModalHandle} open_handle={openModalHandle} create_new_handle={modalSubmitHandle} >
 
         {activeModalMode === 'delete' ? <div>
           <h1>
@@ -405,9 +514,15 @@ const Patients = () => {
 
         </div> : <div className='grid grid-cols-2 gap-4'>
           {
-            fields.filter(({ editable }) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }) => {
+            fields.filter(({ editable }:any) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }:any) => {
               return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
-                <Input_Component value={actionData ? actionData[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
+                {id === 'locationid' ? <Select_Dropdown
+                  bg_color='#fff'
+                  value={actionData ? actionData[id] : 0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }:any) => ({ value: id, label: title }))}
+                  // @ts-ignore
+                  on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, id)}
+                  required={true} /> : <Input_Component value={actionData ? actionData[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
+                }
               </div>
             })
           }
