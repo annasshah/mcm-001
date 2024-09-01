@@ -81,11 +81,11 @@ export async function update_content_service({ table, language, post_data, match
 
 
 
-export async function create_content_service({ table, language, post_data }) {
+export async function create_content_service({ table, language='', post_data, multiple_rows=false }) {
 
   let query = supabase
     .from(`${table}${language}`)
-    .insert([
+    .insert(multiple_rows ? [...post_data] : [
       post_data
     ])
     .select()

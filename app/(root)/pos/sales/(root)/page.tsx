@@ -12,6 +12,8 @@ import { useProductsClinica } from '@/hooks/useProductsClinica';
 import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
 import { currencyFormatHandle } from '@/helper/common_functions'
+import { create_content_service } from '@/utils/supabase/data_services/data_services';
+import { toast } from 'react-toastify';
 // interface PatientDetailsInterface {
 //     name: string;
 //     phone_number: string;
@@ -122,7 +124,7 @@ const CartItemComponent: FC<CartItemComponentInterface> = ({ data, controllProdu
                 <div className='flex flex-col items-center text-[#121111] '><button onClick={() => qtyHandle('inc')} className='disabled:opacity-60' disabled={quantity_available === quantity}>
                     <IoIosArrowUp size={20} className=' text-primary_color' /></button>
                     <span className='block text-lg font-bold text-[#121111]'>{quantity}</span>
-                    <button disabled={quantity === 0} className='disabled:opacity-60'  onClick={() => qtyHandle('dec')} > <IoIosArrowDown size={20} className=' text-primary_color' /></button>
+                    <button disabled={quantity === 0} className='disabled:opacity-60' onClick={() => qtyHandle('dec')} > <IoIosArrowDown size={20} className=' text-primary_color' /></button>
                 </div>
                 <dl>
                     <dt className='text-lg '>
@@ -156,11 +158,12 @@ const Orders = () => {
 
 
     const { categories } = useCategoriesClinica()
-    const [selectedPatient, setSelectedPatient] = useState(null)
+    const [selectedPatient, setSelectedPatient] = useState<any>(null)
     const { selectedCategory, products, getCategoriesByLocationId, loadingProducts, selectedProduct, selectProductHandle } = useProductsClinica()
     const [fetchingDataLoading, setfetchingDataLoading] = useState(true)
     const [cartArray, setCartArray] = useState<CartArrayInterface[]>([])
     const [productQty, setProductQty] = useState<number>(0)
+    const [placeOrderLoading, setPlaceOrderLoading] = useState(false)
 
 
     const router = useRouter()
@@ -205,7 +208,7 @@ const Orders = () => {
 
 
     const addToCartHandle = () => {
-        const findCategory: any = categories.find(({ category_id }:any) => +selectedProduct.category_id === +category_id)
+        const findCategory: any = categories.find(({ category_id }: any) => +selectedProduct.category_id === +category_id)
 
         let addProduct: CartArrayInterface | null = null
         if (findCategory) {
@@ -242,6 +245,54 @@ const Orders = () => {
         setCartArray([...cartArray])
 
     }
+
+
+
+
+    const placeOrderHandle = async () => {
+        try {
+            setPlaceOrderLoading(true);
+    
+            if (!selectedPatient) return;
+    
+            const { data, error }: any = await create_content_service({
+                table: 'orders',
+                post_data: { patient_id: selectedPatient.id },
+            });
+    
+            if (error) throw new Error(error.message);
+    
+            if (data?.length) {
+                const order_id = data[0].order_id;
+    
+                const post_data = cartArray.map((elem) => ({
+                    order_id,
+                    product_id: elem.product_id,
+                    quantity_sold: elem.quantity,
+                    total_price: elem.price * elem.quantity,
+                }));
+    
+                const { data: order_created_data, error: order_created_error }: any = await create_content_service({
+                    table: 'saleshistory',
+                    post_data,
+                    multiple_rows: true,
+                });
+    
+                if (order_created_error) throw new Error(order_created_error.message);
+    
+                if (order_created_data.length) {
+                    toast.success(`Order has been placed, order # ${order_id}`);
+                    setCartArray([]);
+                }
+            }
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setPlaceOrderLoading(false);
+        }
+    };
+    
+    
 
 
 
@@ -289,7 +340,7 @@ const Orders = () => {
                                         Loading Products...
                                     </div> : <Select_Dropdown initialValue={0} bg_color='#fff' start_empty={true}
                                         // @ts-ignore
-                                        options_arr={products.map(({ product_id, product_name }:any) => ({ value: product_id, label: product_name }))}
+                                        options_arr={products.map(({ product_id, product_name }: any) => ({ value: product_id, label: product_name }))}
 
                                         required={true} value={selectedProduct ? selectedProduct.product_id : 0} on_change_handle={select_product_change_handle} label='Select Product' />}
                                 </div>
@@ -322,7 +373,7 @@ const Orders = () => {
                             <h1 className='text-xl '>
                                 Cart Items
                             </h1>
-                            <p className='text-sm'>Order # 01</p>
+                            <p className='text-sm'>Order # --</p>
                         </div>
 
                         {/* <RxReload size={30} /> */}
@@ -382,19 +433,25 @@ const Orders = () => {
                             </div>
 
 
-                            <div className='flex justify-end'>
-                                <div className='bg-[#11252C] w-44 py-1 px-3 text-white rounded-md flex items-center justify-between'>
-                                    <dl  >
-                                        <dt>
-                                            {grandTotalHandle(cartArray).amount}
-                                        </dt>
-                                        <dd className='text-sm font-normal'>
-                                            {grandTotalHandle(cartArray).qty} items
-                                        </dd>
-                                    </dl>
+                            <div className={`flex justify-end `}>
+                                <button onClick={placeOrderHandle} disabled={!cartArray.length} className='bg-[#11252C] w-44 py-1 px-3 text-white rounded-md disabled:opacity-75'>
 
-                                    <PiCaretCircleRightFill size={35} />
-                                </div>
+                                    {placeOrderLoading ? <div className='h-12 flex justify-center items-center'>
+                                        <CircularProgress size={25} color='secondary' />
+                                    </div>
+                                        : <div className='flex items-center justify-between'>
+                                            <dl >
+                                                <dt className='text-start'>
+                                                    {grandTotalHandle(cartArray).amount}
+                                                </dt>
+                                                <dd className='text-sm font-normal'>
+                                                    {grandTotalHandle(cartArray).qty} items
+                                                </dd>
+                                            </dl>
+
+                                            <PiCaretCircleRightFill size={35} />
+                                        </div>}
+                                </button>
                             </div>
 
 
