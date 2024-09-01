@@ -2,22 +2,17 @@
 import { Input_Component } from '@/components/Input_Component';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import React, { useEffect, useState } from 'react'
-import { Quantity_Field } from '@/components/Quantity_Field';
-import { RxReload } from "react-icons/rx";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import { Select } from 'flowbite-react';
-import { PiCaretCircleRightFill } from "react-icons/pi";
-import { CiFilter } from "react-icons/ci";
-import { Edit_Modal } from './EditModal';
 import { Action_Button } from '@/components/Action_Button';
-import { delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import moment from 'moment';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { useRouter } from 'next/navigation';
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { supabase } from '@/services/supabase';
 import { toast } from 'react-toastify';
+import { validateFormData } from '@/utils/validationCheck';
 
 interface PatientDetailsInterface {
   firstname: string;
@@ -171,6 +166,7 @@ const Patients = () => {
   const [allData, setAllData] = useState<PatientDetailsInterface[]>([])
   const [detailsView, setDetailsView] = useState<PatientDetailsInterface | null>(null)
   const [actionData, setActionData] = useState<any>({})
+  const [createActionData, setCreateActionData] = useState<any>({})
   const [editDetails, setEditDetails] = useState<PatientDetailsInterface | {}>({})
   const [loading, setLoading] = useState(true)
   const [activeModalMode, setActiveModalMode] = useState<'edit' | 'delete' | 'create' | ''>('')
@@ -232,11 +228,11 @@ const Patients = () => {
 
 
 
-  const addNewHandle = () => {
-    openModalHandle()
-    setActiveModalMode('create')
+  // const addNewHandle = () => {
+  //   openModalHandle()
+  //   setActiveModalMode('create')
 
-  }
+  // }
   const editHandle = (data: any) => {
     openModalHandle()
     setActionData(data)
@@ -267,7 +263,7 @@ const Patients = () => {
 
   }
   const addPatientFieldsChange = (e: any, id: string) => {
-    setActionData((pre: any) => ({ ...pre, [id]: e }))
+    setCreateActionData((pre: any) => ({ ...pre, [id]: e }))
 
 
     // setCanAddPatient(true)
@@ -307,7 +303,6 @@ const Patients = () => {
 
     }
     else if (error) {
-      console.log(error.message)
       toast.error(error.message);
     }
 
@@ -371,6 +366,55 @@ const Patients = () => {
 
     // }
     // else if()
+
+  }
+
+
+  const createNewDataHandle = async () => {
+
+    const requiredFields = [
+      'locationid',
+      'firstname',
+      'lastname',
+      'email',
+      'gender',
+      'phone',
+      'treatmenttype',
+    ];
+
+
+    const validateData = validateFormData(createActionData)
+
+    if (!validateData) {
+      return
+    }
+
+    for (const field of requiredFields) {
+      if (!createActionData[field]) {
+        toast.warning(`Please fill in the ${field}`);
+        return;
+      }
+    }
+
+
+    const postData = {
+      ...createActionData
+    }
+
+    const { data, error } = await  create_content_service({ table: 'pos', language: '', post_data: postData })
+
+    if (error) {
+      if (error?.message === 'duplicate key value violates unique constraint "Appoinments_date_and_time_key"') {
+        toast.error(`Sorry, Appointment time slot is not available, Please select any other time slot`);
+
+      }
+      else { toast.error(`Error adding patient: ${error?.message}`); }
+    } else {
+      toast.success("Patient successfully added!");
+      setCreateActionData({})
+      fetch_handle()
+    }
+
 
   }
 
@@ -468,17 +512,22 @@ const Patients = () => {
 
 
             <div className='w-2/3 space-y-4'>
-              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'first_name')} label='First Name' />
-              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'last_name')} label='Last Name' />
-              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'email')} label='Email Address' />
-              <Input_Component onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' />
+              <Input_Component value={createActionData.firstname} onChange={(e: string) => addPatientFieldsChange(e, 'firstname')} label='First Name' />
+              <Input_Component value={createActionData.lastname} onChange={(e: string) => addPatientFieldsChange(e, 'lastname')} label='Last Name' />
+              {/* @ts-ignore */}
+              <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'gender')} label='Gender' />
+              <Input_Component value={createActionData.email} onChange={(e: string) => addPatientFieldsChange(e, 'email')} label='Email Address' />
+              <Input_Component value={createActionData.phone} onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' />
 
-
-              <Select_Dropdown bg_color='#fff' start_empty={true} options_arr={services?.map((service) => ({ value: service, label: service }))} required={true} on_change_handle={category_change_handle} label='Treatment Type' />
+              {/* @ts-ignore */}
+              <Select_Dropdown value={createActionData.treatmenttype} bg_color='#fff' start_empty={true} options_arr={services?.map((service) => ({ value: service, label: service }))} required={true} on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'treatmenttype')}
+                label='Treatment Type' />
+             
               <Select_Dropdown
                 bg_color='#fff'
-                value={0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }:any) => ({ value: id, label: title }))}
-                // on_change_handle={select_location_handle}
+                value={createActionData.locationid} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: any) => ({ value: id, label: title }))}
+                // @ts-ignore
+                on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'locationid')}
                 required={true} />
 
             </div>
@@ -490,7 +539,7 @@ const Patients = () => {
 
 
           <div>
-            <button onClick={addNewHandle} className='bg-[#11252C] py-3 w-full text-center text-white'>
+            <button onClick={createNewDataHandle} className='bg-[#11252C] py-3 w-full text-center text-white'>
               Add Patient
             </button>
           </div>
@@ -514,11 +563,11 @@ const Patients = () => {
 
         </div> : <div className='grid grid-cols-2 gap-4'>
           {
-            fields.filter(({ editable }:any) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }:any) => {
+            fields.filter(({ editable }: any) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }: any) => {
               return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
                 {id === 'locationid' ? <Select_Dropdown
                   bg_color='#fff'
-                  value={actionData ? actionData[id] : 0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }:any) => ({ value: id, label: title }))}
+                  value={actionData ? actionData[id] : 0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: any) => ({ value: id, label: title }))}
                   // @ts-ignore
                   on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, id)}
                   required={true} /> : <Input_Component value={actionData ? actionData[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />

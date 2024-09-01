@@ -47,7 +47,7 @@ export async function fetchAppointmentsByLocation(locationId) {
 export async function fetch_content_service({ table, language = '', selectParam = '', matchCase = null }) {
   let query = supabase
     .from(`${table}${language}`)
-    .select(`*${selectParam ? selectParam : ''}`);
+    .select(`*${selectParam ? selectParam : ''}`)
 
     if(matchCase){
       query = query.eq(matchCase.key, matchCase.value)
