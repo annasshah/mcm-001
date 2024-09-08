@@ -185,18 +185,13 @@ const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id }) =>
 }
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, orderDetails }) => {
-    if (!isOpen) return null;
-
-
-
     const [dataList, setDataList] = useState<DataListInterface>({});
     const [salesHistory, setSalesHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const { order_id, pos, patient_id } = orderDetails || {};
-
-
-
+    
+    
     useEffect(() => {
 
         ; (async () => {
@@ -256,7 +251,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
 
 
     return (
-        <div className="fixed inset-0 z-30 bg-black bg-opacity-50 flex items-center justify-center">
+        isOpen ? <div className="fixed inset-0 z-30 bg-black bg-opacity-50 flex items-center justify-center">
             {loading ? <div className='h-full w-full flex justify-center items-center '>
                 <CircularProgress />
             </div> : <div className="bg-white rounded-lg w-3/4 p-6">
@@ -317,7 +312,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
 
                 </div>
             </div>}
-        </div>
+        </div> : null
     );
 };
 
