@@ -119,6 +119,12 @@ const ReturnProductSection = ({data, order_id}:any) => {
     console.log('------------------>', data)
 
     const processReturnHandle = async () => {
+
+        if(forReturnQty > data.quantity_sold){
+            toast.error(`Return quantity should not be higher than the sold quantity`)
+            return 
+
+        }
         setLoading(true)
 
         const postData = {
