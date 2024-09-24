@@ -8,7 +8,7 @@ export function useLocationClinica() {
 
 
     const [locations, setLocations] = useState([])
-    
+
     const [selected_location, setSelected_location] = useState('')
     const [selected_location_data, setSelected_location_data] = useState(null)
     const [change_data, setChange_data] = useState(null)
@@ -19,11 +19,11 @@ export function useLocationClinica() {
 
 
 
-    const set_location_handle = (value) => {
+    const set_location_handle = (value: any) => {
         setSelected_location(value);
 
 
-        const data = locations.find(item => item.id == value)
+        const data = locations.find((item: { id: number | string; }) => item.id == value)
         setSelected_location_data(data)
         setChange_data(data)
 
@@ -36,9 +36,9 @@ export function useLocationClinica() {
 
 
 
-    const on_change_handle = (field, val) => {
+    const on_change_handle = (field: string, val: string) => {
         set_is_edited(true);
-        setChange_data(prev => ({
+        setChange_data((prev: any) => ({
             ...prev,
             [field]: val
         }));
@@ -46,15 +46,15 @@ export function useLocationClinica() {
 
 
     const handle_update = async () => {
-            set_update_loading(true);
-            const res_data = await updateLocationData(change_data.id, change_data);
-            if (res_data?.length) {
-                toast.success('Updated successfully');
-            }
-            // console.log(res_data);
-            setSelected_location_data(res_data[0]);
-            set_update_loading(false);
-            set_is_edited(false);
+        set_update_loading(true);
+        const res_data = await updateLocationData(change_data.id, change_data);
+        if (res_data?.length) {
+            toast.success('Updated successfully');
+        }
+        // console.log(res_data);
+        setSelected_location_data(res_data[0]);
+        set_update_loading(false);
+        set_is_edited(false);
     };
 
 
@@ -73,7 +73,7 @@ export function useLocationClinica() {
 
 
 
-    return { locations, set_location_handle,selected_location_data,change_data, selected_location, reset_state, on_change_handle, is_edited, update_loading, handle_update }
+    return { locations, set_location_handle, selected_location_data, change_data, selected_location, reset_state, on_change_handle, is_edited, update_loading, handle_update }
 
 
 

@@ -16,7 +16,7 @@ const TopTabs = () => {
             title: "Products",
             url: "products"
         },
-        
+
     ];
 
 
@@ -36,7 +36,7 @@ const TopTabs = () => {
                 ))}
             </ul>
 
-         
+
         </nav>
     );
 }

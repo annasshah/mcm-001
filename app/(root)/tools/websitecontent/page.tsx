@@ -4,7 +4,6 @@
 import React from 'react';
 import WebsiteContentLayout from './Layout';
 import { Button, Label, Select, Toast } from "flowbite-react";
-import { fetchHeroSectionContent, updateHeroSectionContent } from '@/utils/supabase/data_services/data_services';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle'
 import { Select_Dropdown } from '@/components/Select_Dropdown'
 import { Form_Component } from '@/components/Form_Component'
@@ -13,9 +12,9 @@ import { home_section_options, langage_list_options } from '@/utils/list_options
 
 
 const only_fields_to_render = {
-    Hero_Section:['title', 'content'],
-    About_Short:['content'],
-    Mission:['Title', 'Text']
+    Hero_Section: ['title', 'content'],
+    About_Short: ['content'],
+    Mission: ['Title', 'Text']
 
 }
 
@@ -38,13 +37,16 @@ const Home = () => {
         selected_list_id,
         change_selected_list_id,
         reset_fields
-    } = useSingleRowDataHandle({update_content_function:updateHeroSectionContent, default_selected_section:home_section_options[0].value, list_item_section:['Mission'], table:'Hero_Section' });
+    } = useSingleRowDataHandle({
+        default_selected_section: home_section_options[0].value, list_item_section: ['Mission'], table: 'Hero_Section',
+        required_fields: []
+    });
 
 
 
-    const select_section_handle = (e) => {
+    const select_section_handle = (e: React.ChangeEvent<HTMLSelectElement>) => {
 
-        setSelected_section(()=>e.target.value)
+        setSelected_section(() => e.target.value)
 
     }
 
@@ -56,11 +58,12 @@ const Home = () => {
 
                     <Select_Dropdown value={selected_section} label='Section' options_arr={home_section_options} on_change_handle={select_section_handle} required={true} />
                     <Select_Dropdown value={selected_language} label='Language' options_arr={langage_list_options} on_change_handle={select_language_handle} required={true} />
-                    {selected_section === 'Mission' && <Select_Dropdown value={selected_list_id} label='ID' options_arr={data_list.map((e)=>({label:e.id, value:e.id}))} on_change_handle={change_selected_list_id} required={true} />}
+                    {selected_section === 'Mission' && <Select_Dropdown value={selected_list_id} label='ID' options_arr={data_list.map((e) => ({ label: e.id, value: e.id }))} on_change_handle={change_selected_list_id} required={true} />}
                 </div>
                 <div className="border-t my-3 border-black"></div>
                 <div className='px-3 w-1/2 space-y-5'>
-                    {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={only_fields_to_render[selected_section]} on_change_handle={on_change_handle}   />}
+                {/* @ts-ignore  */}
+                    {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={only_fields_to_render[selected_section]} on_change_handle={on_change_handle} />}
 
                 </div>
             </div>

@@ -49,9 +49,9 @@ export async function fetch_content_service({ table, language = '', selectParam 
     .from(`${table}${language}`)
     .select(`*${selectParam ? selectParam : ''}`)
 
-    if(matchCase){
-      query = query.eq(matchCase.key, matchCase.value)
-    }
+  if (matchCase) {
+    query = query.eq(matchCase.key, matchCase.value)
+  }
   const { data, error } = await query;
   if (error) {
     console.log(error.message);
@@ -80,8 +80,23 @@ export async function update_content_service({ table, language, post_data, match
 }
 
 
+export async function updateLocationData(id, post_data) {
+  const { data, error } = await supabase
+    .from(`Locations`)
+    .update(post_data)
+    .eq('id', id)
+    .select()
+  if (error) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
 
-export async function create_content_service({ table, language='', post_data, multiple_rows=false }) {
+  return data;
+}
+
+
+
+export async function create_content_service({ table, language = '', post_data, multiple_rows = false }) {
 
   let query = supabase
     .from(`${table}${language}`)

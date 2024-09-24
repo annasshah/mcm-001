@@ -8,7 +8,7 @@ import { Button } from 'flowbite-react'
 
 
 
-export const Form_Component = (props) => {
+export const Form_Component = (props:any) => {
     const {  render_list_fields, data, reset_fields, handle_update, update_loading, is_edited, className, } = props
     return (
         <>
@@ -22,6 +22,7 @@ export const Form_Component = (props) => {
                         // console.log(splited_str)
 
                         if (render_list_fields.includes(field)) {
+                            // @ts-ignore
                             const { Component_Render } = fields_list_components[find_fields[splited_str] === 'timer' ? 'input' : find_fields[splited_str] || 'input']
                             const label = field === 'mon_timing' ? 'Mon - Fri Timing' : capitalize_word_letter(field)
 
