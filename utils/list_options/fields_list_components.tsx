@@ -1,9 +1,27 @@
 import { Rating } from "@mui/material"
 import { Checkbox, TimePicker } from "antd"
-import { useState } from "react"
+import React, { useState } from "react"
 import Moment from 'moment';
 
-export const fields_list_components = {
+// Interface for the data being passed
+interface DataInterface {
+    [key: string]: string | number; // Updated to allow numbers for things like rating
+}
+
+// Define Props for the components
+interface ComponentProps {
+    on_change_handle: (key_id: string, value: string | number | null) => void;
+    label: string;
+    key_id: string;
+    data: DataInterface;
+}
+
+interface fieldsListComponentsInterface {
+    [key: string]: {
+        Component_Render: React.FC<ComponentProps>;
+    };
+}
+export const fields_list_components: fieldsListComponentsInterface = {
     input: {
 
         Component_Render: ({ on_change_handle, label, key_id, data }) => {
@@ -33,12 +51,14 @@ export const fields_list_components = {
     },
     rating: {
         Component_Render: ({ on_change_handle, label, key_id, data }) => {
+            const val = data[key_id] ? data[key_id] : 0
             return <div>
                 <p className='font-bold text-primary_color'>{label} :</p>
                 <Rating
                     size='large'
                     name="simple-controlled"
-                    value={data[key_id] || 0}
+                    // @ts-ignore
+                    value={val}
                     onChange={(event, newValue) => {
                         on_change_handle(key_id, newValue)
                     }}
@@ -51,7 +71,7 @@ export const fields_list_components = {
         Component_Render: ({ on_change_handle, label, key_id, data }) => {
             const [checked, setChecked] = useState(false);
 
-            const onChange = (e) => {
+            const onChange = (e: any) => {
                 // console.log('checked = ', e.target.checked);
                 const val = e.target.checked
                 const save_value = val ? 'Closed' : ''
@@ -59,7 +79,7 @@ export const fields_list_components = {
                 on_change_handle(key_id, save_value)
             };
 
-            const render_time = (val) => {
+            const render_time = (val: any) => {
                 if (val?.toLocaleLowerCase() === 'closed') {
                     return ['', '']
                 }
@@ -77,12 +97,12 @@ export const fields_list_components = {
                 }
             }
 
-            const time_change_handle = (e) => {
+            const time_change_handle = (e: any) => {
 
-                if(data[key_id]){
+                if (data[key_id]) {
                     on_change_handle(key_id, '')
                 }
-                
+
                 let value = ''
                 if (e) {
 
@@ -101,10 +121,10 @@ export const fields_list_components = {
             }
             return <div className="">
 
-               <div className="flex gap-2 justify-between items-end">
-                    <p className='font-bold text-primary_color '>{label} :</p> {key_id !== 'mon_timing' &&  <Checkbox
+                <div className="flex gap-2 justify-between items-end">
+                    <p className='font-bold text-primary_color '>{label} :</p> {key_id !== 'mon_timing' && <Checkbox
                         className="font-bold"
-                        checked={checked || data[key_id] && data[key_id] == "Closed" }
+                        checked={checked || data[key_id] && data[key_id] === "Closed" ? true : false}
                         onChange={onChange}
 
                     >
@@ -113,9 +133,9 @@ export const fields_list_components = {
                 </div>
 
                 <div className="flex items-center space-x-3 w-full">
-                    <TimePicker.RangePicker onChange={time_change_handle} disabled={checked || data[key_id] && data[key_id] == "Closed" }
+                    <TimePicker.RangePicker onChange={time_change_handle} disabled={checked || data[key_id] && data[key_id] === "Closed" ? true : false}
                         use12Hours
-                        
+                        // @ts-ignore
                         defaultValue={render_time(data[key_id])}
                         format="hh:mm A"
                         className="py-3 border-gray-800 w-full" size="large" />

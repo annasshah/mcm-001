@@ -10,7 +10,7 @@ interface RequiredField {
 interface DataInterface {
     initial_language?: string;
     default_selected_section?: string;
-    list_data?: <T>(arg?: any) => any;
+    list_data?: boolean;
     list_item_section?: string[];
     table: string;
     required_fields: RequiredField[];
@@ -25,7 +25,7 @@ interface DataRow {
 function useSingleRowDataHandle(paramData: DataInterface) {
     const {
         initial_language = '',
-        list_data,
+        list_data = false,
         default_selected_section = '',
         list_item_section = [],
         table,

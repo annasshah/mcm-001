@@ -1,17 +1,12 @@
 "use client"
 import React from 'react';
 import WebsiteContentLayout from '../Layout';
-import { Rating, RatingStar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser } from "react-icons/hi";
-import PlusIcon from "@/assets/images/Logos/plus-icon.png"
-import Image from 'next/image';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle';
-import { create_career, fetch_careers, update_career } from '@/utils/supabase/data_services/data_services';
 import { langage_list_options } from '@/utils/list_options/dropdown_list_options';
 import { Form_Component } from '@/components/Form_Component';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
-import { fields_list_components, find_fields } from '@/utils/list_options/fields_list_components';
+import { fields_list_components } from '@/utils/list_options/fields_list_components';
 
 const inputLabelandValue = [
     {
@@ -20,13 +15,13 @@ const inputLabelandValue = [
     },
     {
         label: "Question",
-        key: "question", 
-        type:'input'
+        key: "question",
+        type: 'input'
     },
     {
         label: "Answer",
         key: "answer",
-        type:'textarea'
+        type: 'textarea'
     }
 ];
 
@@ -58,7 +53,10 @@ const FAQs = () => {
         create_row_language,
         create_new_row_language_handle,
         fetch_data_by_parameter
-    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function:update_career, table:'FAQs', list_data: true });
+    } = useSingleRowDataHandle({
+        table: 'FAQs', list_data: true,
+        required_fields: []
+    });
 
 
     return (
@@ -97,6 +95,7 @@ const FAQs = () => {
 
                             {
                                 inputLabelandValue.slice(1).map((item, index) => {
+                                    // @ts-ignore
                                     const { Component_Render } = fields_list_components[item.type]
                                     return (
 
@@ -119,7 +118,7 @@ const FAQs = () => {
 
 
                     <div className='px-3 w-1/2 space-y-5'>
-                        {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={inputLabelandValue.map(({key})=>key)} on_change_handle={on_change_handle} />}
+                        {data && <Form_Component reset_fields={reset_fields} handle_update={handle_update} is_edited={is_edited} update_loading={update_loading} data={data} render_list_fields={inputLabelandValue.map(({ key }) => key)} on_change_handle={on_change_handle} />}
 
                     </div>
 

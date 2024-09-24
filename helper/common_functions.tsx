@@ -1,4 +1,4 @@
-export function capitalize_word_letter(string) {
+export function capitalize_word_letter(string: string) {
     const splited_string = string.split('_')
     const capitalized_string = splited_string.map(word => word.charAt(0).toUpperCase() + word.slice(1))
     return capitalized_string.join(' ')
@@ -6,7 +6,7 @@ export function capitalize_word_letter(string) {
 
 
 
-export const currencyFormatHandle = (amount) => {
+export const currencyFormatHandle = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',

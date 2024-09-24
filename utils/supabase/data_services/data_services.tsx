@@ -2,6 +2,37 @@ import { supabase } from "@/services/supabase"
 
 // data.js
 
+interface MatchCaseInterface {
+  key: string;
+  value: string | number;
+}
+
+interface FetchContentServiceInterface {
+  table: string;
+  language?: string;
+  selectParam?: string
+  matchCase?: MatchCaseInterface | null
+}
+interface UpdateContentServiceInterface {
+  table: string;
+  language?: string;
+  post_data: any
+  matchKey?: string;
+}
+interface CreateContentServiceInterface {
+  table: string;
+  language?: string;
+  post_data: any
+  multiple_rows?: boolean;
+}
+interface DeleteContentServiceInterface {
+  table: string;
+  language?: string;
+  keyByDelete: string;
+  id: string | number;
+}
+
+
 export async function fetchLocations() {
   const { data, error } = await supabase
     .from('Locations')
@@ -15,7 +46,7 @@ export async function fetchLocations() {
 }
 
 
-export async function fetchAppointmentsByLocation(locationId) {
+export async function fetchAppointmentsByLocation(locationId: number) {
   let query = supabase
     .from('Appoinments')
     .select(`*,location:Locations (
@@ -41,11 +72,9 @@ export async function fetchAppointmentsByLocation(locationId) {
 
 
 
-
-
-
-export async function fetch_content_service({ table, language = '', selectParam = '', matchCase = null }) {
+export async function fetch_content_service({ table, language = '', selectParam = '', matchCase = null }: FetchContentServiceInterface) {
   let query = supabase
+    //  @ts-ignore
     .from(`${table}${language}`)
     .select(`*${selectParam ? selectParam : ''}`)
 
@@ -61,12 +90,12 @@ export async function fetch_content_service({ table, language = '', selectParam 
 }
 
 
-export async function update_content_service({ table, language, post_data, matchKey = 'id' }) {
+export async function update_content_service({ table, language = '', post_data, matchKey = 'id' }: UpdateContentServiceInterface) {
   // console.log({ language, post_data, section })
   const id = post_data[matchKey]
   delete post_data[matchKey]
   const { data, error } = await supabase
-
+    //  @ts-ignore
     .from(`${table}${language}`)
     .update(post_data)
     .eq(matchKey, id)
@@ -80,7 +109,7 @@ export async function update_content_service({ table, language, post_data, match
 }
 
 
-export async function updateLocationData(id, post_data) {
+export async function updateLocationData(id: number, post_data: any) {
   const { data, error } = await supabase
     .from(`Locations`)
     .update(post_data)
@@ -96,9 +125,10 @@ export async function updateLocationData(id, post_data) {
 
 
 
-export async function create_content_service({ table, language = '', post_data, multiple_rows = false }) {
+export async function create_content_service({ table, language = '', post_data, multiple_rows = false }: CreateContentServiceInterface) {
 
   let query = supabase
+    //  @ts-ignore
     .from(`${table}${language}`)
     .insert(multiple_rows ? [...post_data] : [
       post_data
@@ -113,7 +143,7 @@ export async function create_content_service({ table, language = '', post_data, 
 }
 
 
-export async function delete_appointment_service(id) {
+export async function delete_appointment_service(id: number) {
   const query = await supabase
     .from('Appoinments')
     .delete()
@@ -127,8 +157,9 @@ export async function delete_appointment_service(id) {
 
 
 }
-export async function delete_content_service({ table, keyByDelete = 'id', id }) {
+export async function delete_content_service({ table, keyByDelete = 'id', id }: DeleteContentServiceInterface) {
   const query = await supabase
+    // @ts-ignore
     .from(table)
     .delete()
     .eq(keyByDelete, id)
@@ -142,9 +173,10 @@ export async function delete_content_service({ table, keyByDelete = 'id', id }) 
 
 
 
-export async function update_appointment_service(id, value) {
+export async function update_appointment_service(id: number, value: string) {
   const query = await supabase
     .from('Appoinments')
+    // @ts-ignore
     .update({ date_and_time: value })
     .eq('id', id)
     .select('*')

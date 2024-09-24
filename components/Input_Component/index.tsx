@@ -1,8 +1,22 @@
 import { Label } from 'flowbite-react'
 import React from 'react'
 
+// Define props interface for the Input_Component
+interface InputComponentProps {
+    label?: string;
+    bg_color?: string;
+    border?: string;
+    py?: string;
+    onChange: (value: string | boolean) => void; // Accepting both string and boolean for value
+    value?: string | boolean; // value can be string or boolean
+    placeholder?: string;
+    type?: string;
+    min?: string; // Keep as string to match HTML input attributes
+    max?: string;
+  }
 
-export const Input_Component = ({
+
+export const Input_Component:React.FC<InputComponentProps> = ({
     label,
     bg_color = 'bg-white',
     border = '',
@@ -15,6 +29,7 @@ export const Input_Component = ({
     max = ''
 }) => {
     console.log({ min, max })
+    
     return (
         <div className='w-full space-y-2'>
             {label && <Label htmlFor="section" value={label} className='font-bold' />}
@@ -48,6 +63,7 @@ export const Input_Component = ({
                     <input
                         min={min}
                         max={100}
+                        // @ts-ignore
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         type={type}
