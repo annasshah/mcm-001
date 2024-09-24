@@ -28,7 +28,7 @@ interface CreateContentServiceInterface {
 interface DeleteContentServiceInterface {
   table: string;
   language?: string;
-  keyByDelete: string;
+  keyByDelete?: string;
   id: string | number;
 }
 
@@ -46,7 +46,7 @@ export async function fetchLocations() {
 }
 
 
-export async function fetchAppointmentsByLocation(locationId: number) {
+export async function fetchAppointmentsByLocation(locationId: number | null) {
   let query = supabase
     .from('Appoinments')
     .select(`*,location:Locations (

@@ -292,7 +292,7 @@ const Page = () => {
   const deleteDataHandle = async () => {
     setModalLoading(true)
     const selectedId = detailsView?.id
-    const { data: res_data, error } = await delete_content_service({ table: 'promotype', id: selectedId });
+    const { data: res_data, error } = await delete_content_service({ table: 'promotype', id: selectedId! });
     if (!error) {
       setDataList((elem) => elem.filter((data: any) => data.id !== selectedId))
       setAllData((elem) => elem.filter((data: any) => data.id !== selectedId))

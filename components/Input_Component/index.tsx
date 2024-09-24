@@ -7,7 +7,7 @@ interface InputComponentProps {
     bg_color?: string;
     border?: string;
     py?: string;
-    onChange: (value: string | boolean) => void; // Accepting both string and boolean for value
+    onChange: (value:any) => void; // Accepting both string and boolean for value
     value?: string | boolean; // value can be string or boolean
     placeholder?: string;
     type?: string;
