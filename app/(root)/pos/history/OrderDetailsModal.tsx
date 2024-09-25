@@ -31,6 +31,9 @@ interface PatientDetailsRenderPropsInterface {
 interface TableListRenderInterface {
     dataList: any;
     order_id: any;
+    isAnyReturned: boolean;
+    hasReturnedHandle: (val: boolean) => void
+
 }
 
 interface DataListInterface {
@@ -96,7 +99,7 @@ const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientD
 }
 
 
-const ReturnProductSection = ({data, order_id}:any) => {
+const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned }: any) => {
 
 
     const [returnedQty, setReturnedQty] = useState(0)
@@ -116,19 +119,19 @@ const ReturnProductSection = ({data, order_id}:any) => {
 
     }
 
-    console.log('------------------>', data)
+    // console.log('------------------>', isAnyReturned, data)
 
     const processReturnHandle = async () => {
 
-        if(forReturnQty > data.quantity_sold){
+        if (forReturnQty > data.quantity_sold) {
             toast.error(`Return quantity should not be higher than the sold quantity`)
-            return 
+            return
 
         }
         setLoading(true)
 
         const postData = {
-            order_id: order_id,
+            sales_id: data.sales_history_id,
             product_id: data.product_id,
             quantity: forReturnQty,
             reason: 'none'
@@ -141,17 +144,23 @@ const ReturnProductSection = ({data, order_id}:any) => {
         } else {
             setProcessReturn(false)
             setReturnedQty(forReturnQty)
+            setOtherReturned(true)
             setForReturnQty(0)
             toast.success("Return processed successfully!");
         }
         setLoading(false)
     }
 
+
+    useEffect(() => {
+        setReturnedQty(data.return_qty)
+    }, [])
+
     if (processReturn) {
         return <div className='w-20 border-2 text-sm border-[#E4E4E7] rounded-md px-2 py-2 flex items-center space-x-2'>
-            <input onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Return QTY' max={data.quantity_sold} />{forReturnQty ?<button  onClick={processReturnHandle} disabled={loading} className='disabled:opacity-60'>
-                 <FaSquareCheck color='#00A31E'  size={25} /> 
-            </button>: null}
+            <input onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Return QTY' max={data.quantity_sold} />{forReturnQty ? <button onClick={processReturnHandle} disabled={loading} className='disabled:opacity-60'>
+                <FaSquareCheck color='#00A31E' size={25} />
+            </button> : null}
         </div>
     }
 
@@ -162,7 +171,7 @@ const ReturnProductSection = ({data, order_id}:any) => {
     }
 
 
-    return <button onClick={returnHandle} className='bg-[#E1BBB8] text-sm px-3 py-3 rounded-md'>
+    return <button disabled={isAnyReturned} onClick={returnHandle} className='bg-[#E1BBB8] text-sm px-3 py-3 rounded-md disabled:opacity-60'>
         Return
     </button>
 
@@ -171,9 +180,7 @@ const ReturnProductSection = ({data, order_id}:any) => {
 }
 
 
-const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id }) => {
-
-    console.log(dataList)
+const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAnyReturned, hasReturnedHandle }) => {
 
 
 
@@ -183,7 +190,7 @@ const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id }) =>
             const content = render_value ? render_value(dataList[id], dataList) : dataList[id];
             return (
                 <h1 key={ind} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
-                    {id === 'actions' ? <ReturnProductSection data={dataList} order_id={order_id} /> : content}
+                    {id === 'actions' ? <ReturnProductSection isAnyReturned={isAnyReturned} setOtherReturned={hasReturnedHandle} data={dataList} order_id={order_id} /> : content}
                 </h1>
             );
         })}
@@ -195,9 +202,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
     const [salesHistory, setSalesHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [isAnyReturned, setIsAnyReturned] = useState(false)
+
     const { order_id, pos, patient_id } = orderDetails || {};
-    
-    
+
+
     useEffect(() => {
 
         ; (async () => {
@@ -218,14 +227,18 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 products(product_name, category_id, categories(category_name)),
                 date_sold,
                 quantity_sold,
-                total_price
+                total_price,
+                return_qty
               )
             `,
                     // @ts-ignore
                     matchCase: { key: 'order_id', value: order_id }
                 });
                 setDataList(fetched_data[0]);
-                setSalesHistory(fetched_data[0]?.saleshistory);
+                const listHistory = fetched_data[0]?.saleshistory || []
+                const checkRtn = listHistory.filter(({ return_qty }: { return_qty: number }) => return_qty > 0)
+                setIsAnyReturned(() => checkRtn.length > 0)
+                setSalesHistory(listHistory);
 
 
             } catch (error) {
@@ -253,6 +266,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
             setSalesHistory([...filteredData])
         }
 
+    }
+
+    const hasReturnedHandle = (val: boolean) => {
+        setIsAnyReturned(() => val)
     }
 
 
@@ -307,15 +324,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                         {
                             salesHistory.map((elem: DataListInterface, index: number) => (
 
-                                <TableRowRender key={index} dataList={elem} order_id={order_id} />
+                                <TableRowRender hasReturnedHandle={hasReturnedHandle} isAnyReturned={isAnyReturned} key={index} dataList={elem} order_id={order_id} />
                             ))
                         }
                     </div>
-
-
-
-
-
                 </div>
             </div>}
         </div> : null
