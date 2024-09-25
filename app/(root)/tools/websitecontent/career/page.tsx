@@ -1,17 +1,12 @@
 "use client"
 import React from 'react';
 import WebsiteContentLayout from '../Layout';
-import { Rating, RatingStar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser } from "react-icons/hi";
-import PlusIcon from "@/assets/images/Logos/plus-icon.png"
-import Image from 'next/image';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle';
-import { create_career, fetch_careers, update_career } from '@/utils/supabase/data_services/data_services';
 import { langage_list_options } from '@/utils/list_options/dropdown_list_options';
 import { Form_Component } from '@/components/Form_Component';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
-import { fields_list_components, find_fields } from '@/utils/list_options/fields_list_components';
+import { fields_list_components } from '@/utils/list_options/fields_list_components';
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 
 const inputLabelandValue = [
@@ -58,7 +53,7 @@ const Career = () => {
         create_row_language,
         create_new_row_language_handle,
         fetch_data_by_parameter
-    } = useSingleRowDataHandle({ create_content_function: create_career, update_content_function: update_career, table: 'career', list_data: true, required_fields: inputLabelandValue});
+    } = useSingleRowDataHandle({ table: 'career', list_data: true, required_fields: inputLabelandValue });
 
 
     return (

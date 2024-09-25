@@ -114,7 +114,7 @@ function useSingleRowDataHandle(paramData: DataInterface) {
         }
     };
 
-    const change_selected_list_id = (e: React.ChangeEvent<HTMLSelectElement> | number, directVal?: boolean) => {
+    const change_selected_list_id = (e: React.ChangeEvent<HTMLSelectElement> | number | string, directVal?: boolean) => {
         const value = directVal ? e : (e as React.ChangeEvent<HTMLSelectElement>).target.value;
         const selectedValue = typeof value === 'string' ? parseInt(value, 10) : value;
 

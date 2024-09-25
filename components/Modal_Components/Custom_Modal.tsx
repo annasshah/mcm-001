@@ -11,10 +11,10 @@ interface PropsInterface {
     submit_button_color?: string;
     Title?: string;
     loading?: boolean;
-    is_open: boolean;
-    close_handle: () => void;
-    open_handle: () => void;
-    create_new_handle: () => void;
+    is_open?: boolean;
+    close_handle?: () => void;
+    open_handle?: () => void;
+    create_new_handle?: () => void;
     buttonLabel?: string;
     Trigger_Button?: null | ReactNode;
     disabled?: boolean;

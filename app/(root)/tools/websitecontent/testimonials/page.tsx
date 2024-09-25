@@ -1,14 +1,10 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import WebsiteContentLayout from '../Layout';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import { useLocationClinica } from '@/hooks/useLocationClinica';
-import { create_testimonials, fetch_testimonials, update_testimonial_content } from '@/utils/supabase/data_services/data_services';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle';
-import { Render_Rating } from '@/components/Rating_Component/Render_Rating'
 import { Form_Component } from '@/components/Form_Component'
-import Image from 'next/image';
-import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { fields_list_components, find_fields } from '@/utils/list_options/fields_list_components';
 
@@ -37,7 +33,7 @@ const inputLabelandValue = [
 const Testimonials = () => {
 
     const { locations, set_location_handle, selected_location } = useLocationClinica()
-    const [filteredData, setfilteredData] = useState([])
+    const [filteredData, setfilteredData] = useState<any>([])
 
 
     const {
@@ -61,12 +57,10 @@ const Testimonials = () => {
         create_content_handle,
         fetch_data_by_parameter
     } = useSingleRowDataHandle({
-        update_content_function: update_testimonial_content,
-        create_content_function: create_testimonials,
         list_data: true, table: 'Testinomial', required_fields: inputLabelandValue
     });
 
-    const select_location_handle = (val) => {
+    const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
         const value = val.target.value
         console.log('first')
         set_location_handle(value)
@@ -75,7 +69,7 @@ const Testimonials = () => {
         if (filterByLocation.length) {
             change_selected_list_id(filterByLocation[0].id, true)
         }
-        else{
+        else {
             change_selected_list_id('', true)
         }
     }
@@ -97,11 +91,11 @@ const Testimonials = () => {
                     <div className='grid grid-cols-5 lg:flex-row lg:gap-24 '>
 
                         <Select_Dropdown
-                            value={selected_location} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }) => ({ value: id, label: title }))}
+                            value={selected_location} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: { id: string, title: string }) => ({ value: id, label: title }))}
                             on_change_handle={select_location_handle}
                             required={true} />
                         <Select_Dropdown
-                            value={selected_list_id} label='ID' start_empty={true} options_arr={filteredData.map(({ id, }) => ({ value: id, label: id }))}
+                            value={selected_list_id} label='ID' start_empty={true} options_arr={filteredData.map(({ id }: { id: string }) => ({ value: id, label: id }))}
                             on_change_handle={change_selected_list_id}
                             required={true} />
                     </div>
@@ -109,8 +103,8 @@ const Testimonials = () => {
                         <div className='grid grid-cols-1 gap-4'>
 
                             <Select_Dropdown
-                                value={create_data.location_id} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }) => ({ value: id, label: title }))}
-                                on_change_handle={(e) => on_change_handle('location_id', e.target.value)}
+                                value={create_data.location_id} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: { id: string, title: string }) => ({ value: id, label: title }))}
+                                on_change_handle={(e: React.ChangeEvent<HTMLSelectElement>) => on_change_handle('location_id', e.target.value)}
                                 required={true} />
 
 
@@ -119,9 +113,10 @@ const Testimonials = () => {
                                     // const { key, label, col_span } = item
                                     // const formattedKey = label.replace(/_/g, " ");
                                     // const is_disabled = update_loading 
+                                    // @ts-ignore
                                     const { Component_Render } = fields_list_components[find_fields[item.key]]
                                     return (
-
+                                    // @ts-ignore
                                         <Component_Render key={index} on_change_handle={on_change_handle} label={item.label} key_id={item.key} data={create_data} />
 
                                     );

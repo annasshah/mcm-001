@@ -10,7 +10,7 @@ interface DataInterface {
 
 // Define Props for the components
 interface ComponentProps {
-    on_change_handle: (key_id: string, value: string | number | null) => void;
+    on_change_handle: (key_id: string, value: any) => void;
     label: string;
     key_id: string;
     data: DataInterface;

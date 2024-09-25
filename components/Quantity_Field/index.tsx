@@ -1,10 +1,18 @@
 import { Label, Select } from 'flowbite-react'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { AiFillPlusCircle } from "react-icons/ai";
 import { AiFillMinusCircle } from "react-icons/ai";
 
 
-export const Quantity_Field = ({ quantity, quantityHandle, maxAvailability }) => {
+interface QuantityFieldInterface {
+    quantity: number;
+    quantityHandle: (e: number) => void;
+    maxAvailability: number;
+
+}
+
+
+export const Quantity_Field: FC<QuantityFieldInterface> = ({ quantity, quantityHandle, maxAvailability }) => {
 
     const [canAddMore, setCanAddMore] = useState(true)
 
@@ -22,7 +30,7 @@ export const Quantity_Field = ({ quantity, quantityHandle, maxAvailability }) =>
 
         if (quantity === maxAvailability) {
             setCanAddMore(false)
-        }else{
+        } else {
             setCanAddMore(true)
         }
 

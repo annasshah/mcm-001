@@ -1,10 +1,6 @@
 "use client"
 import React from 'react';
 import WebsiteContentLayout from '../Layout';
-import { Rating, RatingStar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser } from "react-icons/hi";
-import PlusIcon from "@/assets/images/Logos/plus-icon.png"
-import Image from 'next/image';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 const Career = () => {
@@ -37,7 +33,11 @@ const Career = () => {
 
                     </button> */}
 
-                    <Custom_Modal Title='Create Specials' >
+                    <Custom_Modal Title='Create Specials'
+
+                    // is_open, close_handle, open_handle, create_new_handle
+
+                    >
                         <div className='gap-4'>
                             <div  >
                                 <p className='text-primary_color'>Title:</p>
