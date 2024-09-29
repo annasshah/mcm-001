@@ -51,6 +51,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 const EmailBroadcast: React.FC = () => {
+
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
   const [serviceList, setServiceList] = useState<any[]>([]);
@@ -71,12 +72,15 @@ const EmailBroadcast: React.FC = () => {
   const [location, setLocation] = useState<any>("");
   const [treatmentType, setTreatmentType] = useState<any>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+
   const handleGenderChange = (gender: any) => {
     setSelectedGender(selectedGender === gender ? "" : gender);
   };
+
   const handleVisitChange = (type: any) => {
     setOnsite(onsite === type ? "" : type);
   };
+
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     emailObj: any
@@ -129,12 +133,19 @@ const EmailBroadcast: React.FC = () => {
     setTreatmentType("");
   };
 
+  const handleReset = async () => {
+    setSelectedGender("");
+    setOnsite(undefined);
+    setLocation("");
+    setTreatmentType("");
+  };
+
   const handleSelectAndDeselectAll = (isSelected: boolean) => {
     if (isSelected) {
       // Select all: Add all items to checkedItems
       setCheckedItems(emailList);
     } else {
-      // Deselect all: Clear checkedItems
+
       setCheckedItems([]);
     }
   };
@@ -142,30 +153,31 @@ const EmailBroadcast: React.FC = () => {
   const filterEmails = () => {
     let filteredEmails = emailList;
     if (selectedGender) {
-      filteredEmails = filteredEmails.filter(
-        (item: any) => item.gender === selectedGender
+      filteredEmails = filteredEmails?.filter(
+        (item: any) => item?.gender === selectedGender
       );
     }
     if (treatmentType) {
-      filteredEmails = filteredEmails.filter(
-        (item: any) => item.treatmenttype === treatmentType
+      filteredEmails = filteredEmails?.filter(
+        (item: any) => item?.treatmenttype === treatmentType
       );
     }
     if (location) {
-      filteredEmails = filteredEmails.filter(
-        (item: any) => item.Locations.title === location
+      filteredEmails = filteredEmails?.filter(
+        (item: any) => item?.Locations?.title === location
       );
     }
     if (onsite !== undefined) {
-      filteredEmails = filteredEmails.filter(
-        (item: any) => item.onsite === onsite
+      filteredEmails = filteredEmails?.filter(
+        (item: any) => item?.onsite === onsite
       );
     }
     return filteredEmails.filter((email) =>
-      email.email.toLowerCase().includes(searchQuery.toLowerCase())
+      email?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
   const filteredEmails = filterEmails();
+
   useEffect(() => {
     const fetchEmailList = async () => {
       try {
@@ -376,7 +388,7 @@ const EmailBroadcast: React.FC = () => {
                                   )} // Check if the object is in the checkedItems array
                                   onChange={(e) =>
                                     handleCheckboxChange(e, email)
-                                  } // Pass the whole object
+                                  } 
                                 />
                                 <div className="flex flex-col">
                                   <Label className="mb-1 text-black font-bold">
@@ -477,7 +489,7 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={!onsite}
+                                checked={onsite}
                                 onChange={() => handleVisitChange(false)}
                               />
                               <Label htmlFor="r3">Off-site</Label>
@@ -522,7 +534,10 @@ const EmailBroadcast: React.FC = () => {
                             Remove Filter
                           </Button>
                         ) : (
-                          <Button onClick={() => handleFilter()}>Apply</Button>
+                          <div className="flex w-[30%] items-center space-between ">
+                          <Button onClick={() => handleFilter()} >Apply</Button>
+                          <Button onClick={() => handleReset()}>Reset</Button>
+                          </div>
                         )}
                       </div>
                     )}
