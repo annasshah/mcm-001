@@ -51,7 +51,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 const EmailBroadcast: React.FC = () => {
-
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
   const [serviceList, setServiceList] = useState<any[]>([]);
@@ -67,20 +66,24 @@ const EmailBroadcast: React.FC = () => {
   const [clinicName, setClinicName] = React.useState<any>();
   const [name, setName] = React.useState<any>();
   const [checkedItems, setCheckedItems] = useState<any>([]);
-  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedGender, setSelectedGender] = useState<string[]>([]);
   const [onsite, setOnsite] = useState<boolean | undefined>();
-  const [location, setLocation] = useState<any>("");
-  const [treatmentType, setTreatmentType] = useState<any>("");
+  const [location, setLocation] = useState<any>(null);
+  const [treatmentType, setTreatmentType] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const handleGenderChange = (gender: any) => {
-    setSelectedGender(selectedGender === gender ? "" : gender);
+  const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSelectedGender((prev) =>
+      prev.includes(value)
+        ? prev.filter((gender) => gender !== value)
+        : [...prev, value]
+    );
   };
 
-  const handleVisitChange = (type: any) => {
-    setOnsite(onsite === type ? "" : type);
+  const handleVisitChange = (type: boolean) => {
+    setOnsite(type); // Set onsite to true for On-site, false for Off-site
   };
-
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     emailObj: any
@@ -127,14 +130,14 @@ const EmailBroadcast: React.FC = () => {
   const handlecancelFilter = async () => {
     toast.success("Filter Removed.", { position: "top-center" });
     setIsFilterOn(false);
-    setSelectedGender("");
+    setSelectedGender([]); 
     setOnsite(undefined);
     setLocation("");
     setTreatmentType("");
   };
 
   const handleReset = async () => {
-    setSelectedGender("");
+    setSelectedGender([]); 
     setOnsite(undefined);
     setLocation("");
     setTreatmentType("");
@@ -145,37 +148,43 @@ const EmailBroadcast: React.FC = () => {
       // Select all: Add all items to checkedItems
       setCheckedItems(emailList);
     } else {
-
       setCheckedItems([]);
     }
   };
 
   const filterEmails = () => {
     let filteredEmails = emailList;
-    if (selectedGender) {
-      filteredEmails = filteredEmails?.filter(
-        (item: any) => item?.gender === selectedGender
+  
+    // Check if any genders are selected
+    if (selectedGender.length > 0) {
+      filteredEmails = filteredEmails?.filter((item: any) =>
+        selectedGender.includes(item?.gender)
       );
     }
+  
     if (treatmentType) {
       filteredEmails = filteredEmails?.filter(
         (item: any) => item?.treatmenttype === treatmentType
       );
     }
+  
     if (location) {
       filteredEmails = filteredEmails?.filter(
         (item: any) => item?.Locations?.title === location
       );
     }
+  
     if (onsite !== undefined) {
       filteredEmails = filteredEmails?.filter(
         (item: any) => item?.onsite === onsite
       );
     }
+  
     return filteredEmails.filter((email) =>
       email?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
+  
   const filteredEmails = filterEmails();
 
   useEffect(() => {
@@ -388,7 +397,7 @@ const EmailBroadcast: React.FC = () => {
                                   )} // Check if the object is in the checkedItems array
                                   onChange={(e) =>
                                     handleCheckboxChange(e, email)
-                                  } 
+                                  }
                                 />
                                 <div className="flex flex-col">
                                   <Label className="mb-1 text-black font-bold">
@@ -426,24 +435,29 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "Male"}
-                                onChange={() => handleGenderChange("Male")}
+                                value="Male"
+                                onChange={handleGenderChange}
+                                checked={selectedGender.includes("Male")}
                               />
                               <Label htmlFor="r2">Male</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "Female"}
-                                onChange={() => handleGenderChange("Female")}
+                                value="Female"
+                                onChange={handleGenderChange}
+                                checked={selectedGender.includes("Female")}
+
                               />
                               <Label htmlFor="r3">Female</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={selectedGender === "Others"}
-                                onChange={() => handleGenderChange("Others")}
+                                value="Other"
+                                onChange={handleGenderChange}
+                                checked={selectedGender.includes("Other")}
+
                               />
                               <Label htmlFor="r3">Other</Label>
                             </div>
@@ -458,7 +472,9 @@ const EmailBroadcast: React.FC = () => {
                             onValueChange={(value) => setTreatmentType(value)}
                           >
                             <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Select type" />
+                              <SelectValue>
+                                {treatmentType ? treatmentType : "Select Type"}
+                              </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
@@ -481,7 +497,7 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={onsite}
+                                checked={onsite === true}
                                 onChange={() => handleVisitChange(true)}
                               />
                               <Label htmlFor="r2">On-site</Label>
@@ -489,7 +505,7 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                checked={onsite}
+                                checked={onsite === false}
                                 onChange={() => handleVisitChange(false)}
                               />
                               <Label htmlFor="r3">Off-site</Label>
@@ -503,7 +519,9 @@ const EmailBroadcast: React.FC = () => {
                           </h1>
                           <Select onValueChange={(value) => setLocation(value)}>
                             <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Select a location" />
+                              <SelectValue>
+                                {location ? location : "Select Location"}
+                              </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
@@ -535,8 +553,13 @@ const EmailBroadcast: React.FC = () => {
                           </Button>
                         ) : (
                           <div className="flex w-[30%] items-center space-between ">
-                          <Button onClick={() => handleFilter()} >Apply</Button>
-                          <Button onClick={() => handleReset()}>Reset</Button>
+                            <Button
+                              onClick={() => handleFilter()}
+                              style={{ marginRight: "10px" }}
+                            >
+                              Apply
+                            </Button>
+                            <Button onClick={() => handleReset()}>Reset</Button>
                           </div>
                         )}
                       </div>
