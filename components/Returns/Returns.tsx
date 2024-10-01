@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Button, Spinner } from 'flowbite-react';
 import moment from 'moment';
-import { delete_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
 import { toast } from 'react-toastify';
 
@@ -140,7 +140,7 @@ const Returns: FC<Props> = () => {
     const fetch_handle = async () => {
         setLoading(true)
         // @ts-ignore
-        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: ',saleshistory(order_id, orders(patient_id,  pos(firstname,lastname,phone,email))),products(product_name, price, categories(category_name))' });
+        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: ',saleshistory(order_id, orders(patient_id,  pos(firstname,lastname,phone,email))),products(product_name, price, categories(category_name))', matchCase: { key: 'merge', value: false } });
         setDataList(fetched_data)
         setAllData(fetched_data)
         setLoading(false)
@@ -210,7 +210,7 @@ const Returns: FC<Props> = () => {
 
     const discardHandle = async () => {
         setDeleteLoading(true)
-        const { error } = await delete_content_service({ table: 'returns', keyByDelete: 'return_id', id:  dataDetails?.return_id! })
+        const { error } = await delete_content_service({ table: 'returns', keyByDelete: 'return_id', id: dataDetails?.return_id! })
         if (!error) {
             setDataList((elem) => elem.filter((data: any) => data.return_id !== dataDetails?.return_id!))
             setAllData((elem) => elem.filter((data: any) => data.return_id !== dataDetails?.return_id!))
@@ -222,6 +222,31 @@ const Returns: FC<Props> = () => {
             toast.error(error.message);
         }
         setDeleteLoading(false)
+    }
+
+
+    const mergeHandle = async () => {
+
+        try {
+
+            const res_data = await update_content_service({ table: 'returns', language: '', post_data: { merge: true, return_id: dataDetails?.return_id! }, matchKey: 'return_id' });
+            if (res_data?.length) {
+                setDataList((elem) => elem.filter((data: any) => data.return_id !== dataDetails?.return_id!))
+                setAllData((elem) => elem.filter((data: any) => data.return_id !== dataDetails?.return_id!))
+                setDataDetails(null)
+                toast.success('Merged successfully');
+            }
+        }
+        catch (error: any) {
+
+            if (error && error?.message) {
+                toast.error(error?.message);
+                // throw new Error(error.message);
+            } else {
+                toast.error('Something went wrong!');
+            }
+        }
+
     }
 
 
@@ -346,7 +371,7 @@ const Returns: FC<Props> = () => {
                             <Button disabled={deleteLoading} onClick={discardHandle} className='flex-1' color="gray" >
                                 Discard
                             </Button>
-                            <Button className='flex-1' color="success">
+                            <Button onClick={mergeHandle} className='flex-1' color="success">
                                 Merge
                             </Button>
                         </div>
