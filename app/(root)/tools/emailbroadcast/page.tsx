@@ -10,7 +10,7 @@ import {
   getServices,
 } from "@/actions/send-email/action";
 import { cn } from "@/lib/utils";
-import template1 from "@/assets/images/Avatar/temp1.png";
+import Template1 from "@/components/EmailTemplate/Emailtemplate1";
 import template2 from "@/assets/images/Avatar/temp2.png";
 import template3 from "@/assets/images/Avatar/temp3.png";
 import template4 from "@/assets/images/Avatar/temp4.png";
@@ -269,16 +269,12 @@ const EmailBroadcast: React.FC = () => {
   };
 
   const templates = [
-    // { id: 1, src: template1, name: "Template 1" },
     { id: 2, src: template2, name: "Template 2" },
-    // { id: 3, src: template3, name: "Template 3" },
-    // { id: 4, src: template4, name: "Template 4" },
-    // { id: 5, src: template5, name: "Template 5" },
   ];
 
   return (
-    <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start overflow-hidden items-center space-y-4 p-4">
-      <div className=" w-[80%] h-full flex items-start justify-start flex-col ">
+    <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center  p-4">
+      <div className=" w-[80%] h-full flex items-start   justify-start flex-col ">
         <div className="w-full h-full mt-[80px]">
           <div className="w-[70%] flex flex-col">
             <AlertDialog>
@@ -720,6 +716,10 @@ const EmailBroadcast: React.FC = () => {
           <br />
           <Button onClick={sendEmail}>Submit</Button>
         </div>
+
+      </div>
+      <div className="w-[50%] h-[100vh]   p-5">
+      <Template1   userFirstname={"[Patient]"}   reason={reason ||'[Reason]'} clinicName={clinicName||'[ClinicName]'} name={name} buttonText={buttonText||'[Button Text]'} buttonLink={buttonLink||'[buttonLink]'} endDate={endDate} startDate ={startDate}/>
       </div>
     </main>
   );
