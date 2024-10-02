@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import Filter from "@/assets/images/icons/Filterwhite.png";
 import Filterblack from "@/assets/images/icons/Filterblack.png";
 import {
@@ -12,10 +11,6 @@ import {
 import { cn } from "@/lib/utils";
 import Template1 from "@/components/EmailTemplate/Emailtemplate1";
 import template2 from "@/assets/images/Avatar/temp2.png";
-import template3 from "@/assets/images/Avatar/temp3.png";
-import template4 from "@/assets/images/Avatar/temp4.png";
-import template5 from "@/assets/images/Avatar/temp5.png";
-import { TabContext } from "@/context/ActiveTabContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
@@ -27,19 +22,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronLeft, X } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -82,7 +75,7 @@ const EmailBroadcast: React.FC = () => {
   };
 
   const handleVisitChange = (type: boolean) => {
-    setOnsite(type); // Set onsite to true for On-site, false for Off-site
+    setOnsite(type);
   };
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -90,54 +83,15 @@ const EmailBroadcast: React.FC = () => {
   ) => {
     const isChecked = event.target.checked;
 
-    setCheckedItems(
-      (prevCheckedItems: any[]) =>
-        isChecked
-          ? [...prevCheckedItems, emailObj] // Add the whole object if checked
-          : prevCheckedItems.filter((item) => item.email !== emailObj.email) // Remove the object if unchecked by comparing the email
+    setCheckedItems((prevCheckedItems: any[]) =>
+      isChecked
+        ? [...prevCheckedItems, emailObj]
+        : prevCheckedItems.filter((item) => item.email !== emailObj.email)
     );
-  };
-
-  const filterByGenderAndTreatment = (
-    data: any,
-    gender: string,
-    treatmentType: string,
-    location: string,
-    onsite: boolean | undefined
-  ) => {
-    return data.filter(
-      (item: any) =>
-        item.gender === gender &&
-        item.treatmenttype === treatmentType &&
-        item.location === location &&
-        item.onsite === onsite
-    );
-  };
-
-  // Example usage
-  const handleFilter = async () => {
-    const filteredData = filterByGenderAndTreatment(
-      checkedItems,
-      selectedGender,
-      treatmentType,
-      location,
-      onsite
-    );
-    toast.success("Filter Applied.", { position: "top-center" });
-    setIsFilterOn(true);
-  };
-
-  const handlecancelFilter = async () => {
-    toast.success("Filter Removed.", { position: "top-center" });
-    setIsFilterOn(false);
-    setSelectedGender([]); 
-    setOnsite(undefined);
-    setLocation("");
-    setTreatmentType("");
   };
 
   const handleReset = async () => {
-    setSelectedGender([]); 
+    setSelectedGender([]);
     setOnsite(undefined);
     setLocation("");
     setTreatmentType("");
@@ -145,7 +99,6 @@ const EmailBroadcast: React.FC = () => {
 
   const handleSelectAndDeselectAll = (isSelected: boolean) => {
     if (isSelected) {
-      // Select all: Add all items to checkedItems
       setCheckedItems(emailList);
     } else {
       setCheckedItems([]);
@@ -154,34 +107,34 @@ const EmailBroadcast: React.FC = () => {
 
   const filterEmails = () => {
     let filteredEmails = emailList;
-  
+
     if (selectedGender.length > 0) {
       filteredEmails = filteredEmails?.filter((item) =>
         selectedGender.includes(item.gender)
       );
     }
-  
+
     if (treatmentType) {
       filteredEmails = filteredEmails?.filter(
         (item) => item.treatmenttype === treatmentType
       );
     }
-  
+
     if (location) {
       filteredEmails = filteredEmails?.filter(
         (item) => item.Locations?.title === location
       );
     }
-  
+
     if (typeof onsite === "boolean") {
       filteredEmails = filteredEmails?.filter((item) => item.onsite === onsite);
     }
-  
+
     return filteredEmails?.filter((email) =>
       email?.email?.toLowerCase()?.includes(searchQuery.toLowerCase())
     );
   };
-  
+
   const filteredEmails = filterEmails();
 
   useEffect(() => {
@@ -264,10 +217,6 @@ const EmailBroadcast: React.FC = () => {
       console.log(error);
     }
   };
-
-  const templates = [
-    { id: 2, src: template2, name: "Template 2" },
-  ];
 
   return (
     <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center  p-4">
@@ -384,10 +333,10 @@ const EmailBroadcast: React.FC = () => {
                                 <input
                                   type="checkbox"
                                   id={`checkbox-${index}`}
-                                  value={email.email} // Keep this as the email for rendering
+                                  value={email.email}
                                   checked={checkedItems.some(
                                     (item: any) => item.email === email.email
-                                  )} // Check if the object is in the checkedItems array
+                                  )} 
                                   onChange={(e) =>
                                     handleCheckboxChange(e, email)
                                   }
@@ -440,7 +389,6 @@ const EmailBroadcast: React.FC = () => {
                                 value="female"
                                 onChange={handleGenderChange}
                                 checked={selectedGender.includes("female")}
-
                               />
                               <Label htmlFor="r3">Female</Label>
                             </div>
@@ -450,7 +398,6 @@ const EmailBroadcast: React.FC = () => {
                                 value="other"
                                 onChange={handleGenderChange}
                                 checked={selectedGender.includes("other")}
-
                               />
                               <Label htmlFor="r3">Other</Label>
                             </div>
@@ -466,7 +413,9 @@ const EmailBroadcast: React.FC = () => {
                           >
                             <SelectTrigger className="w-[180px]">
                               <SelectValue>
-                                {treatmentType ? treatmentType : "All Treatments"}
+                                {treatmentType
+                                  ? treatmentType
+                                  : "All Treatments"}
                               </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
@@ -518,7 +467,6 @@ const EmailBroadcast: React.FC = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                {/* <SelectLabel>Fruits</SelectLabel> */}
                                 {locationList
                                   ?.filter(
                                     (location, index, self) =>
@@ -541,21 +489,6 @@ const EmailBroadcast: React.FC = () => {
                         </div>
                         <br />
                         <Button onClick={() => handleReset()}>Reset</Button>
-                        {/* {isFilterOn ? (
-                          <Button onClick={() => handlecancelFilter()}>
-                            Remove Filter
-                          </Button>
-                        ) : (
-                          <div className="flex w-[30%] items-center space-between ">
-                            <Button
-                              onClick={() => handleFilter()}
-                              style={{ marginRight: "10px" }}
-                            >
-                              Apply
-                            </Button>
-                            
-                          </div>
-                        )} */}
                       </div>
                     )}
                   </AlertDialogDescription>
@@ -681,43 +614,22 @@ const EmailBroadcast: React.FC = () => {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-
-            <div className="mt-4 flex w-full">
-              {/* {templates.map((template, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col w-[20%] rounded p-2 justify-center m-3 border border-gray-300 items-center mb-4"
-                >
-                  <Image
-                    src={template.src}
-                    alt={template.name}
-                    className=" h-[100px]  w-[100px] "
-                  />
-                  <RadioGroup className="my-5">
-                    <div className="flex w-full items-center justify-center ">
-                      <RadioGroupItem value="default" id="r1" />
-                      <Label htmlFor="r1" className="ml-1">
-                        {template.name}
-                      </Label>
-                    </div>
-                  </RadioGroup>
-
-                  <div className="flex">
-                    <Link href={`/template/${template.id}`} passHref>
-                      <Button className="w-[90%]">Preview</Button>
-                    </Link>
-                  </div>
-                </div>
-              ))} */}
-            </div>
           </div>
           <br />
           <Button onClick={sendEmail}>Submit</Button>
         </div>
-
       </div>
       <div className="w-[50%] h-[100vh]   p-5">
-      <Template1   userFirstname={"[Patient]"}   reason={reason ||'[Reason]'} clinicName={clinicName||'[ClinicName]'} name={name} buttonText={buttonText||'[Button Text]'} buttonLink={buttonLink||'[buttonLink]'} endDate={endDate} startDate ={startDate}/>
+        <Template1
+          userFirstname={"[Patient]"}
+          reason={reason || "[Reason]"}
+          clinicName={clinicName || "[ClinicName]"}
+          name={name}
+          buttonText={buttonText || "[Button Text]"}
+          buttonLink={buttonLink || "[buttonLink]"}
+          endDate={endDate}
+          startDate={startDate}
+        />
       </div>
     </main>
   );
