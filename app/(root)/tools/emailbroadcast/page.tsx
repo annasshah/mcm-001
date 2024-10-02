@@ -405,9 +405,9 @@ const EmailBroadcast: React.FC = () => {
                               <div>
                                 {" "}
                                 <Label>
-                                  {email.gender === "Male"
+                                  {email.gender === "male"
                                     ? "M"
-                                    : email.gender === "Female"
+                                    : email.gender === "female"
                                     ? "F"
                                     : "O"}
                                 </Label>
@@ -431,18 +431,18 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
-                                value="Male"
+                                value="male"
                                 onChange={handleGenderChange}
-                                checked={selectedGender.includes("Male")}
+                                checked={selectedGender.includes("male")}
                               />
                               <Label htmlFor="r2">Male</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                value="Female"
+                                value="female"
                                 onChange={handleGenderChange}
-                                checked={selectedGender.includes("Female")}
+                                checked={selectedGender.includes("female")}
 
                               />
                               <Label htmlFor="r3">Female</Label>
@@ -450,9 +450,9 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                value="Other"
+                                value="other"
                                 onChange={handleGenderChange}
-                                checked={selectedGender.includes("Other")}
+                                checked={selectedGender.includes("other")}
 
                               />
                               <Label htmlFor="r3">Other</Label>
@@ -469,7 +469,7 @@ const EmailBroadcast: React.FC = () => {
                           >
                             <SelectTrigger className="w-[180px]">
                               <SelectValue>
-                                {treatmentType ? treatmentType : "Select Type"}
+                                {treatmentType ? treatmentType : "All Treatments"}
                               </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
@@ -543,7 +543,8 @@ const EmailBroadcast: React.FC = () => {
                           </Select>
                         </div>
                         <br />
-                        {isFilterOn ? (
+                        <Button onClick={() => handleReset()}>Reset</Button>
+                        {/* {isFilterOn ? (
                           <Button onClick={() => handlecancelFilter()}>
                             Remove Filter
                           </Button>
@@ -555,9 +556,9 @@ const EmailBroadcast: React.FC = () => {
                             >
                               Apply
                             </Button>
-                            <Button onClick={() => handleReset()}>Reset</Button>
+                            
                           </div>
-                        )}
+                        )} */}
                       </div>
                     )}
                   </AlertDialogDescription>
