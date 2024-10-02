@@ -155,33 +155,30 @@ const EmailBroadcast: React.FC = () => {
   const filterEmails = () => {
     let filteredEmails = emailList;
   
-    // Check if any genders are selected
     if (selectedGender.length > 0) {
-      filteredEmails = filteredEmails?.filter((item: any) =>
-        selectedGender.includes(item?.gender)
+      filteredEmails = filteredEmails?.filter((item) =>
+        selectedGender.includes(item.gender)
       );
     }
   
     if (treatmentType) {
       filteredEmails = filteredEmails?.filter(
-        (item: any) => item?.treatmenttype === treatmentType
+        (item) => item.treatmenttype === treatmentType
       );
     }
   
     if (location) {
       filteredEmails = filteredEmails?.filter(
-        (item: any) => item?.Locations?.title === location
+        (item) => item.Locations?.title === location
       );
     }
   
-    if (onsite !== undefined) {
-      filteredEmails = filteredEmails?.filter(
-        (item: any) => item?.onsite === onsite
-      );
+    if (typeof onsite === "boolean") {
+      filteredEmails = filteredEmails?.filter((item) => item.onsite === onsite);
     }
   
-    return filteredEmails.filter((email) =>
-      email?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    return filteredEmails?.filter((email) =>
+      email?.email?.toLowerCase()?.includes(searchQuery.toLowerCase())
     );
   };
   
