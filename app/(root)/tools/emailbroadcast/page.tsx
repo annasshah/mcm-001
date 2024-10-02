@@ -43,6 +43,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
+import moment from 'moment';
+
 const EmailBroadcast: React.FC = () => {
   const [emailList, setEmailList] = useState<any[]>([]);
   const [locationList, setLocationList] = useState<any[]>([]);
@@ -192,8 +194,8 @@ const EmailBroadcast: React.FC = () => {
           name,
           clinicName,
           reason,
-          startDate,
-          endDate,
+          startDate:moment(startDate).format('MM/DD/YYYY'),
+          endDate:moment(endDate).format('MM/DD/YYYY'),
           email: checkedItems,
         }),
       });
@@ -624,11 +626,11 @@ const EmailBroadcast: React.FC = () => {
           userFirstname={"[Patient]"}
           reason={reason || "[Reason]"}
           clinicName={clinicName || "[ClinicName]"}
-          name={name}
+          name={name ||'[Name]'}
           buttonText={buttonText || "[Button Text]"}
           buttonLink={buttonLink || "[buttonLink]"}
-          endDate={endDate}
-          startDate={startDate}
+          endDate={moment(endDate).format('MM/DD/YYYY')||'[End Date]'}
+          startDate={ moment(startDate).format('MM/DD/YYYY') ||'[Start Date]' }
         />
       </div>
     </main>

@@ -20,8 +20,8 @@ interface KoalaWelcomeEmailProps {
   name?: string;
   buttonText?: string;
   buttonLink?: string;
-  endDate?: Date;
-  startDate?: Date;
+  endDate?: string;
+  startDate?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
