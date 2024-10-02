@@ -219,10 +219,10 @@ const EmailBroadcast: React.FC = () => {
   };
 
   return (
-    <main className="w-full h-[150vh] text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center  p-4">
-      <div className=" w-[80%] h-full flex items-start   justify-start flex-col ">
+    <main className="w-full  text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center  p-4">
+      <div className=" w-[60%] h-full flex items-start   justify-start flex-col ">
         <div className="w-full h-full mt-[80px]">
-          <div className="w-[70%] flex flex-col">
+          <div className="w-full flex flex-col">
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <button className="w-full p-2 mb-2 border text-left border-gray-300 rounded">
@@ -336,7 +336,7 @@ const EmailBroadcast: React.FC = () => {
                                   value={email.email}
                                   checked={checkedItems.some(
                                     (item: any) => item.email === email.email
-                                  )} 
+                                  )}
                                   onChange={(e) =>
                                     handleCheckboxChange(e, email)
                                   }
@@ -619,7 +619,7 @@ const EmailBroadcast: React.FC = () => {
           <Button onClick={sendEmail}>Submit</Button>
         </div>
       </div>
-      <div className="w-[50%] h-[100vh]   p-5">
+      <div className="w-[40%]  flex items-center justify-center   p-5">
         <Template1
           userFirstname={"[Patient]"}
           reason={reason || "[Reason]"}
