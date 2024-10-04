@@ -16,9 +16,9 @@ interface Props {
     label?: string
     start_empty?: boolean
     bg_color?: string
-    initialValue?: string | number;
+    initialValue?: any;
 }
-
+// @ts-ignore
 export const Select_Dropdown = ({ options_arr, on_change_handle, required, value = '', label, start_empty = false, bg_color = '#D9D9D9', initialValue = '' || 0 }: Props) => {
     return (
         <div className='w-full'>
