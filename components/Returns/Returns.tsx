@@ -77,6 +77,10 @@ const detailsArray = (dataDetails: DataListInterface) => [
         value: dataDetails.quantity * dataDetails.products.price,
     },
     {
+        label: 'Quantity',
+        value: dataDetails.quantity,
+    },
+    {
         label: 'Patient Phone',
         value: dataDetails?.saleshistory?.orders?.pos?.phone,
     },
@@ -157,7 +161,7 @@ const Returns: FC<Props> = () => {
 
 
 
-    const sortHandle = (column: 'name' | 'order_id' | 'date' | 'category' | 'return_id') => {
+    const sortHandle = (column: 'name' | 'order_id' | 'date' | 'category' | 'return_id' | 'quantity') => {
         let sortedList: DataListInterface[] = [];
 
         if (column === 'name') {
@@ -193,6 +197,13 @@ const Returns: FC<Props> = () => {
                     ? aCategory.localeCompare(bCategory)
                     : bCategory.localeCompare(aCategory);
             });
+        }
+        else if (column === 'quantity') {
+            sortedList = dataList.sort((a, b) =>
+                sortOrder === 1
+                    ? a.quantity - b.quantity
+                    : b.quantity - a.quantity
+            );
         }
         else {
             sortedList = dataList.sort((a, b) =>
@@ -293,6 +304,11 @@ const Returns: FC<Props> = () => {
                                 </button>
                             </h1>
                             <h1 className='flex-1 text-center'>
+                                Quantity <button onClick={() => sortHandle('quantity')} className='active:opacity-50'>
+                                    <PiCaretUpDownBold className={`inline ${sortColumn === 'order_id' ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} />
+                                </button>
+                            </h1>
+                            <h1 className='flex-1 text-center'>
                                 Product <button onClick={() => sortHandle('date')} className='active:opacity-50'>
                                     <PiCaretUpDownBold className={`inline ${sortColumn === 'date' ? 'text-green-600' : 'text-gray-400/50'} hover:text-gray-600 active:text-gray-500 `} />
                                 </button>
@@ -316,13 +332,16 @@ const Returns: FC<Props> = () => {
                                 <Spinner size='xl' />
                             </div> :
                                 dataList.length > 0 ? dataList.map((elem) => {
-                                    const { return_id, saleshistory: { order_id }, products: { product_name, categories: { category_name } } } = elem
+                                    const { return_id, quantity, saleshistory: { order_id }, products: { product_name, categories: { category_name } } } = elem
                                     return <div key={return_id} onClick={() => detailsViewHandle(elem)} className='cursor-pointer hover:bg-gray-500 hover:text-white flex items-center flex-1 font-semibold bg-white px-3 py-4 rounded-md '>
                                         <h1 className='ms-4 flex-1 text-start'>
                                             {return_id}
                                         </h1>
                                         <h1 className='flex-1 text-center'>
                                             {order_id}
+                                        </h1>
+                                        <h1 className='flex-1 text-center'>
+                                            {quantity}
                                         </h1>
                                         <h1 className='flex-1 text-center'>
                                             {product_name}

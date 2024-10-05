@@ -135,7 +135,8 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
 
     // console.log('------------------>', isAnyReturned, data)
 
-    const processReturnHandle = async () => {
+    const processReturnHandle = async (e: React.FormEvent) => {
+        e.preventDefault()
 
         if (forReturnQty > data.quantity_sold) {
             toast.error(`Return quantity should not be higher than the sold quantity`)
@@ -180,28 +181,28 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
                     <IoCloseOutline className='pointer-events-auto cursor-pointer' size={24} onClick={ClosereturnHandle} />
                 </div>
                 <div>
-                    <div className='space-y-6'>
+                    <form onSubmit={processReturnHandle} className='space-y-6'>
 
                         <div className='flex justify-start flex-col space-y-1'>
                             <label className='text-start font-semibold text-gray-600'>
                                 Quantity
                             </label>
                             <div className=' border-2 text-sm rounded-md px-2 py-2 flex items-center space-x-2'>
-                                <input onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Enter return QTY' max={data.quantity_sold} />
+                                <input required onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Enter return QTY' max={data.quantity_sold} />
                             </div>
                         </div>
                         <div className='flex justify-start flex-col space-y-1'>
                             <label className='text-start font-semibold text-gray-600'>
                                 Reason of return
                             </label>
-                            <textarea onChange={changeReasonHandle} className='border-2 text-sm rounded-md border-gray-200 w-full  resize-none outline-none  focus:border-none focus:ring-offset-0' placeholder='Enter return QTY' rows={4} />
+                            <textarea required onChange={changeReasonHandle} className='border-2 text-sm rounded-md border-gray-200 w-full  resize-none outline-none  focus:border-none focus:ring-offset-0' placeholder='Enter reason of return' rows={4} />
                         </div>
 
 
-                        <Button disabled={loading || !forReturnReason || !forReturnQty ? true : false} onClick={processReturnHandle} className='disabled:opacity-60 w-full' color="success">
+                        <Button type='submit' disabled={loading || !forReturnReason || !forReturnQty ? true : false} className='disabled:opacity-60 w-full' color="success">
                             Process Return
                         </Button>
-                    </div>
+                    </form>
                 </div>
             </div>
 

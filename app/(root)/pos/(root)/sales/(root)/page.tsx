@@ -170,6 +170,7 @@ const Orders = () => {
 
     const category_change_handle = (e: any) => {
         const value = e.target.value
+        console.log('--------------->', value)
         getCategoriesByLocationId(value)
         setProductQty(0)
     }
@@ -283,6 +284,8 @@ const Orders = () => {
                 if (order_created_data.length) {
                     toast.success(`Order has been placed, order # ${order_id}`);
                     setCartArray([]);
+                    localStorage.removeItem('@pos-patient')
+                    setSelectedPatient(null)
                 }
             }
         } catch (err: any) {
@@ -333,12 +336,12 @@ const Orders = () => {
 
                             <div className='space-y-6'>
                                 <div className='w-1/3'>
-                                    <Select_Dropdown initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ id, category_name }: any) => ({ id: id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
+                                    <Select_Dropdown disabled={!selectedPatient} initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
                                 </div>
                                 <div className='w-1/3'>
                                     {loadingProducts ? <div className='text-sm text-gray-400'>
                                         Loading Products...
-                                    </div> : <Select_Dropdown initialValue={0} bg_color='#fff' start_empty={true}
+                                    </div> : <Select_Dropdown disabled={!selectedPatient} initialValue={0} bg_color='#fff' start_empty={true}
                                         // @ts-ignore
                                         options_arr={products.map(({ product_id, product_name }: any) => ({ value: product_id, label: product_name }))}
 
@@ -348,7 +351,7 @@ const Orders = () => {
 
 
                                 <div className='flex'>
-                                    <Quantity_Field maxAvailability={selectedProduct ? selectedProduct.quantity_available : 0} quantity={productQty} quantityHandle={quantityHandle} />
+                                    <Quantity_Field disabled={!selectedPatient}  maxAvailability={selectedProduct ? selectedProduct.quantity_available : 0} quantity={productQty} quantityHandle={quantityHandle} />
                                 </div>
 
 

@@ -20,30 +20,34 @@ const tableHeader = [
   {
     id: 'category',
     label: 'Category',
-    render_value: (val: string, elem?:any) => elem?.products?.category_id?.category_name || '-',
+    render_value: (val: string, elem?:any) => elem?.categories?.category_name || '-',
   },
   {
     id: 'name',
     label: 'Name',
-    render_value: (val: any,  elem?:any) => elem?.products?.product_name || '-',
+    render_value: (val: any,  elem?:any) => elem?.product_name || '-',
+    align: 'text-center'
   },
   {
     id: 'price',
     label: 'Price',
-    render_value: (val: any,  elem?:any) => elem?.products?.price,
+    render_value: (val: any,  elem?:any) => elem?.price,
+    align: 'text-center'
   },
   {
     id: 'quantity_in_stock',
     label: 'Quantity Available',
+    render_value: (val: any,  elem?:any) => elem?.quantity_available,
+    align: 'text-center'
     
   },
-  {
-    id: 'last_updated',
-    label: 'Last Updated',
-    render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MMM DD, YYYY'),
-    align: 'text-end'
+  // {
+  //   id: 'last_updated',
+  //   label: 'Last Updated',
+  //   render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MMM DD, YYYY'),
+  //   align: 'text-end'
 
-  },
+  // },
 ]
 
 
@@ -57,7 +61,7 @@ const StockPanel = () => {
 
   const fetch_handle = async () => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'inventory', language: '', selectParam:',products(product_id,product_name,price,category_id(category_name))' });
+    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam:',categories(category_name)' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)

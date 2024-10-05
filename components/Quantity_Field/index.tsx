@@ -8,11 +8,12 @@ interface QuantityFieldInterface {
     quantity: number;
     quantityHandle: (e: number) => void;
     maxAvailability: number;
+    disabled?: boolean;
 
 }
 
 
-export const Quantity_Field: FC<QuantityFieldInterface> = ({ quantity, quantityHandle, maxAvailability }) => {
+export const Quantity_Field: FC<QuantityFieldInterface> = ({ quantity, quantityHandle, maxAvailability, disabled = false }) => {
 
     const [canAddMore, setCanAddMore] = useState(true)
 
@@ -39,7 +40,7 @@ export const Quantity_Field: FC<QuantityFieldInterface> = ({ quantity, quantityH
 
 
     return (
-        <div className='w-28'>
+        <div className={`w-28 ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}>
             <Label htmlFor="quantity" value="Quantity" className='font-bold' />
             <div className='bg-white py-1 px-3 rounded-lg flex items-center'>
                 <p className='flex-1'>{quantity}</p>

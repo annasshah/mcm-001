@@ -33,15 +33,16 @@ export function useProductsClinica() {
 
     useEffect(() => {
         setLoading(true)
-        let matchCase = null
-        if (selectedCategory) {
-            matchCase = {
-                key: 'category_id',
-                value: selectedCategory
-            }
-        }
+       
         !(async function fetch_data() {
-            const data = await fetch_content_service({ table: 'products' })
+            let matchCase = null
+            if (selectedCategory) {
+                matchCase = {
+                    key: 'category_id',
+                    value: selectedCategory
+                }
+            }
+            const data = await fetch_content_service({ table: 'products', matchCase })
             setdata(data);
             setLoading(false)
         })()
