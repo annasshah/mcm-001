@@ -25,10 +25,18 @@ interface PatientDetailsInterface {
     phone: string;
 }
 
+const rtnReasonsList = [
+    "Incorrect Item",
+    "Expired Product",
+    "Not Needed Anymore",
+    "Damaged or Defective",
+    "Other"
+]
 
 
 interface PatientDetailsRenderPropsInterface {
     patientData: PatientDetailsInterface;
+    paymentType: string;
 }
 interface TableListRenderInterface {
     dataList: any;
@@ -84,7 +92,7 @@ const tableHeader = [
 
 
 
-const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientData }) => {
+const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientData, paymentType }) => {
 
     const { firstname, lastname, gender, email, phone, id, treatmenttype } = patientData
     return <div className="py-4 space-y-3">
@@ -94,7 +102,8 @@ const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientD
             <p>Patient Name: <strong>{firstname} {lastname}</strong> </p>
             <p>Gender: <strong>{gender}</strong> </p>
             <p>Phone: <strong>{phone}</strong></p>
-            <p className='col-span-2'>Email: <strong>{email}</strong></p>
+            <p className=''>Email: <strong>{email}</strong></p>
+            <p className=''>payment Type: <strong>{paymentType}</strong></p>
             <p>Treatment Type: <strong>{treatmenttype}</strong></p>
         </div>
     </div>
@@ -195,7 +204,13 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
                             <label className='text-start font-semibold text-gray-600'>
                                 Reason of return
                             </label>
-                            <textarea required onChange={changeReasonHandle} className='border-2 text-sm rounded-md border-gray-200 w-full  resize-none outline-none  focus:border-none focus:ring-offset-0' placeholder='Enter reason of return' rows={4} />
+                            <select onChange={changeReasonHandle} className='border-2 text-sm rounded-md px-2 py-2 flex items-center space-x-2 '>
+                                <option value={''} disabled selected >Select Reason</option>
+                                {rtnReasonsList.map((opt, ind) => <option key={ind} value={opt} >{opt}
+
+                                </option>)}
+                            </select>
+                            {/* <textarea required onChange={changeReasonHandle} className='border-2 text-sm rounded-md border-gray-200 w-full  resize-none outline-none  focus:border-none focus:ring-offset-0' placeholder='Enter reason of return' rows={4} /> */}
                         </div>
 
 
@@ -274,7 +289,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 date_sold,
                 quantity_sold,
                 total_price,
-                return_qty
+                return_qty,
+                paymentcash
               )
             `,
                     // @ts-ignore
@@ -317,6 +333,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
     const hasReturnedHandle = (val: boolean) => {
         setIsAnyReturned(() => val)
     }
+    console.log(dataList.saleshistory[0])
 
 
     return (
@@ -330,7 +347,12 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 </div>
 
 
-                <PatientDetailsRender patientData={dataList.pos} />
+                <PatientDetailsRender patientData={dataList.pos} 
+                
+                // paymentType={[null, true].includes(dataList[0].paymentcash) ? "Cash" : "Creadit Card"}
+                paymentType="Cash"
+                
+                />
 
 
 

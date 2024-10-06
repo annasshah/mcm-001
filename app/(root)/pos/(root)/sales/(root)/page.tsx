@@ -14,6 +14,7 @@ import { CircularProgress } from '@mui/material';
 import { currencyFormatHandle } from '@/helper/common_functions'
 import { create_content_service } from '@/utils/supabase/data_services/data_services';
 import { toast } from 'react-toastify';
+import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 // interface PatientDetailsInterface {
 //     name: string;
 //     phone_number: string;
@@ -117,6 +118,11 @@ const CartItemComponent: FC<CartItemComponentInterface> = ({ data, controllProdu
         controllProductQtyHandle(product_id, newQty, price, index)
     }
 
+
+    const removeItemHandle = () => {
+        controllProductQtyHandle(product_id, 0, price, index)
+    }
+
     return <div className='bg-[#AFB8C6] py-2 px-3 rounded-lg'>
 
         <div className='flex items-center '>
@@ -142,7 +148,7 @@ const CartItemComponent: FC<CartItemComponentInterface> = ({ data, controllProdu
                 </p>
 
                 <div>
-                    <button>
+                    <button onClick={removeItemHandle}>
                         <IoCloseOutline size={20} className=' text-primary_color' />
                     </button>
                 </div>
@@ -253,39 +259,40 @@ const Orders = () => {
     const placeOrderHandle = async () => {
         try {
             setPlaceOrderLoading(true);
-    
+
             if (!selectedPatient) return;
-    
+
             const { data, error }: any = await create_content_service({
                 table: 'orders',
                 post_data: { patient_id: selectedPatient.id },
             });
-    
+
             if (error) throw new Error(error.message);
-    
+
             if (data?.length) {
                 const order_id = data[0].order_id;
-    
+
                 const post_data = cartArray.map((elem) => ({
                     order_id,
                     product_id: elem.product_id,
                     quantity_sold: elem.quantity,
                     total_price: elem.price * elem.quantity,
                 }));
-    
+
                 const { data: order_created_data, error: order_created_error }: any = await create_content_service({
                     table: 'saleshistory',
                     post_data,
                     multiple_rows: true,
                 });
-    
+
                 if (order_created_error) throw new Error(order_created_error.message);
-    
+
                 if (order_created_data.length) {
                     toast.success(`Order has been placed, order # ${order_id}`);
                     setCartArray([]);
                     localStorage.removeItem('@pos-patient')
                     setSelectedPatient(null)
+                    router.push('/after-place-order')
                 }
             }
         } catch (err: any) {
@@ -294,8 +301,8 @@ const Orders = () => {
             setPlaceOrderLoading(false);
         }
     };
-    
-    
+
+
 
 
 
@@ -336,12 +343,12 @@ const Orders = () => {
 
                             <div className='space-y-6'>
                                 <div className='w-1/3'>
-                                    <Select_Dropdown disabled={!selectedPatient} initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
+                                    <Searchable_Dropdown disabled={!selectedPatient} initialValue={0} value={selectedCategory} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={category_change_handle} label='Select Category' />
                                 </div>
                                 <div className='w-1/3'>
                                     {loadingProducts ? <div className='text-sm text-gray-400'>
                                         Loading Products...
-                                    </div> : <Select_Dropdown disabled={!selectedPatient} initialValue={0} bg_color='#fff' start_empty={true}
+                                    </div> : <Searchable_Dropdown disabled={!selectedPatient} initialValue={0} bg_color='#fff' start_empty={true}
                                         // @ts-ignore
                                         options_arr={products.map(({ product_id, product_name }: any) => ({ value: product_id, label: product_name }))}
 
@@ -350,8 +357,21 @@ const Orders = () => {
 
 
 
-                                <div className='flex'>
-                                    <Quantity_Field disabled={!selectedPatient}  maxAvailability={selectedProduct ? selectedProduct.quantity_available : 0} quantity={productQty} quantityHandle={quantityHandle} />
+                                <div className='flex items-end space-x-5'>
+                                    <Quantity_Field disabled={!selectedPatient} maxAvailability={selectedProduct ? selectedProduct.quantity_available : 0} quantity={productQty} quantityHandle={quantityHandle} />
+
+                                    {selectedProduct && <div className='space-y-1 text-gray-600'>
+                                        <div>
+                                            <h1 className='text-base '>
+                                                {currencyFormatHandle(20)} / unit
+                                            </h1>
+                                        </div>
+                                        <div>
+                                            <h1 className='text-base '>
+                                                {selectedProduct.quantity_available - productQty} units are remaining
+                                            </h1>
+                                        </div>
+                                    </div>}
                                 </div>
 
 
@@ -359,6 +379,9 @@ const Orders = () => {
                                     <button disabled={!productQty} onClick={addToCartHandle} className='bg-[#8CB3F0] text-[#fff] font-bold py-3 px-9 rounded-md hover:opacity-80 active:opacity-50 disabled:opacity-60' type='submit'>
                                         Add to cart
                                     </button>
+
+
+
                                 </div>
 
 
