@@ -296,8 +296,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                     // @ts-ignore
                     matchCase: { key: 'order_id', value: order_id }
                 });
-                setDataList(fetched_data[0]);
-                const listHistory = fetched_data[0]?.saleshistory || []
+                setDataList(fetched_data?.[0] || []);
+                const listHistory = fetched_data?.[0]?.saleshistory || []
                 const checkRtn = listHistory.filter(({ return_qty }: { return_qty: number }) => return_qty > 0)
                 setIsAnyReturned(() => checkRtn.length > 0)
                 setSalesHistory(listHistory);
@@ -333,7 +333,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
     const hasReturnedHandle = (val: boolean) => {
         setIsAnyReturned(() => val)
     }
-    console.log(dataList.saleshistory[0])
 
 
     return (
