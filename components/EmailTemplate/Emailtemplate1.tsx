@@ -28,7 +28,7 @@ const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "";
 
-export const KoalaWelcomeEmail = ({
+export const  VercelInviteUserEmail = ({
   userFirstname,
   reason,
   clinicName,
@@ -71,11 +71,11 @@ export const KoalaWelcomeEmail = ({
   </>
 );
 
-KoalaWelcomeEmail.PreviewProps = {
+VercelInviteUserEmail.PreviewProps = {
   userFirstname: "Alan",
 } as KoalaWelcomeEmailProps;
 
-export default KoalaWelcomeEmail;
+export default  VercelInviteUserEmail;
 
 const main = {
   backgroundColor: "#ffffff",
