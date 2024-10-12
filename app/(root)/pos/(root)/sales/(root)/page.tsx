@@ -15,6 +15,8 @@ import { currencyFormatHandle } from '@/helper/common_functions'
 import { create_content_service } from '@/utils/supabase/data_services/data_services';
 import { toast } from 'react-toastify';
 import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
+import PromoCodeComponent from '@/components/PromoCodeComponent';
+import { PromoCodeDataInterface } from '@/types/typesInterfaces';
 // interface PatientDetailsInterface {
 //     name: string;
 //     phone_number: string;
@@ -60,13 +62,6 @@ const render_details = [
 
 
 
-const Promo_Input = () => {
-    return (
-        <div className='w-52 flex rounded-md  items-center bg-white p-2 px-2'>
-            <input type="text" placeholder="Enter Promo Code" className='w-full px-1 py-1 text-sm border-2 focus:outline-none focus:border-blue-500' />
-            <IoCloseOutline />
-        </div>)
-}
 
 const Payment_Method_Select = () => {
 
@@ -83,15 +78,29 @@ const Payment_Method_Select = () => {
         </div>)
 }
 
+const grandTotalHandle = (ProductArray: CartArrayInterface[], discount?: number) => {
+    // Calculate total quantity of products
+    const totalQty = ProductArray.reduce((a, b) => a + b.quantity, 0);
 
-const grandTotalHandle = (ProductArray: CartArrayInterface[]) => {
+    // Calculate total amount before discount
+    let totalAmount = ProductArray.reduce((a, b) => a + (b.quantity * b.price), 0);
 
-    const totalQty = ProductArray.reduce((a, b) => a + b.quantity, 0)
-    const totalAmount = ProductArray.reduce((a, b) => a + (b.quantity * b.price), 0)
+    // Initialize discount amount
+    let discountAmount = 0;
 
-    return { qty: totalQty, amount: currencyFormatHandle(totalAmount) }
+    // Apply discount if it's valid and greater than zero
+    if (discount && discount > 0) {
+        discountAmount = (totalAmount * discount) / 100;  // Calculate the discount amount
+        totalAmount -= discountAmount;  // Subtract the discount from the total amount
+    }
 
-}
+    // Return the total quantity, final amount after discount, and the discount amount
+    return {
+        qty: totalQty,
+        amount: currencyFormatHandle(totalAmount),      // Format the total amount
+        discountAmount: discountAmount ? currencyFormatHandle(discountAmount) : 0 // Format the discounted amount
+    };
+};
 
 
 const calcTotalAmount = (perItemAmount: number, qty: number) => {
@@ -160,6 +169,8 @@ const CartItemComponent: FC<CartItemComponentInterface> = ({ data, controllProdu
 }
 
 
+
+
 const Orders = () => {
 
 
@@ -170,6 +181,8 @@ const Orders = () => {
     const [cartArray, setCartArray] = useState<CartArrayInterface[]>([])
     const [productQty, setProductQty] = useState<number>(0)
     const [placeOrderLoading, setPlaceOrderLoading] = useState(false)
+    const [appliedDiscount, setAppliedDiscount] = useState<number>(0)
+    const [promoCodeData, setPromoCode] = useState<PromoCodeDataInterface | null>(null)
 
 
     const router = useRouter()
@@ -262,9 +275,15 @@ const Orders = () => {
 
             if (!selectedPatient) return;
 
+            let orderCreatePostData: any = { patient_id: selectedPatient.id }
+
+            if (promoCodeData) {
+                orderCreatePostData.promo_code_id = promoCodeData.id
+            }
+
             const { data, error }: any = await create_content_service({
                 table: 'orders',
-                post_data: { patient_id: selectedPatient.id },
+                post_data: orderCreatePostData,
             });
 
             if (error) throw new Error(error.message);
@@ -301,6 +320,14 @@ const Orders = () => {
             setPlaceOrderLoading(false);
         }
     };
+
+
+
+    const applyDiscountHandle = (codeData: PromoCodeDataInterface | null, discount: number) => {
+        setAppliedDiscount(discount)
+        setPromoCode(codeData)
+
+    }
 
 
 
@@ -363,7 +390,7 @@ const Orders = () => {
                                     {selectedProduct && <div className='space-y-1 text-gray-600'>
                                         <div>
                                             <h1 className='text-base '>
-                                                {currencyFormatHandle(20)} / unit
+                                                {currencyFormatHandle(selectedProduct?.price || 0)} / unit
                                             </h1>
                                         </div>
                                         <div>
@@ -419,12 +446,7 @@ const Orders = () => {
                     <div className='bg-[#FFFFFF80]'>
 
                         <div className='py-3 px-4 border-t-[1px] border-t-[#817B7B] space-y-3'>
-                            <div className='flex items-center'>
-                                <h1 className='text-lg flex-1'>
-                                    Promo code
-                                </h1>
-                                <Promo_Input />
-                            </div>
+                            <PromoCodeComponent patientId={selectedPatient?.id} applyDiscountHandle={applyDiscountHandle} />
                             <div className='flex items-center'>
                                 <h1 className='text-lg flex-1'>
                                     Payment method
@@ -435,14 +457,17 @@ const Orders = () => {
                         </div>
                         <div className='py-3 px-4 border-t-[1px] border-t-[#817B7B] space-y-3'>
                             <div className='flex items-center'>
-                                <h1 className='text-lg flex-1'>
-                                    Discount
-                                </h1>
+                                <div className='flex items-center flex-1 space-x-2'>
+                                    <h1 className='text-lg'>
+                                        Discount
+                                    </h1>
+                                    {appliedDiscount ? <span className='text-sm text-red-500'>- {appliedDiscount}% off </span> : null}
+                                </div>
                                 <div className='flex items-center space-x-1'>
-                                    <p className='text-start'>
-                                        nill
+                                    <p className={`${appliedDiscount ? 'text-red-500' : ''} text-start`}>
+                                        {appliedDiscount ? `-${grandTotalHandle(cartArray, appliedDiscount).discountAmount}` : 'nill'}
                                     </p>
-                                    <IoCloseOutline />
+                                    <IoCloseOutline className='text-transparent' />
                                 </div>
                             </div>
 
@@ -468,7 +493,7 @@ const Orders = () => {
                                         : <div className='flex items-center justify-between'>
                                             <dl >
                                                 <dt className='text-start'>
-                                                    {grandTotalHandle(cartArray).amount}
+                                                    {grandTotalHandle(cartArray, appliedDiscount).amount}
                                                 </dt>
                                                 <dd className='text-sm font-normal'>
                                                     {grandTotalHandle(cartArray).qty} items
