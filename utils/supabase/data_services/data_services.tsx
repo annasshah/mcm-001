@@ -4,7 +4,7 @@ import { supabase } from "@/services/supabase"
 
 interface MatchCaseInterface {
   key: string;
-  value: string | number;
+  value: string | number | boolean;
 }
 
 interface FetchContentServiceInterface {

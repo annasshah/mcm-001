@@ -7,6 +7,7 @@ import { currencyFormatHandle } from '@/helper/common_functions';
 import { CircularProgress } from '@mui/material';
 import OrderDetailsModal from './OrderDetailsModal'; // Import the modal
 import { CiSearch } from 'react-icons/ci';
+import TableComponent from '@/components/TableComponent';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -68,7 +69,7 @@ const SalesHistory = () => {
     const fetched_data = await fetch_content_service({
       table: 'orders',
       language: '',
-      selectParam:  `,pos(
+      selectParam: `,pos(
         firstname,
         lastname
       ),
@@ -120,45 +121,14 @@ const SalesHistory = () => {
       </div>
 
       <div className='w-full min-h-[82dvh] h-[100%] overflow-auto py-2 px-2'>
-        <div className='bg-[#EFEFEF] h-[82dvh] col-span-2 rounded-md py-2'>
-          <div className='space-y-6 px-3 py-4 flex justify-between'>
-            <div className='flex items-center space-x-3 px-1 py-1 w-72 text-sm rounded-sm bg-white'>
-              <CiSearch size={22} color='gray' />
-              <input onChange={onChangeHandle} type="text" placeholder="Order ID" className='px-1 focus:outline-none placeholder-gray-400 text-sm font-light' />
-            </div>
-          </div>
+        <TableComponent
+          tableHeader={tableHeader}
+          loading={loading}
+          dataList={dataList}
+          openModal={openModal}
+          searchHandle={onChangeHandle}
 
-          <div className='px-2 pt-5'>
-            <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
-              {tableHeader.map(({ label, align, flex }, index) => (
-                <h1 key={index} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
-                  {label}
-                </h1>
-              ))}
-            </div>
-
-            <div className='mb-4 h-[67dvh] overflow-y-auto'>
-              {loading ? (
-                <div className='h-full w-full flex items-center justify-center'>
-                  <CircularProgress />
-                </div>
-              ) : (
-                dataList.map((elem: DataListInterface, index) => (
-                  <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base py-5 border-b-2 border-b-[#E4E4E7]`}>
-                    {tableHeader.map(({ id, render_value, align, flex }, ind) => {
-                      const content = render_value ? render_value(elem[id], elem, openModal) : elem[id];
-                      return (
-                        <h1 key={ind} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
-                          {content}
-                        </h1>
-                      );
-                    })}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
+        />
       </div>
 
       {/* Modal */}
