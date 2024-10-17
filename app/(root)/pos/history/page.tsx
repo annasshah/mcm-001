@@ -8,6 +8,7 @@ import { CircularProgress } from '@mui/material';
 import OrderDetailsModal from './OrderDetailsModal'; // Import the modal
 import { CiSearch } from 'react-icons/ci';
 import TableComponent from '@/components/TableComponent';
+import ExportAsPDF from '@/components/ExportPDF';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -57,6 +58,28 @@ const tableHeader = [
   },
 ];
 
+
+
+// Format the data
+const formattedData = (rawData: DataListInterface[]) => {
+  return rawData.map((order) => {
+    const { order_id, order_date, pos, saleshistory } = order;
+    const patientName = `${pos.firstname} ${pos.lastname}`;
+
+    // Assuming there's one sales history per order
+    const totalAmount = saleshistory.reduce(
+      (total: number, sale: { total_price: number }) => total + sale.total_price,
+      0
+    )
+    return {
+      orderId: String(order_id), // Convert order_id to string for table
+      date: new Date(order_date).toLocaleDateString(), // Format date
+      patientName,
+      totalAmount: `$${totalAmount}`, // Format total amount
+      paymentType: 'Cash', // Hardcoded for now, can be dynamic if available
+    };
+  });
+}
 const SalesHistory = () => {
   const [dataList, setDataList] = useState<DataListInterface[]>([]);
   const [allData, setAllData] = useState<DataListInterface[]>([]);
@@ -111,12 +134,14 @@ const SalesHistory = () => {
     fetch_handle();
   }, []);
 
+  console.log(dataList)
+
   return (
     <main className="w-full h-full font-[500] text-[20px]">
       <div className='flex justify-between items-center px-4 py-4 space-x-2'>
         <h1 className='text-xl font-bold'>Sales History</h1>
         <div>
-          <button className='bg-black text-base px-3 py-2 text-white rounded-md'>Export as PDF</button>
+          <ExportAsPDF tableData={formattedData(dataList)} />
         </div>
       </div>
 
