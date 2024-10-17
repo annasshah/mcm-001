@@ -6,6 +6,7 @@ import { HiOutlineBell } from "react-icons/hi";
 
 import { useContext } from "react";
 import { TabContext } from "@/context";
+import MenuWithAvatar from "./MenuWithAvatar";
 
 export const Navbar = ({ width }: { width: string }) => {
   const { activeTitle } = useContext(TabContext);
@@ -21,20 +22,7 @@ export const Navbar = ({ width }: { width: string }) => {
         <div className="text-[#000000] text-[16px]">
           <HiOutlineBell />
         </div>
-        <div className="flex items-center justify-center">
-          <Image
-            src={Avatar}
-            alt=""
-            className="w-[48px] h-[48px] rounded-[50%] aspect-auto object-contain"
-          />
-
-          <div className="flex flex-col items-start justify-center">
-            <div className="text-[#121111] text-[16px] font-semibold">
-              Raheel
-            </div>
-            <div className="text-[#121111] text-[12px]">Admin</div>
-          </div>
-        </div>
+        <MenuWithAvatar />
       </div>
     </header>
   );

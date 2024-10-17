@@ -25,3 +25,25 @@ export async function login(formData: FormData) {
 
   return redirect('/')
 }
+
+
+
+
+export async function signOut() {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.log(error.message);
+
+    // Redirect to a custom error page or login page with an error message
+    return redirect(`/login?error_message=${error.message}`);
+  }
+
+  // Revalidate any paths if necessary (for example, layout or other pages)
+  // revalidatePath('/', 'layout');
+
+  // Redirect to the homepage or another page after successful sign out
+  return redirect('/');
+}
