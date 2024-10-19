@@ -25,6 +25,8 @@ const ExportAsPDF: React.FC<ExportAsPDFProps> = ({ tableData }) => {
         const tableColumn = ['Order ID', 'Date', 'Patient Name', 'Total Amount', 'Payment Type'];
         const tableRows: string[][] = [];
 
+        let totalAmount = 0; // Variable to accumulate total amount
+
         // Loop through table data and push into rows
         tableData.forEach((item) => {
             const rowData = [
@@ -35,7 +37,14 @@ const ExportAsPDF: React.FC<ExportAsPDFProps> = ({ tableData }) => {
                 item.paymentType,
             ];
             tableRows.push(rowData);
+
+            totalAmount += parseFloat(item.totalAmount.replace('$', ''));
         });
+
+
+        const totalRow = [{ content: 'Total', colSpan: 3, styles: { halign: 'right',fontStyle:'bold' } }, { content: `$${totalAmount.toFixed(2)}`, colSpan: 2, styles: { halign: 'left' , fontStyle:'bold'} }]
+        // @ts-ignore
+        tableRows.push(totalRow);
 
         // Generate table in the PDF
         autoTable(doc, {
