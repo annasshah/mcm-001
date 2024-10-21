@@ -69,6 +69,7 @@ const EmailBroadcast: React.FC = () => {
 
   const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
+    setIsFilterOn(true)
     setSelectedGender((prev) =>
       prev.includes(value)
         ? prev.filter((gender) => gender !== value)
@@ -77,6 +78,7 @@ const EmailBroadcast: React.FC = () => {
   };
 
   const handleVisitChange = (type: boolean) => {
+    setIsFilterOn(true)
     setOnsite(type);
   };
   const handleCheckboxChange = (
@@ -84,6 +86,7 @@ const EmailBroadcast: React.FC = () => {
     emailObj: any
   ) => {
     const isChecked = event.target.checked;
+    setIsFilterOn(true)
 
     setCheckedItems((prevCheckedItems: any[]) =>
       isChecked
@@ -97,6 +100,7 @@ const EmailBroadcast: React.FC = () => {
     setOnsite(undefined);
     setLocation("");
     setTreatmentType("");
+    setIsFilterOn(false)
   };
 
   const handleSelectAndDeselectAll = (isSelected: boolean) => {
@@ -353,9 +357,9 @@ const EmailBroadcast: React.FC = () => {
                               <div>
                                 {" "}
                                 <Label>
-                                  {email.gender === "male"
+                                  {email.gender === "Male"
                                     ? "M"
-                                    : email.gender === "female"
+                                    : email.gender === "Female"
                                     ? "F"
                                     : "O"}
                                 </Label>
@@ -379,18 +383,18 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
-                                value="male"
+                                value="Male"
                                 onChange={handleGenderChange}
-                                checked={selectedGender.includes("male")}
+                                checked={selectedGender.includes("Male")}
                               />
                               <Label htmlFor="r2">Male</Label>
                             </div>
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
-                                value="female"
+                                value="Female"
                                 onChange={handleGenderChange}
-                                checked={selectedGender.includes("female")}
+                                checked={selectedGender.includes("Female")}
                               />
                               <Label htmlFor="r3">Female</Label>
                             </div>
