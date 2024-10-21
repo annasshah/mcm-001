@@ -113,34 +113,43 @@ const EmailBroadcast: React.FC = () => {
 
   const filterEmails = () => {
     let filteredEmails = emailList;
-
+  
     if (selectedGender.length > 0) {
       filteredEmails = filteredEmails?.filter((item) =>
         selectedGender.includes(item.gender)
       );
     }
-
+  
     if (treatmentType) {
       filteredEmails = filteredEmails?.filter(
         (item) => item.treatmenttype === treatmentType
       );
     }
-
+  
     if (location) {
       filteredEmails = filteredEmails?.filter(
         (item) => item.Locations?.title === location
       );
     }
-
+  
     if (typeof onsite === "boolean") {
       filteredEmails = filteredEmails?.filter((item) => item.onsite === onsite);
     }
-
-    return filteredEmails?.filter((email) =>
+  
+    // Split filtered emails into selected and unselected
+    const selectedEmails = filteredEmails.filter((email) =>
+      checkedItems.some((checkedItem) => checkedItem.email === email.email)
+    );
+    const unselectedEmails = filteredEmails.filter(
+      (email) => !checkedItems.some((checkedItem) => checkedItem.email === email.email)
+    );
+  
+    // Combine selected at the top, followed by unselected
+    return [...selectedEmails, ...unselectedEmails].filter((email) =>
       email?.email?.toLowerCase()?.includes(searchQuery.toLowerCase())
     );
   };
-
+  
   const filteredEmails = filterEmails();
 
   useEffect(() => {
