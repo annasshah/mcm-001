@@ -252,7 +252,7 @@ const EmailBroadcast: React.FC = () => {
         },
         body: JSON.stringify({
           subject,
-          template: 1,
+          template: selectedTemplate,
           buttonLink,
           buttonText,
           name,
@@ -261,6 +261,7 @@ const EmailBroadcast: React.FC = () => {
           startDate:moment(startDate).format('MM/DD/YYYY'),
           endDate:moment(endDate).format('MM/DD/YYYY'),
           email: checkedItems,
+          price
         }),
       });
       if (res.ok) {
