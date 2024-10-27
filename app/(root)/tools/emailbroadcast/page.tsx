@@ -10,7 +10,17 @@ import {
 } from "@/actions/send-email/action";
 import { cn } from "@/lib/utils";
 import Template1 from "@/components/EmailTemplate/Emailtemplate1";
-import template2 from "@/assets/images/Avatar/temp2.png";
+import emailtemplate1 from "@/components/EmailTemplate/template1";
+import emailtemplate2 from "@/components/EmailTemplate/template2";
+import emailtemplate3 from "@/components/EmailTemplate/template3";
+import emailtemplate4 from "@/components/EmailTemplate/template4";
+import emailtemplate5 from "@/components/EmailTemplate/template5";
+import emailtemplate6 from "@/components/EmailTemplate/template6";
+import emailtemplate7 from "@/components/EmailTemplate/template7";
+import emailtemplate8 from "@/components/EmailTemplate/template8";
+import emailtemplate9 from "@/components/EmailTemplate/template9";
+import emailtemplate10 from "@/components/EmailTemplate/template10";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
@@ -59,6 +69,7 @@ const EmailBroadcast: React.FC = () => {
   const [buttonText, setButtonText] = React.useState<any>();
   const [buttonLink, setButtonLink] = React.useState<any>();
   const [clinicName, setClinicName] = React.useState<any>();
+  const [price, setPrice] = React.useState<any>();
   const [name, setName] = React.useState<any>();
   const [checkedItems, setCheckedItems] = useState<any>([]);
   const [selectedGender, setSelectedGender] = useState<string[]>([]);
@@ -66,6 +77,21 @@ const EmailBroadcast: React.FC = () => {
   const [location, setLocation] = useState<any>(null);
   const [treatmentType, setTreatmentType] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const templates = [
+    { label: "Template 1", value: "template1", component: emailtemplate1 },
+    { label: "Template 2", value: "template2", component: emailtemplate2 },
+    { label: "Template 3", value: "template3", component: emailtemplate3 },
+    { label: "Template 4", value: "template4", component: emailtemplate4 },
+    { label: "Template 5", value: "template5", component: emailtemplate5 },
+    { label: "Template 6", value: "template6", component: emailtemplate6 },
+    { label: "Template 7", value: "template7", component: emailtemplate7 },
+    { label: "Template 8", value: "template8", component: emailtemplate8 },
+    { label: "Template 9", value: "template9", component: emailtemplate9 },
+    { label: "Template 10", value: "template10", component: emailtemplate10 },
+  ];
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("template1");
 
   const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -110,6 +136,30 @@ const EmailBroadcast: React.FC = () => {
       setCheckedItems([]);
     }
   };
+
+  const RenderTemplate = () => {
+    const SelectedTemplateComponent = templates.find(
+      (template) => template.value === selectedTemplate
+    )?.component;
+    
+    if (SelectedTemplateComponent) {
+      return (
+        <SelectedTemplateComponent
+          userFirstname={"[Patient]"}
+          reason={reason || "[Reason]"}
+          clinicName={clinicName || "[ClinicName]"}
+          name={name || '[Name]'}
+          buttonText={buttonText || "[Button Text]"}
+          buttonLink={buttonLink || "[buttonLink]"}
+          startDate={moment(startDate).format("MM/DD/YYYY") || "[Start Date]"}
+          endDate={moment(endDate).format("MM/DD/YYYY") || "[End Date]"}
+          price={price||"0"}
+        />
+      );
+    }
+    return null;
+  };
+
 
   const filterEmails = () => {
     let filteredEmails = emailList;
@@ -185,7 +235,8 @@ const EmailBroadcast: React.FC = () => {
         !buttonLink ||
         !startDate ||
         !endDate ||
-        !reason
+        !reason ||
+        !price
       ) {
         toast.error("All fields are necessary.", { position: "top-center" });
         return;
@@ -629,22 +680,36 @@ const EmailBroadcast: React.FC = () => {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
+            <div className="border-gray-300 mb-2 border w-full rounded">
+              <input
+                type="text"
+                id="price"
+                name="price"
+                placeholder="Price"
+                className="w-full p-2  rounded"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+        <select
+          className="p-2 border rounded"
+          value={selectedTemplate}
+          onChange={(e) => setSelectedTemplate(e.target.value)}
+        >
+          {templates.map((template) => (
+            <option key={template.value} value={template.value}>
+              {template.label}
+            </option>
+          ))}
+        </select>
+
           </div>
           <br />
           <Button onClick={sendEmail}>Submit</Button>
         </div>
       </div>
       <div className="w-[40%]  flex items-center justify-center   p-5">
-        <Template1
-          userFirstname={"[Patient]"}
-          reason={reason || "[Reason]"}
-          clinicName={clinicName || "[ClinicName]"}
-          name={name ||'[Name]'}
-          buttonText={buttonText || "[Button Text]"}
-          buttonLink={buttonLink || "[buttonLink]"}
-          endDate={moment(endDate).format('MM/DD/YYYY')||'[End Date]'}
-          startDate={ moment(startDate).format('MM/DD/YYYY') ||'[Start Date]' }
-        />
+      <RenderTemplate/>
       </div>
     </main>
   );
