@@ -1,5 +1,6 @@
 "use client";
-const access_token =process.env.FACEBOOK_ACCESS_TOKEN;
+const access_token = "EAATLOZASILrMBO4BqJYX2Qn65r057776EsgNaLwZABOnv1ZB1yxi9AQyxeXl2y4dfTTdMqfRk9ahlZA8dq56MuJbpnTXBmQIz75K2ENp0Nsnw7SpsQD1r3ZCNZAoOMroTAzVvZCOOwAludlPElp2UEidaBFAw68bQikZBM7oLT4ccFwlU39pQKZB6ZBnQ1bT6kqb1zcjn5o79FZCyr5WGDD1W2hZAkRyPcsiiaa2ugfHHIDknwZDZD"
+
 const PageLikes = async () => {
   const res = await getRepsonse("page_fans");
   const page_users = res.data[0].values[1].value;
