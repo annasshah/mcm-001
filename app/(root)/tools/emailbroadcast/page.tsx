@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Filter from "@/assets/images/icons/Filterwhite.png";
 import Filterblack from "@/assets/images/icons/Filterblack.png";
@@ -19,17 +19,8 @@ import emailtemplate7 from "@/components/EmailTemplate/template7";
 import emailtemplate8 from "@/components/EmailTemplate/template8";
 import emailtemplate9 from "@/components/EmailTemplate/template9";
 import emailtemplate10 from "@/components/EmailTemplate/template10";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ChevronLeft, X } from "lucide-react";
 import { RadioGroup } from "@/components/ui/radio-group";
 import {
@@ -285,13 +276,13 @@ const EmailBroadcast: React.FC = () => {
   };
 
   return (
-    <main className="w-full  text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center  p-4">
+    <main className="w-full  text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center mt-5  p-4">
       <div className=" w-[60%] h-full flex items-start   justify-start flex-col ">
         <div className="w-full h-full mt-[80px]">
           <div className="w-full flex flex-col">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="w-full p-2 mb-2 border text-left border-gray-300 rounded">
+                <button className="w-full p-2 my-1 border text-[16px] text-gray-500 text-left border-gray-300 rounded">
                   Select Option
                 </button>
               </AlertDialogTrigger>
@@ -398,6 +389,7 @@ const EmailBroadcast: React.FC = () => {
                               <div className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
+                                  className="border-2 border-gray-500 rounded p-2"
                                   id={`checkbox-${index}`}
                                   value={email.email}
                                   checked={checkedItems.some(
@@ -563,6 +555,21 @@ const EmailBroadcast: React.FC = () => {
               </AlertDialogContent>
             </AlertDialog>
 
+
+            <select
+          className="p-2  rounded my-2 border border-gray-300 text-gray-500 "
+          value={selectedTemplate}
+          onChange={(e) => setSelectedTemplate(e.target.value)}
+        >
+          {templates.map((template) => (
+            <option key={template.value} value={template.value}>
+              {template.label}
+            </option>
+          ))}
+        </select>
+
+        
+
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
@@ -574,101 +581,7 @@ const EmailBroadcast: React.FC = () => {
                 className="w-full p-2  rounded"
               />
             </div>
-            {/* <div className="border-gray-300 mb-2 border w-full rounded">
-              <input
-                type="text"
-                id="buttonLink"
-                name="buttonLink"
-                placeholder="Button Link"
-                value={buttonLink}
-                onChange={(e) => setButtonLink(e.target.value)}
-                className="w-full p-2  rounded"
-              />
-            </div> */}
-            {/* <div className="border-gray-300 mb-2 border w-full rounded">
-              <input
-                type="text"
-                id="clinicName"
-                name="clinicName"
-                placeholder="Clinic Name"
-                className="w-full p-2  rounded"
-                value={clinicName}
-                onChange={(e) => setClinicName(e.target.value)}
-              />
-            </div>
-            <div className="border-gray-300 mb-2 border w-full rounded">
-              <input
-                type="text"
-                id="Reason"
-                name="Reason"
-                placeholder="Reason"
-                className="w-full p-2  rounded"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              />
-            </div> */}
-            {/* <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[100%] justify-start py-6 mb-2 text-left text-xl font-normal",
-                    !startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? (
-                    format(startDate, "PPP")
-                  ) : (
-                    <span>Start date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  id="startDate"
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover> */}
-
-            {/* <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[100%] justify-start py-6 mb-2 text-left text-xl  font-normal",
-                    !endDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, "PPP") : <span>End date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  id="endDate"
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover> */}
-            {/* <div className="border-gray-300 mb-2 border w-full rounded">
-              <input
-                type="text"
-                id="buttonText"
-                name="buttonText"
-                placeholder="Button Text"
-                className="w-full p-2  rounded"
-                value={buttonText}
-                onChange={(e) => setButtonText(e.target.value)}
-              />
-            </div> */}
+        
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
@@ -691,17 +604,7 @@ const EmailBroadcast: React.FC = () => {
                 onChange={(e) => setPrice(e.target.value)}
               />
             </div>
-        <select
-          className="p-2 border rounded"
-          value={selectedTemplate}
-          onChange={(e) => setSelectedTemplate(e.target.value)}
-        >
-          {templates.map((template) => (
-            <option key={template.value} value={template.value}>
-              {template.label}
-            </option>
-          ))}
-        </select>
+     
 
           </div>
           <br />
