@@ -8,7 +8,6 @@ import {
   getLocations,
   getServices,
 } from "@/actions/send-email/action";
-import { cn } from "@/lib/utils";
 import emailtemplate1 from "@/components/EmailTemplate/template1";
 import emailtemplate2 from "@/components/EmailTemplate/template2";
 import emailtemplate3 from "@/components/EmailTemplate/template3";
@@ -303,12 +302,15 @@ const EmailBroadcast: React.FC = () => {
                       <div className="flex items-center justify-between ">
                         <div className="flex items-center ">
                           <h1>Search</h1>
+                          <div   className="ml-2 border border-gray-300 rounded-lg" >
                           <input
                             placeholder="Search by email"
-                            className="p-2 ml-2 border border-gray-200 rounded-lg"
+                            type="text"
+                            className="p-2  border border-gray-300 rounded-lg"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                           />
+                          </div>
                         </div>
                         {!isFilterOn ? (
                           <Image
@@ -335,9 +337,11 @@ const EmailBroadcast: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center justify-between  ">
-                        <div className="flex ">
+                        <div className="flex items-center ">
+                      
                           <input
                             type="checkbox"
+                            className="border bg-gray-300 rounded p-2 "
                             checked={
                               checkedItems.length === emailList.length &&
                               emailList.length > 0
@@ -346,6 +350,7 @@ const EmailBroadcast: React.FC = () => {
                               handleSelectAndDeselectAll(e.target.checked)
                             }
                           />
+                       
                           <h2 className="ml-2">Name/Email</h2>
                         </div>
                         <h2>Gender</h2>
@@ -389,7 +394,7 @@ const EmailBroadcast: React.FC = () => {
                               <div className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
-                                  className="border-2 border-gray-500 rounded p-2"
+                                  className="border-2 border-gray-500  bg-gray-300 rounded p-2"
                                   id={`checkbox-${index}`}
                                   value={email.email}
                                   checked={checkedItems.some(
@@ -437,6 +442,7 @@ const EmailBroadcast: React.FC = () => {
                                 type="checkbox"
                                 value="Male"
                                 onChange={handleGenderChange}
+                                className="border bg-gray-300 rounded p-2 "
                                 checked={selectedGender.includes("Male")}
                               />
                               <Label htmlFor="r2">Male</Label>
@@ -445,6 +451,7 @@ const EmailBroadcast: React.FC = () => {
                               <input
                                 type="checkbox"
                                 value="Female"
+                                    className="border bg-gray-300 rounded p-2 "
                                 onChange={handleGenderChange}
                                 checked={selectedGender.includes("Female")}
                               />
@@ -454,6 +461,7 @@ const EmailBroadcast: React.FC = () => {
                               <input
                                 type="checkbox"
                                 value="other"
+                                    className="border bg-gray-300 rounded p-2 "
                                 onChange={handleGenderChange}
                                 checked={selectedGender.includes("other")}
                               />
@@ -497,6 +505,7 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <input
                                 type="checkbox"
+                                className="border bg-gray-300 rounded p-2 "
                                 checked={onsite === true}
                                 onChange={() => handleVisitChange(true)}
                               />
@@ -505,6 +514,7 @@ const EmailBroadcast: React.FC = () => {
                             <div className="flex ml-2 items-center space-x-2">
                               <input
                                 type="checkbox"
+                                className="border bg-gray-300 rounded p-2 "
                                 checked={onsite === false}
                                 onChange={() => handleVisitChange(false)}
                               />
