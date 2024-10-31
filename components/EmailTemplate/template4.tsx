@@ -55,9 +55,7 @@ import {
           Goodbye to extra pounds!💪 Our weight loss plan with Semaglutide will help you achieve your goals. 10 units for only ${price}.Consult our experts!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+         
           </Section>
           <Text style={paragraph}>
             Best,

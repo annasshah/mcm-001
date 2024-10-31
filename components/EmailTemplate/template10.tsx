@@ -49,9 +49,7 @@ import {
           Get energized!⚡ Our 5 Vitamin B12 injections will give you the boost you need. Only ${price}!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+         
           </Section>
           <Text style={paragraph}>
        

@@ -54,9 +54,7 @@ import {
           Man! Don&#39;t neglect your health. Get a prostate exam + general exam for ${price} at Clínica San Miguel. Schedule your appointment!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+        
           </Section>
           <Text style={paragraph}>
             Best,

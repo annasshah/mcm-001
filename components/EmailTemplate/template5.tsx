@@ -54,9 +54,7 @@ import {
           ⁠Do you want to feel healthier and more energetic?💪Our plan with Semaglutide is the solution.10 units at an incredible price: ${price}. Don&#39;t miss it!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+        
           </Section>
           <Text style={paragraph}>
             Best,

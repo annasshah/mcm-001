@@ -574,7 +574,7 @@ const EmailBroadcast: React.FC = () => {
                 className="w-full p-2  rounded"
               />
             </div>
-            <div className="border-gray-300 mb-2 border w-full rounded">
+            {/* <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
                 id="buttonLink"
@@ -584,8 +584,8 @@ const EmailBroadcast: React.FC = () => {
                 onChange={(e) => setButtonLink(e.target.value)}
                 className="w-full p-2  rounded"
               />
-            </div>
-            <div className="border-gray-300 mb-2 border w-full rounded">
+            </div> */}
+            {/* <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
                 id="clinicName"
@@ -606,8 +606,8 @@ const EmailBroadcast: React.FC = () => {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
               />
-            </div>
-            <Popover>
+            </div> */}
+            {/* <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -633,9 +633,9 @@ const EmailBroadcast: React.FC = () => {
                   initialFocus
                 />
               </PopoverContent>
-            </Popover>
+            </Popover> */}
 
-            <Popover>
+            {/* <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -657,8 +657,8 @@ const EmailBroadcast: React.FC = () => {
                   initialFocus
                 />
               </PopoverContent>
-            </Popover>
-            <div className="border-gray-300 mb-2 border w-full rounded">
+            </Popover> */}
+            {/* <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"
                 id="buttonText"
@@ -668,7 +668,7 @@ const EmailBroadcast: React.FC = () => {
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
               />
-            </div>
+            </div> */}
             <div className="border-gray-300 mb-2 border w-full rounded">
               <input
                 type="text"

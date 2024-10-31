@@ -55,9 +55,7 @@ import {
           Woman! Your health comes first.🙋‍♀️ Detect breast cancer in time with a mammogram order at Clínica San Miguel. 💝 October special offer: ${price}. Call us!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+          
           </Section>
           <Text style={paragraph}>
             Best,

@@ -55,9 +55,7 @@ import {
           🍂October is the month to fight breast cancer! 💝Protect yourself! At Clínica San Miguel we give you the mammogram order for only ${price}. Don&#39;t wait any longer! It is without appointment.
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+         
           </Section>
           <Text style={paragraph}>
             Best,

@@ -54,9 +54,7 @@ import {
           If you are in Houston and need the immigration exam🇺🇸Clínica San Miguel offers it to you for only ${price} (vaccines not included). //Call us!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+          
           </Section>
           <Text style={paragraph}>
             Best,

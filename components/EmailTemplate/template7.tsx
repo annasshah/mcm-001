@@ -54,9 +54,7 @@ import {
           Woman! Take care of your health with our complete package: Pap smear + General Exam for only ${price}. Feel safe!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+       
           </Section>
           <Text style={paragraph}>
             Best,

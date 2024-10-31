@@ -55,9 +55,7 @@ import {
           Pink October! Take care of yourself and take care of the women you love. Mammography only ${price}. San Miguel Clinic. Schedule your appointment today!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+   
           </Section>
           <Text style={paragraph}>
             Best,

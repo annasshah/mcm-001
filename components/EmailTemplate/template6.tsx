@@ -54,9 +54,7 @@ import {
           Transform your body and your life! 💥 Our weight loss plan with Semaglutide is your best ally. Check our packages!
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`${buttonLink}`}>
-              {buttonText}
-            </Button>
+          
           </Section>
           <Text style={paragraph}>
             Best,
