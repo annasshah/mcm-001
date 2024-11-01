@@ -1,7 +1,11 @@
+import ProfileHeader from "../../../components/Profile/ProfileHeader";
+import ProfileSection from "../../../components/Profile/ProfileSection";
+
 const Profiles = () => {
   return (
-    <main className="w-full h-full text-[#B6B6B6] font-[500] text-[20px] flex justify-center items-center">
-      nothing to show here now
+    <main className="w-full h-full flex-col flex justify-start items-center mt-[80px]">
+      <ProfileHeader />
+      <ProfileSection />
     </main>
   );
 };
