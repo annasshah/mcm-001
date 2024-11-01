@@ -264,11 +264,11 @@ const Products = () => {
       } else {
 
         sortedList = dataList.sort((a, b) => b[column] - a[column])
-        
+
       }
     }
 
-    setSortOrder((order)=> order === -1 ? 1 : -1)
+    setSortOrder((order) => order === -1 ? 1 : -1)
     setDataList([...sortedList])
 
 
@@ -282,44 +282,35 @@ const Products = () => {
 
 
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
-        <div className='bg-[#D9DFE9] h-[100%]  col-span-2 rounded-md py-2   ' >
+        <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
           <div className='space-y-6 px-3 pb-4 flex justify-between'>
-            <div className='space-y-1'>
-              <h1 className='text-lg font-bold'>
-                Search by Product
-              </h1>
+            <div className='flex items-center gap-x-3'>
 
-              <div className='flex items-center gap-x-3'>
-
-                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
-                <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
-                  <Image
-                    className="w-9"
-                    src={PlusIcon}
-                    alt="Logo"
-                  />
-                </button>
-              </div>
+              <input onChange={onChangeHandle} type="text" placeholder="Search by Product" className=' px-1 py-3 w-72 text-sm rounded-md focus:outline-none bg-white' />
+              <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
+                <Image
+                  className="w-9"
+                  src={PlusIcon}
+                  alt="Logo"
+                />
+              </button>
 
 
             </div>
 
 
 
-            {/* <div>
-              <HiMiniChevronUpDown size={30} />
-            </div> */}
+            
 
 
 
           </div>
-          <div className='h-[1px] w-full bg-black' />
 
           <div className='px-3 pt-5'>
             {/* Table goes here */}
 
-            <div className='flex items-center flex-1 font-semibold pr-5'>
+            <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
               {tableHeader.map(({ label, align, can_sort, id }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
@@ -341,7 +332,7 @@ const Products = () => {
 
                   {dataList.map((elem: DataListInterface, index) => {
                     const even_row = (index + 1) % 2
-                    return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
+                    return <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base py-5 border-b-2 border-b-[#E4E4E7]`}>
                       {
                         tableHeader.map((element, ind) => {
                           const { id, Render_Value, align } = element

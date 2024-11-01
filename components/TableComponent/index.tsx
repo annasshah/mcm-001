@@ -29,7 +29,7 @@ interface DataListInterface {
 const TableComponent: React.FC<Props> = ({ tableHeader, loading, dataList, openModal, tableBodyHeight = 'h-[67dvh]', tableHeight = 'h-[82dvh]', searchHandle, searchInputplaceholder, RightSideComponent }) => {
     return (
 
-        <div className={`bg-[#EFEFEF] ${tableHeight} col-span-2 rounded-md py-2`}>
+        <div className={`bg-[#EFEFEF] ${tableHeight} col-span-2 rounded-md py-2 px-3`}>
             <div className='space-y-6 px-3 py-4 flex justify-between'>
                 <div className='flex items-center space-x-3 px-1 py-1 w-72 text-sm rounded-sm bg-white'>
                     <CiSearch size={22} color='gray' />

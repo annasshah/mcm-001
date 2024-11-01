@@ -10,6 +10,9 @@ import { create_content_service, delete_content_service, fetch_content_service }
 import { toast } from 'react-toastify';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
+import TableComponent from '@/components/TableComponent';
+import { CiSearch } from 'react-icons/ci';
+import { CircularProgress } from '@mui/material';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -19,7 +22,8 @@ interface DataListInterface {
 const tableHeader = [
   {
     id: 'category_id',
-    label: 'Category ID'
+    label: 'Category ID',
+    align: 'text-start',
   },
   {
     id: 'category_name',
@@ -30,6 +34,7 @@ const tableHeader = [
     id: 'actions',
     label: 'Action',
     align: 'text-end',
+    component: true,
     Render_Value: ({ val, onClickHandle, isLoading }: { val?: string, onClickHandle?: () => void, isLoading?: boolean }) => {
 
       return <Action_Button isLoading={isLoading} onClick={onClickHandle} label='Delete' bg_color='bg-[#FF6363]' />
@@ -158,21 +163,93 @@ const Categories = () => {
     <main className="w-full  h-full font-[500] text-[20px]">
 
 
+      {/* <div className={`bg-[#EFEFEF] h-[81dvh] col-span-2 rounded-md py-2 px-3`}>
+        <div className='space-y-6 px-3 py-4 flex justify-between'>
+          <div className='flex items-center space-x-3 px-1 py-1 w-72 text-sm rounded-sm bg-white'>
+            <CiSearch size={22} color='gray' />
+            <input onChange={onChangeHandle} type="text" placeholder={''} className='px-1 focus:outline-none placeholder-gray-400 text-sm font-light' />
+          </div>
+
+          <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
+            <Image
+              className="w-7"
+              src={PlusIcon}
+              alt="Logo"
+            />
+          </button>
+
+        </div>
+
+
+
+        <div className='px-2 pt-5'>
+          <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
+            {tableHeader.map(({ label, align, flex }: any, index: number) => (
+              <h1 key={index} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
+                {label}
+              </h1>
+            ))}
+          </div>
+
+          <div className={`mb-4 h-[65dvh] overflow-y-auto`}>
+            {loading ? (
+              <div className='h-full w-full flex items-center justify-center'>
+                <CircularProgress />
+              </div>
+            ) : (
+              dataList.map((elem: DataListInterface, index: number) => (
+                <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base py-5 border-b-2 border-b-[#E4E4E7]`}>
+                  {tableHeader.map(({ id, Render_Value, align }: any, ind) => {
+                    const content = Render_Value ? <Render_Value isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
+                    return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
+                      {content}
+                    </h1>
+
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div> */}
+
+
+
+
+
+      {/* <TableComponent
+        tableHeight='h-[80dvh]'
+        tableBodyHeight='h-[56dvh]'
+        tableHeader={tableHeader}
+        loading={loading}
+        dataList={dataList}
+        searchInputplaceholder="Search by product id"
+        searchHandle={onChangeHandle}
+        RightSideComponent={() =>
+          <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
+            <Image
+              className="w-7"
+              src={PlusIcon}
+              alt="Logo"
+            />
+          </button>
+
+        }
+      /> */}
+
+
 
 
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
-        <div className='bg-[#D9DFE9] h-[100%]  col-span-2 rounded-md py-2   ' >
+        <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 pb-4 flex justify-between'>
+          <div className='space-y-6 px-3 flex justify-between'>
             <div className='space-y-1'>
-              <h1 className='text-lg font-bold'>
-                Search by Category
-              </h1>
 
-              <div className='flex items-center gap-x-3'>
+              <div className='flex items-center w-full justify-between gap-x-3'>
 
-                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
-                <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
+                <input onChange={onChangeHandle} type="text" placeholder="Search by Category" className=' block px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <button className='block' onClick={() => openModalHandle(modalStateEnum.CREATE)} >
                   <Image
                     className="w-9"
                     src={PlusIcon}
@@ -185,20 +262,11 @@ const Categories = () => {
             </div>
 
 
-
-            {/* <div>
-              <HiMiniChevronUpDown size={30} />
-            </div> */}
-
-
-
           </div>
-          <div className='h-[1px] w-full bg-black' />
 
           <div className='px-3 pt-5'>
-            {/* Table goes here */}
 
-            <div className='flex items-center flex-1 font-semibold pr-5'>
+            <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
               {tableHeader.map(({ label, align }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
@@ -208,10 +276,10 @@ const Categories = () => {
             </div>
 
 
-            <div className='mt-5 mb-4 space-y-5 h-[60dvh] overflow-y-auto'>
+            <div className='mt-3 mb-4 space-y-5 h-[60dvh] overflow-y-auto'>
 
               <>
-                {loading ? <div className="flex h-full flex-1 flex-col justify-center items-center">
+                {loading ? <div className="h-full w-full flex items-center justify-center">
                   <Spinner size='xl' />
 
 
@@ -220,7 +288,7 @@ const Categories = () => {
 
                   {dataList.map((elem: DataListInterface, index) => {
                     const even_row = (index + 1) % 2
-                    return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
+                    return <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base border-b-2 border-b-[#E4E4E7]  px-3 py-4 rounded-md`}>
                       {
                         tableHeader.map(({ id, Render_Value, align }, ind) => {
                           const content = Render_Value ? <Render_Value isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
