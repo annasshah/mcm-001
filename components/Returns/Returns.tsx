@@ -1,10 +1,11 @@
 'use client'
 import React, { FC, useEffect, useState } from 'react'
-import { Button, Spinner } from 'flowbite-react';
+import { Button, Select, Spinner } from 'flowbite-react';
 import moment from 'moment';
 import { delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
 import { toast } from 'react-toastify';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
 
 
 interface DataListInterface {
@@ -106,6 +107,7 @@ interface Props {
 const Returns: FC<Props> = () => {
 
 
+    const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
 
 
     const [dataList, setDataList] = useState<DataListInterface[]>([])
@@ -141,20 +143,23 @@ const Returns: FC<Props> = () => {
 
 
 
-    const fetch_handle = async () => {
+    const fetch_handle = async (location_id: any) => {
         setLoading(true)
         // @ts-ignore
-        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: ',saleshistory(order_id, orders(patient_id,  pos(firstname,lastname,phone,email))),products(product_name, price, categories(category_name))', matchCase: { key: 'merge', value: false } });
-        setDataList(fetched_data)
-        setAllData(fetched_data)
+        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: `,saleshistory(order_id, orders(patient_id,  pos(firstname,lastname,phone,email,locationid ))),products(product_name, price, categories(category_name))`, matchCase: [{ key: 'merge', value: false }, { key: 'saleshistory.orders.pos.locationid', value: location_id }] });
+        const filteredData = fetched_data.filter((elem: any) => elem.saleshistory.orders.pos !== null)
+        setDataList(filteredData)
+        setAllData(filteredData)
         setLoading(false)
 
 
     }
 
     useEffect(() => {
-        fetch_handle()
-    }, [])
+        if (selected_location) {
+            fetch_handle(selected_location);
+        }
+    }, [selected_location]);
 
 
 
@@ -260,6 +265,12 @@ const Returns: FC<Props> = () => {
 
     }
 
+    const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = val.target.value
+
+        set_location_handle(value)
+    }
+
 
 
     return (
@@ -269,6 +280,13 @@ const Returns: FC<Props> = () => {
                 <h1 className='text-xl font-bold'>
                     Returns
                 </h1>
+
+                <div >
+                    <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+                        {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+                    </Select>
+
+                </div>
 
             </div>
 
@@ -352,7 +370,7 @@ const Returns: FC<Props> = () => {
                                     </div>
                                 }) : <div className="flex h-full flex-1 flex-col justify-center items-center">
                                     <h1>
-                                        No patient found!
+                                        No data found!
                                     </h1>
                                 </div>}
                         </div>

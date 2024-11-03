@@ -11,7 +11,7 @@ interface FetchContentServiceInterface {
   table: string;
   language?: string;
   selectParam?: string
-  matchCase?: MatchCaseInterface | null
+  matchCase?: MatchCaseInterface | MatchCaseInterface[] | null
 }
 interface UpdateContentServiceInterface {
   table: string;
@@ -72,23 +72,39 @@ export async function fetchAppointmentsByLocation(locationId: number | null) {
 
 
 
-export async function fetch_content_service({ table, language = '', selectParam = '', matchCase = null }: FetchContentServiceInterface) {
+export async function fetch_content_service({
+  table,
+  language = '',
+  selectParam = '',
+  matchCase = null
+}: FetchContentServiceInterface) {
+
   let query = supabase
     //  @ts-ignore
     .from(`${table}${language}`)
-    .select(`*${selectParam ? selectParam : ''}`)
+    .select(`*${selectParam ? selectParam : ''}`);
 
+  // Handle single or multiple match cases
   if (matchCase) {
-    query = query.eq(matchCase.key, matchCase.value)
+    if (Array.isArray(matchCase)) {
+      // Apply each filter in the array
+      matchCase.forEach((condition) => {
+        query = query.eq(condition.key, condition.value);
+      });
+    } else {
+      // Apply single match case
+      query = query.eq(matchCase.key, matchCase.value);
+    }
   }
+
   const { data, error } = await query;
   if (error) {
     console.log(error.message);
     throw new Error(error.message);
   }
+
   return data;
 }
-
 
 export async function update_content_service({ table, language = '', post_data, matchKey = 'id' }: UpdateContentServiceInterface) {
   // console.log({ language, post_data, section })
