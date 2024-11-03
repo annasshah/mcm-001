@@ -13,6 +13,7 @@ import { Input_Component } from '@/components/Input_Component';
 import TableComponent from '@/components/TableComponent';
 import { CiSearch } from 'react-icons/ci';
 import { CircularProgress } from '@mui/material';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -61,6 +62,9 @@ const Categories = () => {
   const [modalData, setModalData] = useState<DataListInterface>({})
   const [modalState, setModalState] = useState('')
   const [activeDeleteId, setActiveDeleteId] = useState(0)
+
+  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+
 
 
   const openModalHandle = (state: string) => {
@@ -157,6 +161,12 @@ const Categories = () => {
     })
   }
 
+  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = val.target.value
+
+    set_location_handle(value)
+  }
+
 
 
   return (
@@ -243,12 +253,12 @@ const Categories = () => {
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
         <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 flex justify-between'>
+          <div className=' px-3 flex justify-between'>
             <div className='space-y-1'>
 
               <div className='flex items-center w-full justify-between gap-x-3'>
 
-                <input onChange={onChangeHandle} type="text" placeholder="Search by Category" className=' block px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
+                <input onChange={onChangeHandle} type="text" placeholder="Search by Category" className=' block px-1 py-3 w-72 text-sm rounded-md focus:outline-none bg-white' />
                 <button className='block' onClick={() => openModalHandle(modalStateEnum.CREATE)} >
                   <Image
                     className="w-9"
@@ -259,8 +269,17 @@ const Categories = () => {
               </div>
 
 
+
+
             </div>
 
+
+              <div >
+                <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+                  {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+                </Select>
+
+              </div>
 
           </div>
 

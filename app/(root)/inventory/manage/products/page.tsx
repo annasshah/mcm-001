@@ -12,6 +12,7 @@ import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
+import { useLocationClinica } from '@/hooks/useLocationClinica';
 
 
 interface DataListInterface {
@@ -102,6 +103,9 @@ const Products = () => {
   const [sortOrder, setSortOrder] = useState(-1)
   const [sortColumn, setSortColumn] = useState('')
 
+  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+
+
 
 
 
@@ -118,7 +122,7 @@ const Products = () => {
 
 
 
-  const fetch_handle = async () => {
+  const fetch_handle = async (location_id: number) => {
     setLoading(true)
     const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
     setDataList(fetched_data)
@@ -143,9 +147,8 @@ const Products = () => {
 
 
   useEffect(() => {
-    fetch_handle()
-
-  }, [])
+      fetch_handle(selected_location);
+  }, []);
 
 
   const modalInputChangeHandle = (key: string, value: string | number) => {
@@ -275,6 +278,13 @@ const Products = () => {
     setSortColumn(column)
   }
 
+
+  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = val.target.value
+
+    set_location_handle(value)
+  }
+
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
 
@@ -284,7 +294,7 @@ const Products = () => {
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
         <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 pb-4 flex justify-between'>
+          <div className='px-3 py-4 flex justify-between items-center '>
             <div className='flex items-center gap-x-3'>
 
               <input onChange={onChangeHandle} type="text" placeholder="Search by Product" className=' px-1 py-3 w-72 text-sm rounded-md focus:outline-none bg-white' />
@@ -300,8 +310,16 @@ const Products = () => {
             </div>
 
 
+            <div >
+              <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+                {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+              </Select>
 
-            
+            </div>
+
+
+
+
 
 
 

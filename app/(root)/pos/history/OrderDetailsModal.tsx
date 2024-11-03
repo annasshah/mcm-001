@@ -94,7 +94,7 @@ const tableHeader = [
 
 const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientData, paymentType }) => {
 
-    const { firstname, lastname, gender, email, phone, id, treatmenttype } = patientData
+    const { firstname = '', lastname = '', gender = '', email = '', phone = '', id, treatmenttype } = patientData
     return <div className="py-4 space-y-3">
         <h3 className="font-bold">Patient Details</h3>
         <div className="text-base grid grid-cols-3 gap-6">
@@ -197,7 +197,7 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
                                 Quantity
                             </label>
                             <div className=' border-2 text-sm rounded-md px-2 py-2 flex items-center space-x-2'>
-                                <input required onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Enter return QTY' max={data.quantity_sold} />
+                                <input required onChange={changeQtyHandle} className='w-full focus:outline-none placeholder-gray-400' placeholder='Enter return QTY' max={data?.quantity_sold} />
                             </div>
                         </div>
                         <div className='flex justify-start flex-col space-y-1'>
@@ -346,11 +346,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 </div>
 
 
-                <PatientDetailsRender patientData={dataList.pos} 
-                
-                // paymentType={[null, true].includes(dataList[0].paymentcash) ? "Cash" : "Creadit Card"}
-                paymentType="Cash"
-                
+                <PatientDetailsRender patientData={dataList?.pos}
+
+                    // paymentType={[null, true].includes(dataList[0].paymentcash) ? "Cash" : "Creadit Card"}
+                    paymentType="Cash"
+
                 />
 
 

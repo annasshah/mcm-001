@@ -63,15 +63,15 @@ const render_details = [
 
 
 
-const Payment_Method_Select = () => {
+const Payment_Method_Select = ({handleSelectChange, selectedMethod}:any) => {
 
     return (
         <div className='w-52'>
-            <Select className='w-full h-auto' style={{ backgroundColor: 'white' }} id="section" required={true}>
-                <option>
+            <Select onChange={handleSelectChange} className='w-full h-auto' style={{ backgroundColor: 'white' }} id="section" required={true}>
+                <option value='Cash'>
                     Cash
                 </option>
-                <option>
+                <option value='Debit Card'>
                     Debit Card
                 </option>
             </Select>
@@ -183,6 +183,7 @@ const Orders = () => {
     const [placeOrderLoading, setPlaceOrderLoading] = useState(false)
     const [appliedDiscount, setAppliedDiscount] = useState<number>(0)
     const [promoCodeData, setPromoCode] = useState<PromoCodeDataInterface | null>(null)
+    const [selectedMethod, setSelectedMethod] = useState('Cash');
 
 
     const router = useRouter()
@@ -296,6 +297,7 @@ const Orders = () => {
                     product_id: elem.product_id,
                     quantity_sold: elem.quantity,
                     total_price: elem.price * elem.quantity,
+                    paymentcash: selectedMethod === 'Cash' ?  true : false
                 }));
 
                 const { data: order_created_data, error: order_created_error }: any = await create_content_service({
@@ -329,6 +331,12 @@ const Orders = () => {
 
     }
 
+
+    const selectPaymentHandle = (event: any) => {
+
+        setSelectedMethod(event.target.value);
+
+    }
 
 
 
@@ -450,8 +458,8 @@ const Orders = () => {
                             <div className='flex items-center'>
                                 <h1 className='text-lg flex-1'>
                                     Payment method
-                                </h1>
-                                <Payment_Method_Select />
+                                </h1> 
+                                <Payment_Method_Select selectedMethod={selectedMethod} handleSelectChange={selectPaymentHandle} />
                             </div>
 
                         </div>

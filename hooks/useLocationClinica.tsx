@@ -4,8 +4,9 @@ import { toast } from 'react-toastify';
 
 
 
-export function useLocationClinica() {
+export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
+    const { defaultSetFirst = false } = params
 
     const [locations, setLocations] = useState([])
 
@@ -67,6 +68,9 @@ export function useLocationClinica() {
         !(async function fetch_data() {
             const data = await fetchLocations()
             setLocations(data);
+            if (defaultSetFirst) {
+                set_location_handle(data[0].id)
+            }
         })()
 
     }, []);
