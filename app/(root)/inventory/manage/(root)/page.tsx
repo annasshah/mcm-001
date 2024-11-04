@@ -63,7 +63,7 @@ const Categories = () => {
   const [modalState, setModalState] = useState('')
   const [activeDeleteId, setActiveDeleteId] = useState(0)
 
-  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+  // const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
 
 
 
@@ -161,11 +161,11 @@ const Categories = () => {
     })
   }
 
-  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = val.target.value
+  // const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const value = val.target.value
 
-    set_location_handle(value)
-  }
+  //   set_location_handle(value)
+  // }
 
 
 
@@ -274,12 +274,12 @@ const Categories = () => {
             </div>
 
 
-              <div >
+              {/* <div >
                 <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
                   {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
                 </Select>
 
-              </div>
+              </div> */}
 
           </div>
 

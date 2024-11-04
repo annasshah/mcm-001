@@ -122,11 +122,23 @@ const Products = () => {
 
 
 
+
   const fetch_handle = async (location_id: number) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
-    setDataList(fetched_data)
-    setAllData(fetched_data)
+    const fetched_data = await fetch_content_service({ table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: { key: 'location_id', value: location_id } });
+
+    // const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
+
+    const inventoryData = fetched_data.map(({products, price,quantity }: any) => ({
+      product_id: products.product_id,
+      category_id:products.category_id,
+      product_name: products.product_name,
+      price:price,
+      quantity_available: quantity,
+      categories:products.categories
+    }))
+    setDataList(inventoryData)
+    setAllData(inventoryData)
     setLoading(false)
 
 
@@ -147,8 +159,10 @@ const Products = () => {
 
 
   useEffect(() => {
+    if (selected_location) {
       fetch_handle(selected_location);
-  }, []);
+    }
+  }, [selected_location]);
 
 
   const modalInputChangeHandle = (key: string, value: string | number) => {
@@ -164,14 +178,25 @@ const Products = () => {
     if (modalState === modalStateEnum.CREATE) {
 
       const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
+
       if (error) {
         console.log(error.message);
         toast.error(error.message);
         // throw new Error(error.message);
       }
       if (res_data?.length) {
+        const invenPostData = {
+          // @ts-ignore
+          product_id: res_data[0].product_id!,
+          price: modalData.price,
+          quantity: modalData.quantity_available,
+          location_id: selected_location
+
+        }
+        const { data: inventoryData, error: inventoryError } = await create_content_service({ table: 'inventory', language: '', post_data: invenPostData });
         toast.success('Created successfully');
         closeModalHandle()
+        fetch_handle(selected_location);
         // dataList.push(res_data[0])
         // allData.push(res_data[0])
         // setAllData([...allData])
@@ -192,6 +217,8 @@ const Products = () => {
           toast.success('Created successfully');
           closeModalHandle()
         }
+
+
 
       } catch (error: any) {
 
