@@ -1,7 +1,6 @@
 "use server";
 import { NextResponse } from "next/server";
 import { render } from "@react-email/components";
-import { KoalaWelcomeEmail } from "@/components/EmailTemplate/koalatemplate";
 import emailtemplate1 from "@/components/EmailTemplate/template1";
 import emailtemplate2 from "@/components/EmailTemplate/template2";
 import emailtemplate3 from "@/components/EmailTemplate/template3";
