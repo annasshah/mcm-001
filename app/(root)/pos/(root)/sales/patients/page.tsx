@@ -591,7 +591,7 @@ const Patients = () => {
 
 
           {/* @ts-ignore */}
-          <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'gender')} label='Gender' />
+          <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, 'gender')} label='Gender' />
         </div>}
       </Custom_Modal>
     </main>
