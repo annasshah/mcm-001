@@ -1,5 +1,7 @@
 const { useEffect, useState } = require("react");
+import { LocationContext } from '@/context';
 import { fetchLocations, updateLocationData } from '@/utils/supabase/data_services/data_services'
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
 
@@ -7,6 +9,10 @@ import { toast } from 'react-toastify';
 export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
     const { defaultSetFirst = false } = params
+
+    const {  selectedLocation, setSelectedLocation } = useContext(LocationContext);
+
+    console.log(selectedLocation)
 
     const [locations, setLocations] = useState([])
 
@@ -26,6 +32,7 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
         const data = locations.find((item: { id: number | string; }) => item.id == value)
         setSelected_location_data(data)
+        setSelectedLocation(data)
         setChange_data(data)
 
     };
@@ -54,6 +61,7 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
         }
         // console.log(res_data);
         setSelected_location_data(res_data[0]);
+        setSelectedLocation(res_data[0])
         set_update_loading(false);
         set_is_edited(false);
     };

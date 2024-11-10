@@ -2,7 +2,12 @@ import { supabase } from "@/services/supabase"
 
 // data.js
 
-interface MatchCaseInterface {
+interface SortOptions {
+  column: string;
+  order: 'asc' | 'desc';
+}
+
+interface MatchCase {
   key: string;
   value: string | number | boolean;
 }
@@ -10,8 +15,9 @@ interface MatchCaseInterface {
 interface FetchContentServiceInterface {
   table: string;
   language?: string;
-  selectParam?: string
-  matchCase?: MatchCaseInterface | MatchCaseInterface[] | null
+  selectParam?: string;
+  matchCase?: MatchCase | MatchCase[] | null;
+  sortOptions?: SortOptions | null;
 }
 interface UpdateContentServiceInterface {
   table: string;
@@ -76,7 +82,8 @@ export async function fetch_content_service({
   table,
   language = '',
   selectParam = '',
-  matchCase = null
+  matchCase = null,
+  sortOptions = null
 }: FetchContentServiceInterface) {
 
   let query = supabase
@@ -95,6 +102,10 @@ export async function fetch_content_service({
       // Apply single match case
       query = query.eq(matchCase.key, matchCase.value);
     }
+  }
+
+  if (sortOptions) {
+    query = query.order(sortOptions.column, { ascending: sortOptions.order === 'asc' });
   }
 
   const { data, error } = await query;
