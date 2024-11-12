@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { validateFormData } from '@/utils/validationCheck';
 import { LocationContext } from '@/context';
 import PhoneNumberInput from '@/components/PhoneNumberInput';
+import { CiFilter } from 'react-icons/ci';
 
 interface PatientDetailsInterface {
   firstname: string;
@@ -180,6 +181,8 @@ const Patients = () => {
   const [canAddPatient, setCanAddPatient] = useState(false)
   const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
 
+  const [activeFilterBtn, setActiveFilterBtn] = useState(0)
+
   const category_change_handle = () => {
 
   }
@@ -189,19 +192,32 @@ const Patients = () => {
 
 
   const fetch_handle = async (locationId: number) => {
-    setLoading(true)
-    // @ts-ignore
-    const fetched_data: any = await fetch_content_service({ table: 'pos', matchCase: { key: 'locationid', value: locationId || 17 }, sortOptions: { column: 'updated_at' } });
-    setDataList(fetched_data)
-    setAllData(fetched_data)
-    setLoading(false)
+    setLoading(true);
 
+    // Get today's date at midnight using Moment.js
+    const todayStart = moment().startOf('day').toISOString();
 
+    // Define filter options based on the selected button (0: Today, 1: Past records)
+    const filterOptions = activeFilterBtn === 0
+      ? [{ column: 'updated_at', operator: 'gte', value: todayStart }] // Records from today
+      : [{ column: 'updated_at', operator: 'lt', value: todayStart }]; // Records before today
+
+    // Fetch data with match cases and filter options
+    const fetched_data: any = await fetch_content_service({
+      table: 'pos',
+      matchCase: [{ key: 'locationid', value: locationId || 17 }],
+      filterOptions: filterOptions,
+      sortOptions: { column: 'updated_at', order: 'desc' }
+    });
+
+    setDataList(fetched_data);
+    setAllData(fetched_data);
+    setLoading(false);
   }
 
   useEffect(() => {
     fetch_handle(selectedLocation?.id)
-  }, [, selectedLocation])
+  }, [, selectedLocation, activeFilterBtn])
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -431,7 +447,7 @@ const Patients = () => {
       <div className='w-full h-[75.5dvh] py-2 px-2 grid grid-cols-3 gap-2'>
         <div className='bg-[#B8C8E1] h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 pb-4 flex justify-between'>
+          <div className='space-y-6 px-3 pb-4 flex items-center space-x-4'>
             <div>
               <h1 className='text-xl font-bold'>
                 search
@@ -441,9 +457,11 @@ const Patients = () => {
 
 
 
-            {/* <div>
-              <CiFilter size={30} />
-            </div> */}
+            <div className='space-x-3'>
+              {
+                ['Today', 'Past records'].map((elem: string, index: number) => <Action_Button onClick={() => setActiveFilterBtn(index)} label={elem} bg_color={index === activeFilterBtn ? 'bg-[#13787E]' : 'bg-gray-500'} />)
+              }
+            </div>
 
 
 

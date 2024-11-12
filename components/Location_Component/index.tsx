@@ -11,6 +11,8 @@ const Location_Component = () => {
         set_location_handle(value)
     }
 
+    console.log(selected_location)
+
     return (
         <div >
             <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
