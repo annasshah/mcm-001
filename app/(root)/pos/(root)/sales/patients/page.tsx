@@ -459,7 +459,7 @@ const Patients = () => {
 
             <div className='space-x-3'>
               {
-                ['Today', 'Past records'].map((elem: string, index: number) => <Action_Button onClick={() => setActiveFilterBtn(index)} label={elem} bg_color={index === activeFilterBtn ? 'bg-[#13787E]' : 'bg-gray-500'} />)
+                ['Today', 'Past records'].map((elem: string, index: number) => <Action_Button key={index} onClick={() => setActiveFilterBtn(index)} label={elem} bg_color={index === activeFilterBtn ? 'bg-[#13787E]' : 'bg-gray-500'} />)
               }
             </div>
 
