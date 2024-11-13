@@ -1,7 +1,7 @@
-import { LocationContext } from '@/context'
+'use client'
 import { useLocationClinica } from '@/hooks/useLocationClinica'
 import { Select } from 'flowbite-react'
-import React, { useContext } from 'react'
+import React from 'react'
 
 const Location_Component = () => {
     const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })

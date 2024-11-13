@@ -1,14 +1,41 @@
+import { LocationContext } from '@/context';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
-const InventoryCards = () => {
+const InventoryCards = ({archived}:{archived:boolean}) => {
     const [procucts_count, setProcucts_count] = useState(0)
     const [stock_value, setStock_value] = useState(0)
     const [categories_count, setCategories_count] = useState(0)
-    const fetch_products = async () => {
-        const fetched_data = await fetch_content_service({ table: 'products', language: '' });
-        if (fetched_data && fetched_data.length > 0) {
-            const calc_val = fetched_data.reduce((a: number, b: any) => a + (b.price * b.quantity_available), 0)
+
+    const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
+
+    console.log(selectedLocation)
+
+
+
+
+
+
+    const fetch_products = async (location_id: number, archived:boolean) => {
+        const fetched_data = await fetch_content_service({
+            table: 'inventory', language: '', matchCase: [
+                {
+                    key: 'location_id',
+                    value: location_id
+                },
+                {
+                    key: 'archived',
+                    value: archived
+                },
+                {
+                    key: 'products.archived',
+                    value: false
+                }],
+                selectParam:',products(archived)',
+                filterOptions: [{ operator: 'not', column: 'products', value: null }],
+        });
+        if (fetched_data) {
+            const calc_val = fetched_data.reduce((a: number, b: any) => a + (b.price * b.quantity), 0)
             setStock_value(calc_val)
             setProcucts_count(fetched_data.length)
         }
@@ -23,11 +50,13 @@ const InventoryCards = () => {
 
 
     useEffect(() => {
-
-        fetch_products()
         fetch_categories()
-
     }, [])
+    useEffect(() => {
+        if (selectedLocation?.id) {
+            fetch_products(selectedLocation.id, archived)
+        }
+    }, [selectedLocation, archived])
 
 
     const usdFormatter = new Intl.NumberFormat('en-US', {

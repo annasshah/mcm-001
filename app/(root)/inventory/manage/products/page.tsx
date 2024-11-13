@@ -58,7 +58,7 @@ const tableHeader = [
     Render_Value: ({ clickHandle }: { clickHandle: (state: string) => void }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Delete' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
+        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Archive' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
       </div>
 
     }
@@ -125,17 +125,33 @@ const Products = () => {
 
   const fetch_handle = async (location_id: number) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: { key: 'location_id', value: location_id } });
+    const fetched_data = await fetch_content_service({
+      table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: [
+        {
+          key: 'location_id',
+          value: location_id
+        },
+        {
+          key: 'archived',
+          value: false
+        },
+        {
+          key: 'products.archived',
+          value: false
+        },
+
+      ], filterOptions: [{ operator: 'not', column: 'products', value: null }]
+    });
 
     // const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
 
-    const inventoryData = fetched_data.map(({products, price,quantity }: any) => ({
-      product_id: products.product_id,
-      category_id:products.category_id,
+    const inventoryData = fetched_data.map(({ products, price, quantity, inventory_id }: any) => ({
+      product_id:inventory_id,
+      category_id: products.category_id,
       product_name: products.product_name,
-      price:price,
+      price: price,
       quantity_available: quantity,
-      categories:products.categories
+      categories: products.categories
     }))
     setDataList(inventoryData)
     setAllData(inventoryData)
@@ -238,11 +254,10 @@ const Products = () => {
 
 
   const onClickHandle = async (id: number) => {
-    const { error } = await delete_content_service({ table: 'products', keyByDelete: 'product_id', id })
+    const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: true, inventory_id: id } })
     if (!error) {
-      setDataList((elem) => elem.filter((data: any) => data.product_id !== id))
-      setAllData((elem) => elem.filter((data: any) => data.product_id !== id))
-      toast.success('Deleled successfully');
+      fetch_handle(selected_location)
+      toast.success('Archived successfully');
     }
     else if (error) {
       console.log(error.message)
