@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
 import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 
 
 interface DataListInterface {
@@ -424,11 +425,17 @@ const Products = () => {
             requiredInputFields.map((elem) => {
               const { id, label, colSpan } = elem
               return id === 'category_id' ? <div className='col-span-2 space-y-2' >
-                <Label htmlFor={id} value={label} className='font-bold' />
-                <Select value={modalData[id]} onChange={(e: any) => modalInputChangeHandle(id, e.target.value)} id={id} required>
+
+                <Searchable_Dropdown initialValue={0} value={modalData[id]} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={(e: any) => modalInputChangeHandle(id, e.target.value)} label='Category' />
+
+
+
+
+
+                {/* <Select value={modalData[id]} onChange={(e: any) => modalInputChangeHandle(id, e.target.value)} id={id} required>
                   <option selected >{label}</option>
                   {categories.map((elem: any, index: any) => <option key={index} value={elem[id]}>{elem.category_name}</option>)}
-                </Select>
+                </Select> */}
 
               </div> : <div className={`${colSpan || 'col-span-2'}`}>
                 <Input_Component value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} />

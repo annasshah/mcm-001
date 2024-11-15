@@ -1,20 +1,15 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { create_content_service, delete_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { toast } from 'react-toastify';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
-import TableComponent from '@/components/TableComponent';
-import { CiSearch } from 'react-icons/ci';
-import { CircularProgress } from '@mui/material';
-import { useLocationClinica } from '@/hooks/useLocationClinica';
-
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
@@ -36,9 +31,9 @@ const tableHeader = [
     label: 'Action',
     align: 'text-end',
     component: true,
-    Render_Value: ({ val, onClickHandle, isLoading }: { val?: string, onClickHandle?: () => void, isLoading?: boolean }) => {
+    Render_Value: ({ val, onClickHandle, isLoading, getDataArchiveType }: { val?: string, onClickHandle?: () => void, isLoading?: boolean, getDataArchiveType: boolean }) => {
 
-      return <Action_Button isLoading={isLoading} onClick={onClickHandle} label='Delete' bg_color='bg-[#FF6363]' />
+      return <Action_Button isLoading={isLoading} onClick={onClickHandle} label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} />
 
     }
 
@@ -62,6 +57,8 @@ const Categories = () => {
   const [modalData, setModalData] = useState<DataListInterface>({})
   const [modalState, setModalState] = useState('')
   const [activeDeleteId, setActiveDeleteId] = useState(0)
+  const [getDataArchiveType, setGetDataArchiveType] = useState(false);
+
 
   // const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
 
@@ -78,9 +75,9 @@ const Categories = () => {
     setModalData({})
   }
 
-  const fetch_handle = async () => {
+  const fetch_handle = async (archive: boolean) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'categories', language: '' });
+    const fetched_data = await fetch_content_service({ table: 'categories', matchCase: { key: 'archived', value: archive }, language: '' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)
@@ -103,9 +100,9 @@ const Categories = () => {
 
 
   useEffect(() => {
-    fetch_handle()
+    fetch_handle(getDataArchiveType)
 
-  }, [])
+  }, [getDataArchiveType])
 
 
   const onClickHandle = async (id: number) => {
@@ -115,19 +112,53 @@ const Categories = () => {
 
   const deleteHandle = async () => {
     setDeleteLoading(true)
-    const { error } = await delete_content_service({ table: 'categories', keyByDelete: 'category_id', id: activeDeleteId })
-    if (!error) {
-      setDataList((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
-      setAllData((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
-      setActiveDeleteId(0)
-      toast.success('Deleled successfully');
-    }
-    else if (error) {
+    try {
+      const res_data = await update_content_service({ table: 'categories', matchKey: 'category_id', post_data: { category_id: activeDeleteId, archived: !getDataArchiveType } })
+      if (res_data?.length) {
+        setDataList((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
+        setAllData((elem) => elem.filter((data: any) => data.category_id !== activeDeleteId))
+        setActiveDeleteId(0)
+        toast.success(getDataArchiveType ? "Category no longer archived" : 'Archived successfully');
+      }
+    } catch (error: any) {
       console.log(error.message)
       toast.error(error.message);
+      setDeleteLoading(false)
+    } finally {
+      setDeleteLoading(false)
     }
-    setDeleteLoading(false)
   }
+
+  const handleActiveClick = useCallback(() => {
+    setGetDataArchiveType(false);
+  }, []);
+
+  const handleArchiveClick = useCallback(() => {
+    setGetDataArchiveType(true);
+  }, []);
+
+
+
+  const RightSideComponent = useMemo(
+    () => (
+      <div className='text-sm text-gray-500 space-x-4 mr-6 flex items-center justify-end w-full'>
+        <button
+          onClick={handleActiveClick}
+          className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Active
+        </button>
+        <button
+          onClick={handleArchiveClick}
+          className={`${getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Archived
+        </button>
+
+      </div>
+    ),
+    [getDataArchiveType, handleActiveClick, handleArchiveClick]
+  );
 
 
 
@@ -173,79 +204,8 @@ const Categories = () => {
     <main className="w-full  h-full font-[500] text-[20px]">
 
 
-      {/* <div className={`bg-[#EFEFEF] h-[81dvh] col-span-2 rounded-md py-2 px-3`}>
-        <div className='space-y-6 px-3 py-4 flex justify-between'>
-          <div className='flex items-center space-x-3 px-1 py-1 w-72 text-sm rounded-sm bg-white'>
-            <CiSearch size={22} color='gray' />
-            <input onChange={onChangeHandle} type="text" placeholder={''} className='px-1 focus:outline-none placeholder-gray-400 text-sm font-light' />
-          </div>
-
-          <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
-            <Image
-              className="w-7"
-              src={PlusIcon}
-              alt="Logo"
-            />
-          </button>
-
-        </div>
 
 
-
-        <div className='px-2 pt-5'>
-          <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
-            {tableHeader.map(({ label, align, flex }: any, index: number) => (
-              <h1 key={index} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
-                {label}
-              </h1>
-            ))}
-          </div>
-
-          <div className={`mb-4 h-[65dvh] overflow-y-auto`}>
-            {loading ? (
-              <div className='h-full w-full flex items-center justify-center'>
-                <CircularProgress />
-              </div>
-            ) : (
-              dataList.map((elem: DataListInterface, index: number) => (
-                <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base py-5 border-b-2 border-b-[#E4E4E7]`}>
-                  {tableHeader.map(({ id, Render_Value, align }: any, ind) => {
-                    const content = Render_Value ? <Render_Value isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
-                    return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
-                      {content}
-                    </h1>
-
-                  })}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div> */}
-
-
-
-
-
-      {/* <TableComponent
-        tableHeight='h-[80dvh]'
-        tableBodyHeight='h-[56dvh]'
-        tableHeader={tableHeader}
-        loading={loading}
-        dataList={dataList}
-        searchInputplaceholder="Search by product id"
-        searchHandle={onChangeHandle}
-        RightSideComponent={() =>
-          <button onClick={() => openModalHandle(modalStateEnum.CREATE)} >
-            <Image
-              className="w-7"
-              src={PlusIcon}
-              alt="Logo"
-            />
-          </button>
-
-        }
-      /> */}
 
 
 
@@ -253,7 +213,7 @@ const Categories = () => {
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
         <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className=' px-3 flex justify-between'>
+          <div className=' px-3 flex justify-between w-full'>
             <div className='space-y-1'>
 
               <div className='flex items-center w-full justify-between gap-x-3'>
@@ -271,15 +231,12 @@ const Categories = () => {
 
 
 
+
             </div>
 
+            {RightSideComponent}
 
-              {/* <div >
-                <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-                  {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
-                </Select>
 
-              </div> */}
 
           </div>
 
@@ -310,7 +267,7 @@ const Categories = () => {
                     return <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base border-b-2 border-b-[#E4E4E7]  px-3 py-4 rounded-md`}>
                       {
                         tableHeader.map(({ id, Render_Value, align }, ind) => {
-                          const content = Render_Value ? <Render_Value isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
+                          const content = Render_Value ? <Render_Value getDataArchiveType={getDataArchiveType} isLoading={deleteLoading} onClickHandle={() => onClickHandle(elem.category_id)} /> : elem[id]
                           return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
                             {content}
                           </h1>
@@ -343,14 +300,14 @@ const Categories = () => {
           <div className='bg-white w-full max-w-xl px-4 py-3 rounded-lg'>
 
             <h1 className='font-bold text-xl text-black mb-5'>Confirmation</h1>
-            <p className='text-lg'>Do you really want to delete this category</p>
-            <p className='text-sm'>Remember All of the associated products will also be deleted with the category</p>
+            <p className='text-lg'>Do you really want to {getDataArchiveType ?  "Unarchive" : "Archive" } this category</p>
+            <p className='text-sm'>Remember All of the associated products will also be {getDataArchiveType ?  "Unarchive" : "Archive" } with the category</p>
 
 
             <div className='mt-4 flex items-center space-x-3 justify-end'>
               <Button disabled={deleteLoading} onClick={() => setActiveDeleteId(0)} color="gray">Cancel</Button>
-              <Button isProcessing={deleteLoading} color="failure" onClick={deleteHandle}>
-                Delete
+              <Button isProcessing={deleteLoading} color={"failure"} onClick={deleteHandle}>
+                {getDataArchiveType ?  "Unarchive" : "Archive" }
               </Button>
             </div>
 
