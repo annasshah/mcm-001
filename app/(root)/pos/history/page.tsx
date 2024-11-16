@@ -90,6 +90,28 @@ const SalesHistory = () => {
   const [selectedOrder, setSelectedOrder] = useState<DataListInterface | null>(null);
 
   const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+  const [preDefinedReasonList, setPreDefinedReasonList] = useState([])
+
+
+
+  const fetchReasonsList = async () => {
+    try {
+      const fetched_data: any = await fetch_content_service({
+        table: 'returnreasons',
+        language: '',
+      });
+      setPreDefinedReasonList(fetched_data || []);
+
+    } catch (error) {
+      // toast.error()
+      console.log(error)
+
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
 
   const fetch_handle = async (location_id: number) => {
@@ -154,8 +176,11 @@ const SalesHistory = () => {
     }
   }, [selected_location]);
 
-  console.log(dataList)
 
+  useEffect(() => {
+    fetchReasonsList()
+  }, [])
+  
   return (
     <main className="w-full h-full font-[500] text-[20px]">
       <div className='flex justify-between items-center px-4 py-4 space-x-2'>
@@ -184,7 +209,7 @@ const SalesHistory = () => {
 
       {/* Modal */}
       {selectedOrder && (
-        <OrderDetailsModal isOpen={modalOpen} onClose={closeModal} orderDetails={selectedOrder} />
+        <OrderDetailsModal preDefinedReasonList={preDefinedReasonList} isOpen={modalOpen} onClose={closeModal} orderDetails={selectedOrder} />
       )}
     </main>
   );

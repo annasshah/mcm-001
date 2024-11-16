@@ -9,10 +9,18 @@ import { FaSquareCheck } from 'react-icons/fa6';
 import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 
+
+interface PreDefinedReasonListInterface {
+    created_at: string;
+    id: number;
+    reason: string;
+
+}
 interface OrderDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
     orderDetails: any;
+    preDefinedReasonList: PreDefinedReasonListInterface[]
 }
 
 interface PatientDetailsInterface {
@@ -23,15 +31,18 @@ interface PatientDetailsInterface {
     gender: string;
     email: string;
     phone: string;
+    Locations: {
+        title: string
+    }
 }
 
-const rtnReasonsList = [
-    "Incorrect Item",
-    "Expired Product",
-    "Not Needed Anymore",
-    "Damaged or Defective",
-    "Other"
-]
+// const rtnReasonsList = [
+//     "Incorrect Item",
+//     "Expired Product",
+//     "Not Needed Anymore",
+//     "Damaged or Defective",
+//     "Other"
+// ]
 
 
 interface PatientDetailsRenderPropsInterface {
@@ -43,6 +54,7 @@ interface TableListRenderInterface {
     order_id: any;
     isAnyReturned: boolean;
     hasReturnedHandle: (val: boolean) => void
+    preDefinedReasonList: PreDefinedReasonListInterface[];
 
 }
 
@@ -94,7 +106,7 @@ const tableHeader = [
 
 const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientData, paymentType }) => {
 
-    const { firstname = '', lastname = '', gender = '', email = '', phone = '', id, treatmenttype } = patientData
+    const { firstname = '', lastname = '', gender = '', email = '', phone = '', id, treatmenttype, Locations } = patientData
     return <div className="py-4 space-y-3">
         <h3 className="font-bold">Patient Details</h3>
         <div className="text-base grid grid-cols-3 gap-6">
@@ -105,12 +117,13 @@ const PatientDetailsRender: FC<PatientDetailsRenderPropsInterface> = ({ patientD
             <p className=''>Email: <strong>{email}</strong></p>
             <p className=''>payment Type: <strong>{paymentType}</strong></p>
             <p>Treatment Type: <strong>{treatmenttype}</strong></p>
+            <p>Location: <strong>{Locations?.title}</strong></p>
         </div>
     </div>
 }
 
 
-const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned }: any) => {
+const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned, preDefinedReasonList }: any) => {
 
 
     const [returnedQty, setReturnedQty] = useState(0)
@@ -176,9 +189,16 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
     }
 
 
+
+
+    
+
+
     useEffect(() => {
         setReturnedQty(data.return_qty)
     }, [])
+
+
 
     if (processReturn) {
         return <div className=' fixed bg-black/40 top-0 bottom-0 left-0 right-0 flex justify-center items-center'>
@@ -206,7 +226,8 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
                             </label>
                             <select onChange={changeReasonHandle} className='border-2 text-sm rounded-md px-2 py-2 flex items-center space-x-2 '>
                                 <option value={''} disabled selected >Select Reason</option>
-                                {rtnReasonsList.map((opt, ind) => <option key={ind} value={opt} >{opt}
+                                {/* @ts-ignore */}
+                                {preDefinedReasonList.map((opt, ind) => <option key={ind} value={opt?.reason} >{opt?.reason}
 
                                 </option>)}
                             </select>
@@ -241,7 +262,7 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned 
 }
 
 
-const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAnyReturned, hasReturnedHandle }) => {
+const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAnyReturned, hasReturnedHandle,preDefinedReasonList }) => {
 
 
 
@@ -251,14 +272,14 @@ const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAn
             const content = render_value ? render_value(dataList[id], dataList) : dataList[id];
             return (
                 <h1 key={ind} className={`${flex ? flex : 'flex-[4]'} ${align || 'text-center'}`}>
-                    {id === 'actions' ? <ReturnProductSection isAnyReturned={isAnyReturned} setOtherReturned={hasReturnedHandle} data={dataList} order_id={order_id} /> : content}
+                    {id === 'actions' ? <ReturnProductSection preDefinedReasonList={preDefinedReasonList} isAnyReturned={isAnyReturned} setOtherReturned={hasReturnedHandle} data={dataList} order_id={order_id} /> : content}
                 </h1>
             );
         })}
     </div>
 }
 
-const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, orderDetails }) => {
+const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, orderDetails, preDefinedReasonList }) => {
     const [dataList, setDataList] = useState<DataListInterface>({});
     const [salesHistory, setSalesHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -280,7 +301,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 id,
                 firstname,
                 lastname,
-                email, gender, phone, treatmenttype
+                email, gender, phone, treatmenttype,locationid, Locations(title)
+                
               ),
               saleshistory (
                 sales_history_id,
@@ -391,7 +413,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                         {
                             salesHistory.map((elem: DataListInterface, index: number) => (
 
-                                <TableRowRender hasReturnedHandle={hasReturnedHandle} isAnyReturned={isAnyReturned} key={index} dataList={elem} order_id={order_id} />
+                                <TableRowRender preDefinedReasonList={preDefinedReasonList} hasReturnedHandle={hasReturnedHandle} isAnyReturned={isAnyReturned} key={index} dataList={elem} order_id={order_id} />
                             ))
                         }
                     </div>
