@@ -33,7 +33,10 @@ const tableHeader = [
     component: true,
     Render_Value: ({ val, onClickHandle, isLoading, getDataArchiveType }: { val?: string, onClickHandle?: () => void, isLoading?: boolean, getDataArchiveType: boolean }) => {
 
-      return <Action_Button isLoading={isLoading} onClick={onClickHandle} label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} />
+      return <div className='space-x-4'>
+      <Action_Button isLoading={isLoading} onClick={onClickHandle} label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} />
+      {/* <Action_Button  isLoading={isLoading} onClick={onClickHandle} label={'Delete'} bg_color={'bg-red-700'} /> */}
+      </div>
 
     }
 
@@ -77,7 +80,7 @@ const Categories = () => {
 
   const fetch_handle = async (archive: boolean) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'categories', matchCase: { key: 'archived', value: archive }, language: '' });
+    const fetched_data = await fetch_content_service({ table: 'categories',selectParam:',products:products!inner()' , matchCase: { key: 'archived', value: archive }, language: '' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)

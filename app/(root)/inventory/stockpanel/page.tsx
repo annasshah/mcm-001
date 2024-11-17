@@ -51,7 +51,7 @@ const StockPanel = () => {
     const fetched_data = await fetch_content_service({
       table: 'inventory',
       language: '',
-      selectParam: ',products(category_id, product_name,archived)',
+      selectParam: ',products(category_id, categories(category_name),  product_name,archived)',
       filterOptions: [{ operator: 'not', column: 'products', value: null }],
       matchCase: [
         {
@@ -70,13 +70,14 @@ const StockPanel = () => {
       ],
     });
 
-    const formattedData = fetched_data.map(({ quantity, inventory_id, price, products: { product_name, category_id } }: any) => {
+    const formattedData = fetched_data.map(({ quantity, inventory_id, price, products: { product_name, category_id, categories } }: any) => {
       return {
         product_id: inventory_id,
         category_id,
         product_name: product_name,
         price,
         quantity_available: quantity,
+        categories: { category_name: categories?.category_name }
       }
     })
     setDataList(formattedData);
@@ -97,10 +98,10 @@ const StockPanel = () => {
   };
 
   useEffect(() => {
-    if(selectedLocation?.id){
+    if (selectedLocation?.id) {
       fetch_handle(getDataArchiveType, selectedLocation.id);
     }
-  }, [getDataArchiveType,selectedLocation]);
+  }, [getDataArchiveType, selectedLocation]);
 
   const handleActiveClick = useCallback(() => {
     setGetDataArchiveType(false);

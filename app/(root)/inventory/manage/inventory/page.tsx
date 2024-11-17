@@ -1,10 +1,12 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Spinner } from 'flowbite-react';
+import React, { useEffect, useState } from 'react'
+import { Label, Select, Spinner } from 'flowbite-react';
+import { HiMiniChevronUpDown } from "react-icons/hi2";
+import moment from 'moment';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { create_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
@@ -12,6 +14,9 @@ import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
+import { useProductsClinica } from '@/hooks/useProductsClinica';
+import { useMasterProductsClinica } from '@/hooks/useMasterProductsClinica';
+import { Price_Input } from '@/components/Price_Input';
 
 
 interface DataListInterface {
@@ -41,13 +46,23 @@ const tableHeader = [
     can_sort: true
   },
   {
+    id: 'price',
+    label: 'Price',
+    can_sort: true
+  },
+  {
+    id: 'quantity_available',
+    label: 'Units',
+    can_sort: true
+  },
+  {
     id: 'actions',
     label: 'Action',
     align: 'text-right',
-    Render_Value: ({ clickHandle, getDataArchiveType }: { clickHandle: (state: string) => void, getDataArchiveType: boolean }) => {
+    Render_Value: ({ clickHandle }: { clickHandle: (state: string) => void }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} onClick={() => clickHandle(modalStateEnum.DELETE)} />
+        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Archive' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
       </div>
 
     }
@@ -58,18 +73,32 @@ const tableHeader = [
 const requiredInputFields = [
   {
     id: 'category_id',
-    label: 'Category'
+    label: 'Category',
+    type:'select'
   },
   {
-    id: 'product_name',
-    label: 'Name'
-  }
+    id: 'master_product_id',
+    label: 'Product',
+    type:'select'
+  },
+  {
+    id: 'price',
+    label: 'Price',
+    colSpan: 'col-span-1',
+    type:'number'
+  },
+  {
+    id: 'quantity_available',
+    label: 'Units',
+    colSpan: 'col-span-1',
+    type:'number'
+  },
 ]
 
 
 
 
-const Products = () => {
+const Inventory = () => {
   const [dataList, setDataList] = useState<DataListInterface[]>([])
   const [allData, setAllData] = useState<DataListInterface[]>([])
   const [loading, setLoading] = useState(true)
@@ -81,12 +110,10 @@ const Products = () => {
   const { categories } = useCategoriesClinica()
   const [sortOrder, setSortOrder] = useState(-1)
   const [sortColumn, setSortColumn] = useState('')
-  const [getDataArchiveType, setGetDataArchiveType] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false)
-  const [activeDeleteId, setActiveDeleteId] = useState(0)
 
+  const { products, onChangeCategory, loadingProducts, selectedCategory, selectedProduct, selectProductHandle } = useMasterProductsClinica()
 
-
+  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
 
 
 
@@ -106,31 +133,38 @@ const Products = () => {
 
 
 
-  const fetch_handle = async (getDataArchiveType: boolean) => {
-    try {
-      setLoading(true)
-      const fetched_data = await fetch_content_service({
-        table: 'products', language: '', selectParam: ',categories(category_name)', matchCase: [
+  const fetch_handle = async (location_id: number) => {
+    setLoading(true)
+    const fetched_data = await fetch_content_service({
+      table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: [
+        {
+          key: 'location_id',
+          value: location_id
+        },
+        {
+          key: 'archived',
+          value: false
+        },
+        {
+          key: 'products.archived',
+          value: false
+        },
 
-          {
-            key: 'archived',
-            value: getDataArchiveType
-          },
+      ], filterOptions: [{ operator: 'not', column: 'products', value: null }]
+    });
 
-
-        ],
-        sortOptions: { column: 'product_id', order: 'desc' }
-      });
-
-      setDataList(fetched_data)
-      setAllData(fetched_data)
-      setLoading(false)
-    } catch (error) {
-
-    }
-    finally {
-      setLoading(false)
-    }
+    const inventoryData = fetched_data.map(({ products, price, quantity, inventory_id }: any) => ({
+      product_id: inventory_id,
+      master_product_id: products.product_id,
+      category_id: products.category_id,
+      product_name: products.product_name,
+      price: price,
+      quantity_available: quantity,
+      categories: products.categories
+    }))
+    setDataList(inventoryData)
+    setAllData(inventoryData)
+    setLoading(false)
 
 
   }
@@ -150,24 +184,45 @@ const Products = () => {
 
 
   useEffect(() => {
-    fetch_handle(getDataArchiveType);
-  }, [getDataArchiveType]);
-
+    if (selected_location) {
+      fetch_handle(selected_location);
+    }
+  }, [selected_location]);
 
 
   const modalInputChangeHandle = (key: string, value: string | number) => {
+    if (key === 'category_id') {
+      onChangeCategory(+value)
+    }
+
+    else if (key === 'master_product_id') {
+      selectProductHandle(+value)
+
+    }
     setModalData((pre) => {
       return { ...pre, [key]: value }
     })
   }
 
 
+
   const modalSubmitHandle = async () => {
+
+    console.log({ modalData })
     setModalEventLoading(true)
-    console.log({modalData,modalState})
+    console.log(modalData)
     if (modalState === modalStateEnum.CREATE) {
 
-      const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: {...modalData} });
+      const invenPostData = {
+        price: modalData.price,
+        quantity: modalData.quantity_available,
+        location_id: selected_location,
+        product_id: modalData.master_product_id,
+      }
+
+
+
+      const { data: res_data, error } = await create_content_service({ table: 'inventory', language: '', post_data: invenPostData });
 
       if (error) {
         console.log(error.message);
@@ -177,20 +232,25 @@ const Products = () => {
       if (res_data?.length) {
         toast.success('Created successfully');
         closeModalHandle()
-        fetch_handle(getDataArchiveType);
+        fetch_handle(selected_location);
       }
     }
     else {
       try {
+
         const postData = {
-          product_id: +modalData.product_id,
-          category_id: +modalData.category_id,
-          product_name: modalData.product_name,
+          inventory_id: +modalData.product_id,
+          price: +modalData.price,
+          quantity: +modalData.quantity_available,
+          location_id: +selected_location,
+          product_id: modalData.master_product_id,
+
         }
-        const res_data = await update_content_service({ table: 'products', language: '', post_data: postData, matchKey: 'product_id' });
+
+        const res_data = await update_content_service({ table: 'inventory', language: '', post_data: postData, matchKey: 'inventory_id' });
         if (res_data?.length) {
           toast.success('Updated successfully');
-          fetch_handle(getDataArchiveType);
+          fetch_handle(selected_location);
           closeModalHandle()
         }
 
@@ -215,6 +275,19 @@ const Products = () => {
 
 
 
+  const onClickHandle = async (id: number) => {
+    const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: true, inventory_id: id } })
+    if (!error) {
+      fetch_handle(selected_location)
+      toast.success('Archived successfully');
+    }
+    else if (error) {
+      console.log(error.message)
+      toast.error(error.message);
+    }
+  }
+
+
 
   const buttonClickActionHandle = (action: string, elem: any) => {
     console.log({
@@ -222,10 +295,11 @@ const Products = () => {
       elem
     })
     if (action === modalStateEnum.DELETE) {
-      setActiveDeleteId(elem.product_id)
+      onClickHandle(elem.product_id)
     }
     else if (action === modalStateEnum.UPDATE) {
       setModalData(elem)
+      onChangeCategory(elem.category_id)
       openModalHandle(modalStateEnum.UPDATE)
     }
 
@@ -270,58 +344,11 @@ const Products = () => {
   }
 
 
-  const handleActiveClick = useCallback(() => {
-    setGetDataArchiveType(false);
-  }, []);
+  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = val.target.value
 
-  const handleArchiveClick = useCallback(() => {
-    setGetDataArchiveType(true);
-  }, []);
-
-
-
-
-  const deleteHandle = async () => {
-    setDeleteLoading(true)
-    try {
-      const res_data = await update_content_service({ table: 'products', matchKey: 'product_id', post_data: { product_id: activeDeleteId, archived: !getDataArchiveType } })
-      if (res_data?.length) {
-        setDataList((elem) => elem.filter((data: any) => data.product_id !== activeDeleteId))
-        setAllData((elem) => elem.filter((data: any) => data.product_id !== activeDeleteId))
-        setActiveDeleteId(0)
-        toast.success(getDataArchiveType ? "Product no longer archived" : 'Archived successfully');
-      }
-    } catch (error: any) {
-      console.log(error.message)
-      toast.error(error.message);
-      setDeleteLoading(false)
-    } finally {
-      setDeleteLoading(false)
-    }
+    set_location_handle(value)
   }
-
-
-
-  const RightSideComponent = useMemo(
-    () => (
-      <div className='text-sm text-gray-500 space-x-4 mr-6 flex items-center justify-end w-full'>
-        <button
-          onClick={handleActiveClick}
-          className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
-        >
-          Active
-        </button>
-        <button
-          onClick={handleArchiveClick}
-          className={`${getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
-        >
-          Archived
-        </button>
-
-      </div>
-    ),
-    [getDataArchiveType, handleActiveClick, handleArchiveClick]
-  );
 
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
@@ -348,11 +375,12 @@ const Products = () => {
             </div>
 
 
+            <div >
+              <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+                {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+              </Select>
 
-
-            {RightSideComponent}
-
-
+            </div>
 
 
 
@@ -391,9 +419,9 @@ const Products = () => {
                       {
                         tableHeader.map((element, ind) => {
                           const { id, Render_Value, align } = element
-                          const content = Render_Value ? <Render_Value getDataArchiveType={getDataArchiveType} clickHandle={(action: string) => buttonClickActionHandle(action, elem)} /> : elem[id]
+                          const content = Render_Value ? <Render_Value clickHandle={(action: string) => buttonClickActionHandle(action, elem)} /> : elem[id]
                           return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
-                            {id === 'category' ? elem?.categories?.category_name : content}
+                            {id === 'category' ? elem.categories.category_name : content}
                           </h1>
                         })
                       }
@@ -416,13 +444,17 @@ const Products = () => {
         <div className="w-full grid grid-cols-2 gap-4">
 
           {
-            requiredInputFields.map((elem,index) => {
-              const { id, label } = elem
-              return id === 'category_id' ? <div key={index} className='col-span-2 space-y-2' >
+            requiredInputFields.map((elem) => {
+              const { id, label, colSpan, type } = elem
+              return id === 'category_id' ? <div className='col-span-2 space-y-2' >
 
                 <Searchable_Dropdown initialValue={0} value={modalData[id]} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={(e: any) => modalInputChangeHandle(id, e.target.value)} label='Category' />
-              </div> : <div  key={index}  className={`col-span-2`}>
-                <Input_Component value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} />
+
+              </div> : id === 'master_product_id' ? <div className='col-span-2 space-y-2' >
+                <Searchable_Dropdown initialValue={0} value={modalData[id]} bg_color='#fff' start_empty={true} options_arr={products.map(({ product_id, product_name }: any) => ({ value: product_id, label: product_name }))} required={true} on_change_handle={(e: any) => modalInputChangeHandle(id, e.target.value)} label='Product' />
+
+              </div> : <div className={`${colSpan || 'col-span-2'}`}>
+                {id === 'price' ? <Price_Input type={type} value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} /> : <Input_Component type={type} value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} />}
               </div>
             })
           }
@@ -433,33 +465,8 @@ const Products = () => {
       </Custom_Modal>
 
 
-
-      {activeDeleteId ? <div className='fixed bg-black/75 h-screen w-screen top-0 left-0 right-0 bottom-0 z-20'>
-        <div className='flex justify-center items-center w-full h-full'>
-
-          <div className='bg-white w-full max-w-xl px-4 py-3 rounded-lg'>
-
-            <h1 className='font-bold text-xl text-black mb-5'>Confirmation</h1>
-            <p className='text-lg'>Do you really want to {getDataArchiveType ? "Unarchive" : "Archive"} this product</p>
-            <p className='text-sm'>Remember All of the locations inventories will also be {getDataArchiveType ? "Unarchive" : "Archive"} with the product</p>
-
-
-            <div className='mt-4 flex items-center space-x-3 justify-end'>
-              <Button disabled={deleteLoading} onClick={() => setActiveDeleteId(0)} color="gray">Cancel</Button>
-              <Button isProcessing={deleteLoading} color={"failure"} onClick={deleteHandle}>
-                {getDataArchiveType ? "Unarchive" : "Archive"}
-              </Button>
-            </div>
-
-
-          </div>
-        </div>
-
-      </div> : null}
-
-
     </main>
   )
 }
 
-export default Products
+export default Inventory

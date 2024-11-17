@@ -7,16 +7,24 @@ import { PiCaretUpDownBold } from 'react-icons/pi';
 import { toast } from 'react-toastify';
 import { useLocationClinica } from '@/hooks/useLocationClinica';
 
-
 interface DataListInterface {
     return_id: number;
-    product_id: number;
+    inventory_id: number;
     return_date: string; // ISO Date string format
     quantity: number;
     reason: string;
     sales_id: number;
     merge: boolean;
-    saleshistory: {
+    inventory: {
+        price: number;
+        products: {
+            product_name: string;
+            categories: {
+                category_name: string;
+            };
+        };
+    };
+    sales_history: {
         order_id: number;
         orders: {
             patient_id: number;
@@ -25,14 +33,8 @@ interface DataListInterface {
                 lastname: string;
                 phone: string;
                 email: string;
+                locationid: number;
             };
-        };
-    };
-    products: {
-        product_name: string;
-        price: number;
-        categories: {
-            category_name: string;
         };
     };
 }
@@ -59,7 +61,7 @@ interface DataListInterface {
 const detailsArray = (dataDetails: DataListInterface) => [
     {
         label: 'Order ID',
-        value: dataDetails?.saleshistory?.order_id
+        value: dataDetails?.sales_history?.order_id
     },
     {
         label: 'Return ID',
@@ -67,15 +69,15 @@ const detailsArray = (dataDetails: DataListInterface) => [
     },
     {
         label: 'Patient Name',
-        value: `${dataDetails?.saleshistory?.orders?.pos?.firstname} ${dataDetails?.saleshistory?.orders?.pos?.lastname}`
+        value: `${dataDetails?.sales_history?.orders?.pos?.firstname} ${dataDetails?.sales_history?.orders?.pos?.lastname}`
     },
     {
         label: 'Patient ID',
-        value: dataDetails?.saleshistory?.orders.patient_id
+        value: dataDetails?.sales_history?.orders.patient_id
     },
     {
         label: 'Amount',
-        value: dataDetails.quantity * dataDetails.products.price,
+        value: dataDetails.quantity * dataDetails.inventory.price,
     },
     {
         label: 'Quantity',
@@ -83,11 +85,11 @@ const detailsArray = (dataDetails: DataListInterface) => [
     },
     {
         label: 'Patient Phone',
-        value: dataDetails?.saleshistory?.orders?.pos?.phone,
+        value: dataDetails?.sales_history?.orders?.pos?.phone,
     },
     {
         label: 'Patient Email',
-        value: dataDetails?.saleshistory?.orders?.pos?.email,
+        value: dataDetails?.sales_history?.orders?.pos?.email,
         col_span_02: true
     },
     {
@@ -129,7 +131,7 @@ const Returns: FC<Props> = () => {
         else {
 
             const filteredData = allData.filter((elem) => {
-                const concatName = elem.products.product_name
+                const concatName = elem.inventory.products.product_name
                 return concatName.toLocaleLowerCase().includes(val.toLocaleLowerCase())
             })
             setDataList([...filteredData])
@@ -146,10 +148,10 @@ const Returns: FC<Props> = () => {
     const fetch_handle = async (location_id: any) => {
         setLoading(true)
         // @ts-ignore
-        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: `,saleshistory(order_id, orders(patient_id,  pos(firstname,lastname,phone,email,locationid ))),products(product_name, price, categories(category_name))`, matchCase: [{ key: 'merge', value: false }, { key: 'saleshistory.orders.pos.locationid', value: location_id }] });
-        const filteredData = fetched_data.filter((elem: any) => elem.saleshistory.orders.pos !== null)
-        setDataList(filteredData)
-        setAllData(filteredData)
+        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: `,sales_history(order_id, orders(patient_id,  pos(firstname,lastname,phone,email,locationid ))),inventory(price, products(product_name, categories(category_name)))`, matchCase: [{ key: 'merge', value: false }, { key: 'sales_history.orders.pos.locationid', value: location_id }], filterOptions: [{ operator: 'not', column: 'sales_history.orders.pos', value: null }]  });
+        // const filteredData = fetched_data.filter((elem: any) => elem.saleshistory.orders.pos !== null)
+        setDataList(fetched_data)
+        setAllData(fetched_data)
         setLoading(false)
 
 
@@ -171,8 +173,8 @@ const Returns: FC<Props> = () => {
 
         if (column === 'name') {
             sortedList = dataList.sort((a, b) => {
-                const aConcatName = `${a.saleshistory.orders.pos.firstname} ${a.saleshistory.orders.pos.lastname}`;
-                const bConcatName = `${b.saleshistory.orders.pos.firstname} ${b.saleshistory.orders.pos.lastname}`;
+                const aConcatName = `${a.sales_history.orders.pos.firstname} ${a.sales_history.orders.pos.lastname}`;
+                const bConcatName = `${b.sales_history.orders.pos.firstname} ${b.sales_history.orders.pos.lastname}`;
 
                 return sortOrder === 1
                     ? aConcatName.localeCompare(bConcatName)
@@ -182,8 +184,8 @@ const Returns: FC<Props> = () => {
         else if (column === 'order_id') {
             sortedList = dataList.sort((a, b) =>
                 sortOrder === 1
-                    ? a.saleshistory.order_id - b.saleshistory.order_id
-                    : b.saleshistory.order_id - a.saleshistory.order_id
+                    ? a.sales_history.order_id - b.sales_history.order_id
+                    : b.sales_history.order_id - a.sales_history.order_id
             );
         }
         else if (column === 'date') {
@@ -195,8 +197,8 @@ const Returns: FC<Props> = () => {
         }
         else if (column === 'category') {
             sortedList = dataList.sort((a, b) => {
-                const aCategory = a.products.categories.category_name;
-                const bCategory = b.products.categories.category_name;
+                const aCategory = a.inventory.products.categories.category_name;
+                const bCategory = b.inventory.products.categories.category_name;
 
                 return sortOrder === 1
                     ? aCategory.localeCompare(bCategory)
@@ -350,7 +352,7 @@ const Returns: FC<Props> = () => {
                                 <Spinner size='xl' />
                             </div> :
                                 dataList.length > 0 ? dataList.map((elem) => {
-                                    const { return_id, quantity, saleshistory: { order_id }, products: { product_name, categories: { category_name } } } = elem
+                                    const { return_id, quantity, sales_history: { order_id }, inventory: {products: { product_name, categories: { category_name }} } } = elem
                                     return <div key={return_id} onClick={() => detailsViewHandle(elem)} className='cursor-pointer hover:bg-gray-500 hover:text-white flex items-center flex-1 font-semibold bg-white px-3 py-4 rounded-md '>
                                         <h1 className='ms-4 flex-1 text-start'>
                                             {return_id}

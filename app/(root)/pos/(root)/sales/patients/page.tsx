@@ -16,6 +16,7 @@ import { validateFormData } from '@/utils/validationCheck';
 import { LocationContext } from '@/context';
 import PhoneNumberInput from '@/components/PhoneNumberInput';
 import { CiFilter } from 'react-icons/ci';
+import { formatPhoneNumber } from '@/utils/getCountryName';
 
 interface PatientDetailsInterface {
   firstname: string;
@@ -486,7 +487,7 @@ const Patients = () => {
 
                   <div className='flex items-start'>
                     <p className='text-lg flex-1 text-gray-600'>
-                      {phone}
+                      {formatPhoneNumber(phone)}
                     </p>
                     <div className='text-right space-y-2'>
                       <div className='space-x-3'>
@@ -495,7 +496,7 @@ const Patients = () => {
                         <Action_Button onClick={() => selectHandle(elem)} label='Select' bg_color='bg-[#00720B]' />
 
                       </div>
-                      <p className='text-sm text-gray-600'>{moment(updated_at, 'YYYY-MM-DD h:mm s').format('DD/MM/YYYY h:mm A')}</p>
+                      <p className='text-sm text-gray-600'>{moment.utc(updated_at, 'YYYY-MM-DD h:mm s').local().format('DD/MM/YYYY h:mm A')}</p>
                     </div>
                   </div>
                 </div>
@@ -609,7 +610,7 @@ const Patients = () => {
 
 
           {/* @ts-ignore */}
-          <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, 'gender')} label='Gender' />
+          <Select_Dropdown value={actionData['gender']} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, 'gender')} label='Gender' />
         </div>}
       </Custom_Modal>
     </main>

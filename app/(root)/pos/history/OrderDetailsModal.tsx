@@ -1,3 +1,4 @@
+import { inventory } from '@/assets/SVGs';
 import { currencyFormatHandle } from '@/helper/common_functions';
 import { create_content_service, fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { CircularProgress } from '@mui/material';
@@ -63,7 +64,7 @@ interface DataListInterface {
 }
 
 const calcTotalAmount = (list: any) => {
-    const totalVal = list.saleshistory.reduce((a: number, b: { total_price: number }) => a + b.total_price, 0);
+    const totalVal = list?.sales_history?.reduce((a: number, b: { total_price: number }) => a + b.total_price, 0);
     return currencyFormatHandle(totalVal)
 }
 
@@ -75,13 +76,13 @@ const tableHeader = [
         label: 'Category',
         align: 'text-center',
         flex: 'flex-1',
-        render_value: (val: string, elem: any) => elem?.products?.categories?.category_name,
+        render_value: (val: string, elem: any) => elem?.inventory?.products?.categories?.category_name,
 
     },
     {
         id: 'product_name',
         label: 'Product',
-        render_value: (val: string, elem: any) => elem?.products?.product_name,
+        render_value: (val: string, elem: any) => elem?.inventory?.products?.product_name,
 
     },
     {
@@ -160,6 +161,8 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned,
     const processReturnHandle = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        console.log({ data })
+
         if (forReturnQty > data.quantity_sold) {
             toast.error(`Return quantity should not be higher than the sold quantity`)
             return
@@ -169,7 +172,7 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned,
 
         const postData = {
             sales_id: data.sales_history_id,
-            product_id: data.product_id,
+            inventory_id: data.inventory_id,
             quantity: forReturnQty,
             reason: forReturnReason
         }
@@ -191,7 +194,7 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned,
 
 
 
-    
+
 
 
     useEffect(() => {
@@ -262,7 +265,7 @@ const ReturnProductSection = ({ data, order_id, setOtherReturned, isAnyReturned,
 }
 
 
-const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAnyReturned, hasReturnedHandle,preDefinedReasonList }) => {
+const TableRowRender: FC<TableListRenderInterface> = ({ dataList, order_id, isAnyReturned, hasReturnedHandle, preDefinedReasonList }) => {
 
 
 
@@ -304,10 +307,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 email, gender, phone, treatmenttype,locationid, Locations(title)
                 
               ),
-              saleshistory (
+              sales_history (
                 sales_history_id,
-                product_id,
-                products(product_name, category_id, categories(category_name)),
+                inventory_id,
+                inventory(product_id, products(product_name, category_id, categories(category_name))),
                 date_sold,
                 quantity_sold,
                 total_price,
@@ -318,8 +321,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                     // @ts-ignore
                     matchCase: { key: 'order_id', value: order_id }
                 });
+
+                const listHistory = fetched_data?.[0]?.sales_history || []
+
                 setDataList(fetched_data?.[0] || []);
-                const listHistory = fetched_data?.[0]?.saleshistory || []
+            
                 const checkRtn = listHistory.filter(({ return_qty }: { return_qty: number }) => return_qty > 0)
                 setIsAnyReturned(() => checkRtn.length > 0)
                 setSalesHistory(listHistory);
@@ -341,12 +347,12 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
     const searchProductHandle = (e: any) => {
         const val = e.target.value
         if (val === '') {
-            setSalesHistory(dataList.saleshistory)
+            setSalesHistory(dataList.sales_history)
 
         }
         else {
 
-            const filteredData = dataList.saleshistory.filter((elem: any) => elem.products.product_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+            const filteredData = dataList.sales_history.filter((elem: any) => elem.products.product_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
             setSalesHistory([...filteredData])
         }
 
@@ -371,7 +377,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ isOpen, onClose, 
                 <PatientDetailsRender patientData={dataList?.pos}
 
                     // paymentType={[null, true].includes(dataList[0].paymentcash) ? "Cash" : "Creadit Card"}
-                    paymentType="Cash"
+                    paymentType={dataList?.paymentType}
 
                 />
 

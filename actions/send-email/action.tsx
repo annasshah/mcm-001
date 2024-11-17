@@ -9,7 +9,6 @@ export async function getUserEmail(): Promise<any> {
         "email,treatmenttype,firstname,gender,onsite,locationid,Locations (title)"
       );
 
-    console.log(data);
 
     return data;
   } catch (error) {

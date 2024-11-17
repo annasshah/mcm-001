@@ -17,7 +17,9 @@ export const SidebarSection = () => {
         />
       </div>
 
+      <div className="flex-1 overflow-y-auto">
       <SidebarPanel />
+      </div>
       <Clinic />
     </div>
   );

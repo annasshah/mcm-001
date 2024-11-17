@@ -6,6 +6,7 @@ import { useLocationClinica } from '@/hooks/useLocationClinica';
 import moment from 'moment';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
+import { formatPhoneNumber } from '@/utils/getCountryName';
 
 interface DataListInterface {
   id: number;
@@ -307,7 +308,7 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
             <div className='space-y-7 '>
               <dl>
                 <dd className='font-semibold text-lg'>
-                  {patientDetails?.phone}
+                  {formatPhoneNumber(patientDetails?.phone)}
                 </dd>
                 <dt className='text-sm text-[#707070]'>
                   Patient Phone

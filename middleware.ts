@@ -13,7 +13,6 @@ export async function middleware(request: NextRequest) {
   const path_start_with = pathname.startsWith('/login')
 
   // await updateSession(request);
-  // console.log('-------------->', session, session?.access_token)
 
   if (session) {
     if (path_start_with) {
