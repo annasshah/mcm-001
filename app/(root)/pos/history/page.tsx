@@ -38,7 +38,7 @@ const tableHeader = [
     id: 'total_price',
     label: 'Total Amount',
     render_value: (val: any, elem?: any) => {
-      const totalVal = elem.saleshistory.reduce((a: number, b: { total_price: number }) => a + b?.total_price, 0);
+      const totalVal = elem.sales_history?.reduce((a: number, b: { total_price: number }) => a + b?.total_price, 0);
       return currencyFormatHandle(totalVal);
     }
   },
@@ -65,11 +65,11 @@ const tableHeader = [
 // Format the data
 const formattedData = (rawData: DataListInterface[]) => {
   return rawData.map((order) => {
-    const { order_id, order_date, pos, saleshistory } = order;
+    const { order_id, order_date, pos, sales_history } = order;
     const patientName = `${pos.firstname} ${pos.lastname}`;
 
     // Assuming there's one sales history per order
-    const totalAmount = saleshistory.reduce(
+    const totalAmount = sales_history?.reduce(
       (total: number, sale: { total_price: number }) => total + sale.total_price,
       0
     )
@@ -124,9 +124,9 @@ const SalesHistory = () => {
         firstname,
         locationid
       ),
-      saleshistory (
+      sales_history (
         sales_history_id,
-        product_id,
+        inventory_id,
         date_sold,
         quantity_sold,
         total_price

@@ -13,6 +13,10 @@ const TopTabs = () => {
             url: "/"
         },
         {
+            title: "Inventory",
+            url: "inventory"
+        },
+        {
             title: "Products",
             url: "products"
         },

@@ -1,9 +1,11 @@
 import { clinca_logo } from "@/assets/images";
 import Image from "next/image";
+// import ChangeLocationModal from "./ChangeLocationModal";
 
 export const Clinic = () => {
   return (
-    <article className="fixed w-[233px] p-3 bottom-5 bg-white flex justify-center">
+    <article className="w-[233px] bg-white flex justify-center">
+      {/* <ChangeLocationModal /> */}
       <div className="w-[185px] h-[55px] rounded-[8px] bg-[#8AA0C2] p-2 flex items-center justify-start gap-3">
         <Image
           src={clinca_logo}

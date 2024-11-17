@@ -13,6 +13,7 @@ import moment from "moment";
 import { Calendar, DatePicker, Input } from "antd";
 import { Appointment_Edit_Modal } from "@/components/Appointment/Appointment_Edit/Appointment_Edit_Modal";
 import { Add_Appointment_Modal } from "@/components/Appointment/Add_Appointment_Modal";
+import { formatPhoneNumber } from "@/utils/getCountryName";
 
 export interface Location {
   id: number;
@@ -459,7 +460,7 @@ const Appoinments = () => {
               <div className=" font-semibold space-y-4 flex-1 text-black">
                 {render_detail_keys.map((elem, index: any) => {
                   const key: string = elem.key
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.address : appointment_details ? appointment_details[key as keyof typeof Appoinments] : '-'}</span></h1>
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.address : key === 'phone' ? formatPhoneNumber(appointment_details?.phone)  :appointment_details ? appointment_details[key as keyof typeof Appoinments] : '-'}</span></h1>
                 })}
               </div>
 

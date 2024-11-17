@@ -146,6 +146,8 @@ export async function fetch_content_service({
     query = query.order(sortOptions.column, { ascending: sortOptions.order === 'asc' });
   }
 
+  // query.limit(1, { foreignTable: 'products' });
+
   const { data, error } = await query;
   if (error) {
     console.log(error.message);

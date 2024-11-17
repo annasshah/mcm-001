@@ -13,7 +13,7 @@ export const Navbar = ({ width }: { width: string }) => {
 
   return (
     <header
-      className={` h-[70px] px-5 flex justify-between items-center fixed z-20 bg-[#B8C8E1]`}
+      className={` h-[70px] px-5 flex justify-between items-center fixed bg-[#B8C8E1]`}
       style={{ width: `calc(100% - ${width})` }}
     >
       <div className="text-[#121111] text-[16px] font-[700]">{activeTitle}</div>

@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 import PromoCodeComponent from '@/components/PromoCodeComponent';
 import { PromoCodeDataInterface } from '@/types/typesInterfaces';
+import { formatPhoneNumber } from '@/utils/getCountryName';
 // interface PatientDetailsInterface {
 //     name: string;
 //     phone_number: string;
@@ -44,11 +45,12 @@ const render_details = [
     {
         key: 'name',
         label: 'Name:',
-        render_value: (val: any) => `${val.firstname} ${val.lastname}`,
+        render_value: (val: any) => `${val?.firstname} ${val?.lastname}`,
     },
     {
         key: 'phone',
-        label: 'Phone Number:'
+        label: 'Phone Number:',
+        render_value: (val: any) => formatPhoneNumber(val?.phone),
     },
     {
         key: 'email',
@@ -294,14 +296,14 @@ const Orders = () => {
 
                 const post_data = cartArray.map((elem) => ({
                     order_id,
-                    product_id: elem.product_id,
+                    inventory_id: elem.product_id,
                     quantity_sold: elem.quantity,
                     total_price: elem.price * elem.quantity,
                     paymentcash: selectedMethod === 'Cash' ?  true : false
                 }));
 
                 const { data: order_created_data, error: order_created_error }: any = await create_content_service({
-                    table: 'saleshistory',
+                    table: 'sales_history',
                     post_data,
                     multiple_rows: true,
                 });
@@ -382,7 +384,7 @@ const Orders = () => {
                                 </div>
                                 <div className='w-1/3'>
                                     {loadingProducts ? <div className='text-sm text-gray-400'>
-                                        Loading Products...
+                                        {selectedCategory ?  "Loading Products..." : "Select Category First.."}
                                     </div> : <Searchable_Dropdown disabled={!selectedPatient} initialValue={0} bg_color='#fff' start_empty={true}
                                         // @ts-ignore
                                         options_arr={products.map(({ product_id, product_name }: any) => ({ value: product_id, label: product_name }))}
