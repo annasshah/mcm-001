@@ -1,19 +1,17 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback, useMemo, useContext } from 'react';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import InventoryCards from './InventoryCards';
 import TableComponent from '@/components/TableComponent';
+import Location_Component from '@/components/Location_Component';
+import { LocationContext } from '@/context';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
 }
 
-
 const tableHeader = [
-  {
-    id: 'product_id',
-    label: 'Product ID'
-  },
+  { id: 'product_id', label: 'Product ID' },
   {
     id: 'category',
     label: 'Category',
@@ -23,106 +21,135 @@ const tableHeader = [
     id: 'name',
     label: 'Name',
     render_value: (val: any, elem?: any) => elem?.product_name || '-',
-    align: 'text-center'
+    align: 'text-center',
   },
   {
     id: 'price',
     label: 'Price',
     render_value: (val: any, elem?: any) => elem?.price,
-    align: 'text-center'
+    align: 'text-center',
   },
   {
     id: 'quantity_in_stock',
     label: 'Quantity Available',
     render_value: (val: any, elem?: any) => elem?.quantity_available,
-    align: 'text-center'
-
+    align: 'text-center',
   },
-  // {
-  //   id: 'last_updated',
-  //   label: 'Last Updated',
-  //   render_value: (val: string) => moment(val, 'YYYY-MM-DD h:mm s').format('MMM DD, YYYY'),
-  //   align: 'text-end'
-
-  // },
-]
-
-
+];
 
 const StockPanel = () => {
+  const [dataList, setDataList] = useState<DataListInterface[]>([]);
+  const [allData, setAllData] = useState<DataListInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [getDataArchiveType, setGetDataArchiveType] = useState(false);
 
-  const [dataList, setDataList] = useState<DataListInterface[]>([])
-  const [allData, setAllData] = useState<DataListInterface[]>([])
-  const [loading, setLoading] = useState(true)
-  const [getDataArchiveType, setGetDataArchiveType] = useState(false)
-
-
-  const fetch_handle = async (archived:boolean) => {
-    setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)', matchCase: { key: 'archived', value: archived } });
-    setDataList(fetched_data)
-    setAllData(fetched_data)
-    setLoading(false)
+  const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
 
 
-  }
+  const fetch_handle = async (archived: boolean, location_id: number) => {
+    setLoading(true);
+    const fetched_data = await fetch_content_service({
+      table: 'inventory',
+      language: '',
+      selectParam: ',products(category_id, product_name,archived)',
+      filterOptions: [{ operator: 'not', column: 'products', value: null }],
+      matchCase: [
+        {
+          key: 'location_id',
+          value: location_id
+        },
+        {
+          key: 'archived',
+          value: archived
+        },
+        {
+          key: 'products.archived',
+          value: false
+        },
+
+      ],
+    });
+
+    const formattedData = fetched_data.map(({ quantity, inventory_id, price, products: { product_name, category_id } }: any) => {
+      return {
+        product_id: inventory_id,
+        category_id,
+        product_name: product_name,
+        price,
+        quantity_available: quantity,
+      }
+    })
+    setDataList(formattedData);
+    setAllData(formattedData);
+    setLoading(false);
+  };
 
   const onChangeHandle = (e: any) => {
-    const val = e.target.value
+    const val = e.target.value;
     if (val === '') {
-      setDataList([...allData])
-
+      setDataList([...allData]);
+    } else {
+      const filteredData = allData.filter((elem) =>
+        elem.products.product_name.toLowerCase().includes(val.toLowerCase())
+      );
+      setDataList([...filteredData]);
     }
-    else {
-
-      const filteredData = allData.filter((elem) => elem.products.product_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
-      setDataList([...filteredData])
-    }
-  }
-
+  };
 
   useEffect(() => {
-    fetch_handle(getDataArchiveType)
+    if(selectedLocation?.id){
+      fetch_handle(getDataArchiveType, selectedLocation.id);
+    }
+  }, [getDataArchiveType,selectedLocation]);
 
-  }, [getDataArchiveType])
+  const handleActiveClick = useCallback(() => {
+    setGetDataArchiveType(false);
+  }, []);
 
+  const handleArchiveClick = useCallback(() => {
+    setGetDataArchiveType(true);
+  }, []);
 
+  const RightSideComponent = useMemo(
+    () => (
+      <div className='text-sm text-gray-500 space-x-4 mr-6 flex items-center'>
+        <button
+          onClick={handleActiveClick}
+          className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Active
+        </button>
+        <button
+          onClick={handleArchiveClick}
+          className={`${getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Archive
+        </button>
+        <div className='w-72'>
 
-
+        </div>
+      </div>
+    ),
+    [getDataArchiveType, handleActiveClick, handleArchiveClick]
+  );
 
   return (
-    <main className="w-full  h-full font-[500] text-[20px]">
-
-
-
-
-      <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
-        <InventoryCards />
-
+    <main className="w-full h-full font-[500] text-[20px]">
+      <div className='w-full min-h-[81dvh] h-[100%] overflow-auto py-2 px-2'>
+        <InventoryCards archived={getDataArchiveType} />
         <TableComponent
-          tableHeight='h-[72dvh]'
-          tableBodyHeight='h-[56dvh]'
+          tableHeight='h-[71.5dvh]'
+          tableBodyHeight='h-[55dvh]'
           tableHeader={tableHeader}
           loading={loading}
           dataList={dataList}
           searchInputplaceholder="Search by product id"
           searchHandle={onChangeHandle}
-          RightSideComponent={() =>
-            <div className='text-sm text-gray-500 underline space-x-4 mr-6 '>
-              <button onClick={()=>setGetDataArchiveType(false)} className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}>
-                Active
-              </button>
-              <button onClick={()=>setGetDataArchiveType(true)} className={`${getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}>
-                Archive
-              </button>
-            </div>
-          }
+          RightSideComponent={() => RightSideComponent}
         />
       </div>
-
-
     </main>
-  )
-}
+  );
+};
 
-export default StockPanel
+export default StockPanel;

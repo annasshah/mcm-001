@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GoDotFill } from "react-icons/go";
 import { usePathname } from 'next/navigation'
 import EditIcon from "@/assets/svg_icons/Edit_Icon";
+import Location_Component from "@/components/Location_Component";
 
 const TopTabs = () => {
     const pathname = usePathname()
@@ -16,7 +17,7 @@ const TopTabs = () => {
             title: "Patients",
             url: "patients"
         },
-        
+
     ];
 
 
@@ -36,9 +37,7 @@ const TopTabs = () => {
                 ))}
             </ul>
 
-         {/* <div className="bg-[#D9DFE9] w-1/3 py-2 rounded-md flex items-center px-3 " >
-            <input value='Sarah S.' className="bg-transparent flex-1" /> <EditIcon />
-         </div> */}
+            <Location_Component />
         </nav>
     );
 }

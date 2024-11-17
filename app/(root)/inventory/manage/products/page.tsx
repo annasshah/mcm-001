@@ -12,6 +12,8 @@ import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
+import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 
 
 interface DataListInterface {
@@ -57,7 +59,7 @@ const tableHeader = [
     Render_Value: ({ clickHandle }: { clickHandle: (state: string) => void }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Delete' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
+        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Archive' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
       </div>
 
     }
@@ -102,6 +104,9 @@ const Products = () => {
   const [sortOrder, setSortOrder] = useState(-1)
   const [sortColumn, setSortColumn] = useState('')
 
+  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+
+
 
 
 
@@ -118,11 +123,39 @@ const Products = () => {
 
 
 
-  const fetch_handle = async () => {
+
+  const fetch_handle = async (location_id: number) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
-    setDataList(fetched_data)
-    setAllData(fetched_data)
+    const fetched_data = await fetch_content_service({
+      table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: [
+        {
+          key: 'location_id',
+          value: location_id
+        },
+        {
+          key: 'archived',
+          value: false
+        },
+        {
+          key: 'products.archived',
+          value: false
+        },
+
+      ], filterOptions: [{ operator: 'not', column: 'products', value: null }]
+    });
+
+    // const fetched_data = await fetch_content_service({ table: 'products', language: '', selectParam: ',categories(category_name)' });
+
+    const inventoryData = fetched_data.map(({ products, price, quantity, inventory_id }: any) => ({
+      product_id:inventory_id,
+      category_id: products.category_id,
+      product_name: products.product_name,
+      price: price,
+      quantity_available: quantity,
+      categories: products.categories
+    }))
+    setDataList(inventoryData)
+    setAllData(inventoryData)
     setLoading(false)
 
 
@@ -143,9 +176,10 @@ const Products = () => {
 
 
   useEffect(() => {
-    fetch_handle()
-
-  }, [])
+    if (selected_location) {
+      fetch_handle(selected_location);
+    }
+  }, [selected_location]);
 
 
   const modalInputChangeHandle = (key: string, value: string | number) => {
@@ -161,14 +195,25 @@ const Products = () => {
     if (modalState === modalStateEnum.CREATE) {
 
       const { data: res_data, error } = await create_content_service({ table: 'products', language: '', post_data: modalData });
+
       if (error) {
         console.log(error.message);
         toast.error(error.message);
         // throw new Error(error.message);
       }
       if (res_data?.length) {
+        const invenPostData = {
+          // @ts-ignore
+          product_id: res_data[0].product_id!,
+          price: modalData.price,
+          quantity: modalData.quantity_available,
+          location_id: selected_location
+
+        }
+        const { data: inventoryData, error: inventoryError } = await create_content_service({ table: 'inventory', language: '', post_data: invenPostData });
         toast.success('Created successfully');
         closeModalHandle()
+        fetch_handle(selected_location);
         // dataList.push(res_data[0])
         // allData.push(res_data[0])
         // setAllData([...allData])
@@ -190,6 +235,8 @@ const Products = () => {
           closeModalHandle()
         }
 
+
+
       } catch (error: any) {
 
         if (error && error?.message) {
@@ -208,11 +255,10 @@ const Products = () => {
 
 
   const onClickHandle = async (id: number) => {
-    const { error } = await delete_content_service({ table: 'products', keyByDelete: 'product_id', id })
+    const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: true, inventory_id: id } })
     if (!error) {
-      setDataList((elem) => elem.filter((data: any) => data.product_id !== id))
-      setAllData((elem) => elem.filter((data: any) => data.product_id !== id))
-      toast.success('Deleled successfully');
+      fetch_handle(selected_location)
+      toast.success('Archived successfully');
     }
     else if (error) {
       console.log(error.message)
@@ -264,15 +310,22 @@ const Products = () => {
       } else {
 
         sortedList = dataList.sort((a, b) => b[column] - a[column])
-        
+
       }
     }
 
-    setSortOrder((order)=> order === -1 ? 1 : -1)
+    setSortOrder((order) => order === -1 ? 1 : -1)
     setDataList([...sortedList])
 
 
     setSortColumn(column)
+  }
+
+
+  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = val.target.value
+
+    set_location_handle(value)
   }
 
   return (
@@ -282,44 +335,43 @@ const Products = () => {
 
 
       <div className='w-full min-h-[81.5dvh] h-[100%] overflow-auto py-2 px-2'>
-        <div className='bg-[#D9DFE9] h-[100%]  col-span-2 rounded-md py-2   ' >
+        <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 pb-4 flex justify-between'>
-            <div className='space-y-1'>
-              <h1 className='text-lg font-bold'>
-                Search by Product
-              </h1>
+          <div className='px-3 py-4 flex justify-between items-center '>
+            <div className='flex items-center gap-x-3'>
 
-              <div className='flex items-center gap-x-3'>
-
-                <input onChange={onChangeHandle} type="text" placeholder="" className=' px-1 py-2 w-72 text-sm rounded-md focus:outline-none bg-white' />
-                <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
-                  <Image
-                    className="w-9"
-                    src={PlusIcon}
-                    alt="Logo"
-                  />
-                </button>
-              </div>
+              <input onChange={onChangeHandle} type="text" placeholder="Search by Product" className=' px-1 py-3 w-72 text-sm rounded-md focus:outline-none bg-white' />
+              <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
+                <Image
+                  className="w-9"
+                  src={PlusIcon}
+                  alt="Logo"
+                />
+              </button>
 
 
             </div>
 
 
+            <div >
+              <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+                {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+              </Select>
 
-            {/* <div>
-              <HiMiniChevronUpDown size={30} />
-            </div> */}
+            </div>
+
+
+
+
 
 
 
           </div>
-          <div className='h-[1px] w-full bg-black' />
 
           <div className='px-3 pt-5'>
             {/* Table goes here */}
 
-            <div className='flex items-center flex-1 font-semibold pr-5'>
+            <div className='pb-3 flex text-base text-[#71717A] items-center flex-1 font-normal border-b-2 border-b-[#E4E4E7]'>
               {tableHeader.map(({ label, align, can_sort, id }, index) => {
 
                 return <h1 key={index} className={`flex-1 ${align || 'text-start'}  `}>
@@ -341,7 +393,7 @@ const Products = () => {
 
                   {dataList.map((elem: DataListInterface, index) => {
                     const even_row = (index + 1) % 2
-                    return <div key={index} className={`cursor-pointer hover:bg-text_primary_color hover:text-white flex items-center flex-1 font-semibold ${even_row ? 'bg-[#B8C8E1]' : 'bg-white'}  px-3 py-4 rounded-md`}>
+                    return <div key={index} className={`hover:bg-[#d0d0d0] flex items-center flex-1 text-base py-5 border-b-2 border-b-[#E4E4E7]`}>
                       {
                         tableHeader.map((element, ind) => {
                           const { id, Render_Value, align } = element
@@ -373,11 +425,17 @@ const Products = () => {
             requiredInputFields.map((elem) => {
               const { id, label, colSpan } = elem
               return id === 'category_id' ? <div className='col-span-2 space-y-2' >
-                <Label htmlFor={id} value={label} className='font-bold' />
-                <Select value={modalData[id]} onChange={(e: any) => modalInputChangeHandle(id, e.target.value)} id={id} required>
+
+                <Searchable_Dropdown initialValue={0} value={modalData[id]} bg_color='#fff' start_empty={true} options_arr={categories.map(({ category_id, category_name }: any) => ({ value: category_id, label: category_name }))} required={true} on_change_handle={(e: any) => modalInputChangeHandle(id, e.target.value)} label='Category' />
+
+
+
+
+
+                {/* <Select value={modalData[id]} onChange={(e: any) => modalInputChangeHandle(id, e.target.value)} id={id} required>
                   <option selected >{label}</option>
                   {categories.map((elem: any, index: any) => <option key={index} value={elem[id]}>{elem.category_name}</option>)}
-                </Select>
+                </Select> */}
 
               </div> : <div className={`${colSpan || 'col-span-2'}`}>
                 <Input_Component value={modalData[id]} onChange={(e: string) => modalInputChangeHandle(id, e)} py='py-3' border='border-[1px] border-gray-300 rounded-md' label={label} />

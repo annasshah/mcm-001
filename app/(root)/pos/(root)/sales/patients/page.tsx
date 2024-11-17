@@ -1,7 +1,7 @@
 'use client'
 import { Input_Component } from '@/components/Input_Component';
 import { Select_Dropdown } from '@/components/Select_Dropdown';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { IoCloseOutline } from "react-icons/io5";
 import { Select } from 'flowbite-react';
 import { Action_Button } from '@/components/Action_Button';
@@ -13,6 +13,9 @@ import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { supabase } from '@/services/supabase';
 import { toast } from 'react-toastify';
 import { validateFormData } from '@/utils/validationCheck';
+import { LocationContext } from '@/context';
+import PhoneNumberInput from '@/components/PhoneNumberInput';
+import { CiFilter } from 'react-icons/ci';
 
 interface PatientDetailsInterface {
   firstname: string;
@@ -23,6 +26,7 @@ interface PatientDetailsInterface {
   gender: string;
   locationid: string;
   created_at: string;
+  updated_at: string;
 }
 
 const fields = [
@@ -175,7 +179,9 @@ const Patients = () => {
   const [services, setServices] = useState<string[] | null | undefined>([]);
   const [canModalSubmit, setCanModalSubmit] = useState(false)
   const [canAddPatient, setCanAddPatient] = useState(false)
+  const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
 
+  const [activeFilterBtn, setActiveFilterBtn] = useState(0)
 
   const category_change_handle = () => {
 
@@ -185,20 +191,33 @@ const Patients = () => {
   const router = useRouter()
 
 
-  const fetch_handle = async () => {
-    setLoading(true)
-    // @ts-ignore
-    const fetched_data: any = await fetch_content_service({ table: 'pos' });
-    setDataList(fetched_data)
-    setAllData(fetched_data)
-    setLoading(false)
+  const fetch_handle = async (locationId: number) => {
+    setLoading(true);
 
+    // Get today's date at midnight using Moment.js
+    const todayStart = moment().startOf('day').toISOString();
 
+    // Define filter options based on the selected button (0: Today, 1: Past records)
+    const filterOptions = activeFilterBtn === 0
+      ? [{ column: 'updated_at', operator: 'gte', value: todayStart }] // Records from today
+      : [{ column: 'updated_at', operator: 'lt', value: todayStart }]; // Records before today
+
+    // Fetch data with match cases and filter options
+    const fetched_data: any = await fetch_content_service({
+      table: 'pos',
+      matchCase: [{ key: 'locationid', value: locationId || 17 }],
+      filterOptions: filterOptions,
+      sortOptions: { column: 'updated_at', order: 'desc' }
+    });
+
+    setDataList(fetched_data);
+    setAllData(fetched_data);
+    setLoading(false);
   }
 
   useEffect(() => {
-    fetch_handle()
-  }, [])
+    fetch_handle(selectedLocation?.id)
+  }, [, selectedLocation, activeFilterBtn])
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -389,19 +408,20 @@ const Patients = () => {
       return
     }
 
+    const postData = {
+      ...createActionData,
+      locationid: selectedLocation?.id || ''
+    }
     for (const field of requiredFields) {
-      if (!createActionData[field]) {
+      if (!postData[field]) {
         toast.warning(`Please fill in the ${field}`);
         return;
       }
     }
 
 
-    const postData = {
-      ...createActionData
-    }
 
-    const { data, error } = await  create_content_service({ table: 'pos', language: '', post_data: postData })
+    const { data, error } = await create_content_service({ table: 'pos', language: '', post_data: postData })
 
     if (error) {
       if (error?.message === 'duplicate key value violates unique constraint "Appoinments_date_and_time_key"') {
@@ -412,7 +432,7 @@ const Patients = () => {
     } else {
       toast.success("Patient successfully added!");
       setCreateActionData({})
-      fetch_handle()
+      fetch_handle(selectedLocation?.id)
     }
 
 
@@ -427,7 +447,7 @@ const Patients = () => {
       <div className='w-full h-[75.5dvh] py-2 px-2 grid grid-cols-3 gap-2'>
         <div className='bg-[#B8C8E1] h-[100%]  col-span-2 rounded-md py-2   ' >
 
-          <div className='space-y-6 px-3 pb-4 flex justify-between'>
+          <div className='space-y-6 px-3 pb-4 flex items-center space-x-4'>
             <div>
               <h1 className='text-xl font-bold'>
                 search
@@ -437,9 +457,11 @@ const Patients = () => {
 
 
 
-            {/* <div>
-              <CiFilter size={30} />
-            </div> */}
+            <div className='space-x-3'>
+              {
+                ['Today', 'Past records'].map((elem: string, index: number) => <Action_Button key={index} onClick={() => setActiveFilterBtn(index)} label={elem} bg_color={index === activeFilterBtn ? 'bg-[#13787E]' : 'bg-gray-500'} />)
+              }
+            </div>
 
 
 
@@ -450,7 +472,7 @@ const Patients = () => {
 
 
             {dataList.map((elem, ind) => {
-              const { firstname, lastname, created_at, phone } = elem
+              const { firstname, lastname, created_at, phone, updated_at } = elem
               return <div key={ind} className='space-y-6 px-3'>
 
 
@@ -469,11 +491,11 @@ const Patients = () => {
                     <div className='text-right space-y-2'>
                       <div className='space-x-3'>
                         <Action_Button onClick={() => editHandle(elem)} label='Edit' bg_color='bg-[#13787E]' />
-                        <Action_Button onClick={() => deleteHandle(elem)} label='Delete' bg_color='bg-[#FF6363]' />
+                        {/* <Action_Button onClick={() => deleteHandle(elem)} label='Delete' bg_color='bg-[#FF6363]' /> */}
                         <Action_Button onClick={() => selectHandle(elem)} label='Select' bg_color='bg-[#00720B]' />
 
                       </div>
-                      <p className='text-sm text-gray-600'>{moment(created_at, 'YYYY-MM-DD h:mm s').format('h:mm A')}</p>
+                      <p className='text-sm text-gray-600'>{moment(updated_at, 'YYYY-MM-DD h:mm s').format('DD/MM/YYYY h:mm A')}</p>
                     </div>
                   </div>
                 </div>
@@ -517,19 +539,12 @@ const Patients = () => {
               {/* @ts-ignore */}
               <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'gender')} label='Gender' />
               <Input_Component value={createActionData.email} onChange={(e: string) => addPatientFieldsChange(e, 'email')} label='Email Address' />
-              <Input_Component value={createActionData.phone} onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' />
+              {/* <Input_Component value={createActionData.phone} onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' /> */}
+              <PhoneNumberInput value={createActionData.phone} onChange={(e: string) => addPatientFieldsChange(e, 'phone')} label='Phone Number' placeholder={''} breakpoint={false} />
 
               {/* @ts-ignore */}
               <Select_Dropdown value={createActionData.treatmenttype} bg_color='#fff' start_empty={true} options_arr={services?.map((service) => ({ value: service, label: service }))} required={true} on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'treatmenttype')}
                 label='Treatment Type' />
-             
-              <Select_Dropdown
-                bg_color='#fff'
-                value={createActionData.locationid} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: any) => ({ value: id, label: title }))}
-                // @ts-ignore
-                on_change_handle={(e: string) => addPatientFieldsChange(e.target.value, 'locationid')}
-                required={true} />
-
             </div>
 
 
@@ -562,24 +577,41 @@ const Patients = () => {
 
 
         </div> : <div className='grid grid-cols-2 gap-4'>
-          {
+          {/* {
             fields.filter(({ editable }: any) => editable).sort((a, b) => a.details_order - b.details_order).map(({ id, label, type, col_span_01, col_span_01_modal }: any) => {
-              return <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}>
-                {id === 'locationid' ? <Select_Dropdown
-                  bg_color='#fff'
-                  value={actionData ? actionData[id] : 0} label='Locations' start_empty={true} options_arr={locations.map(({ id, title }: any) => ({ value: id, label: title }))}
-                  // @ts-ignore
-                  on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, id)}
-                  required={true} /> : <Input_Component value={actionData ? actionData[id] : ''} type={type} border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, id)} label={label} />
-                }
-              </div>
-            })
-          }
+              return  */}
+
+          {/* <div key={id} className={col_span_01 || col_span_01_modal ? 'col-span-1' : 'col-span-2'}> */}
+
+
+          <div className={'col-span-1'}>
+
+            <Input_Component value={actionData ? actionData['firstname'] : ''} type='text' border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, 'firstname')} label={'First Name'} />
+          </div>
+          <div className={'col-span-1'}>
+
+            <Input_Component value={actionData ? actionData['lastname'] : ''} type='text' border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, 'lastname')} label={'Last Name'} />
+          </div>
+          <div className={'col-span-2'}>
+
+            <Input_Component value={actionData ? actionData['email'] : ''} type='text' border='border-2 border-gray-300 rounded-md' onChange={(e: string) => modalInputChangeHandle(e, 'email')} label={'Email'} />
+          </div>
+
+
+          <div className={'col-span-2'}>
+            <PhoneNumberInput value={actionData['phone']} onChange={(e: string) => modalInputChangeHandle(e, 'phone')} label='Phone Number' placeholder={''} breakpoint={false} />
+          </div>
+
+          {/* @ts-ignore */}
+          <Select_Dropdown value={actionData['treatmenttype']} bg_color='#fff' start_empty={true} options_arr={services?.map((service) => ({ value: service, label: service }))} required={true} on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, 'treatmenttype')}
+            label='Treatment Type' />
+
+
+
+          {/* @ts-ignore */}
+          <Select_Dropdown value={createActionData.gender} bg_color='#fff' start_empty={true} options_arr={['Male', 'Female'].map((gender) => ({ value: gender, label: gender }))} required={true} on_change_handle={(e: string) => modalInputChangeHandle(e.target.value, 'gender')} label='Gender' />
         </div>}
       </Custom_Modal>
-
-
-      {/* <Edit_Modal is_open={modalOpen} close_handle={close_modal_handle} /> */}
     </main>
   )
 }

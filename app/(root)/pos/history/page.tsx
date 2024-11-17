@@ -9,6 +9,8 @@ import OrderDetailsModal from './OrderDetailsModal'; // Import the modal
 import { CiSearch } from 'react-icons/ci';
 import TableComponent from '@/components/TableComponent';
 import ExportAsPDF from '@/components/ExportPDF';
+import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { Select } from 'flowbite-react';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -30,13 +32,13 @@ const tableHeader = [
   {
     id: 'name',
     label: 'Patient Name',
-    render_value: (val: any, elem?: any) => `${elem.pos.firstname} ${elem.pos.lastname}`,
+    render_value: (val: any, elem?: any) => `${elem?.pos?.firstname} ${elem?.pos?.lastname}`,
   },
   {
     id: 'total_price',
     label: 'Total Amount',
     render_value: (val: any, elem?: any) => {
-      const totalVal = elem.saleshistory.reduce((a: number, b: { total_price: number }) => a + b.total_price, 0);
+      const totalVal = elem.saleshistory.reduce((a: number, b: { total_price: number }) => a + b?.total_price, 0);
       return currencyFormatHandle(totalVal);
     }
   },
@@ -87,14 +89,40 @@ const SalesHistory = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<DataListInterface | null>(null);
 
-  const fetch_handle = async () => {
+  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+  const [preDefinedReasonList, setPreDefinedReasonList] = useState([])
+
+
+
+  const fetchReasonsList = async () => {
+    try {
+      const fetched_data: any = await fetch_content_service({
+        table: 'returnreasons',
+        language: '',
+      });
+      setPreDefinedReasonList(fetched_data || []);
+
+    } catch (error) {
+      // toast.error()
+      console.log(error)
+
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+
+  const fetch_handle = async (location_id: number) => {
     setLoading(true);
     const fetched_data = await fetch_content_service({
       table: 'orders',
       language: '',
-      selectParam: `,pos(
+      selectParam: `,pos:pos (
+        lastname,
         firstname,
-        lastname
+        locationid
       ),
       saleshistory (
         sales_history_id,
@@ -103,10 +131,15 @@ const SalesHistory = () => {
         quantity_sold,
         total_price
       )
-    `
+    `,
+      matchCase: {
+        key: 'pos.locationid', value: location_id
+      }
     });
-    setDataList(fetched_data);
-    setAllData(fetched_data);
+
+    const filteredData = fetched_data.filter((elem) => elem.pos !== null)
+    setDataList(filteredData);
+    setAllData(filteredData);
     setLoading(false);
   };
 
@@ -130,17 +163,35 @@ const SalesHistory = () => {
     }
   };
 
+
+  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = val.target.value
+
+    set_location_handle(value)
+  }
+
   useEffect(() => {
-    fetch_handle();
-  }, []);
+    if (selected_location) {
+      fetch_handle(selected_location);
+    }
+  }, [selected_location]);
 
-  console.log(dataList)
 
+  useEffect(() => {
+    fetchReasonsList()
+  }, [])
+  
   return (
     <main className="w-full h-full font-[500] text-[20px]">
       <div className='flex justify-between items-center px-4 py-4 space-x-2'>
         <h1 className='text-xl font-bold'>Sales History</h1>
-        <div>
+        <div className='flex items-center space-x-3'>
+          <div >
+            <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
+              {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
+            </Select>
+
+          </div>
           <ExportAsPDF tableData={formattedData(dataList)} />
         </div>
       </div>
@@ -158,7 +209,7 @@ const SalesHistory = () => {
 
       {/* Modal */}
       {selectedOrder && (
-        <OrderDetailsModal isOpen={modalOpen} onClose={closeModal} orderDetails={selectedOrder} />
+        <OrderDetailsModal preDefinedReasonList={preDefinedReasonList} isOpen={modalOpen} onClose={closeModal} orderDetails={selectedOrder} />
       )}
     </main>
   );

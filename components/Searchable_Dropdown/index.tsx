@@ -68,6 +68,7 @@ export const Searchable_Dropdown = ({
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setShowDropdown(false);
+                setSearchTerm('')
             }
         };
 
@@ -80,21 +81,23 @@ export const Searchable_Dropdown = ({
     return (
         <div className="w-full relative" ref={dropdownRef}>
             {label && <Label htmlFor="searchable-select" value={label} className="font-bold" />}
-            <input
+            <div onClick={() => {setShowDropdown(true), setSearchTerm('')}} className="w-full p-2 border border-gray-300 rounded" style={{ backgroundColor: bg_color }}>
+                <p className='text-base'>{options_arr.find((opt) => opt.value === selectedValue)?.label || label}</p>
+            </div>
+            {/* <input
                 type="text"
-                value={searchTerm || options_arr.find((opt) => opt.value === selectedValue)?.label || ''}
-                onChange={handleInputChange}
-                onFocus={() => setShowDropdown(true)}
+                value={options_arr.find((opt) => opt.value === selectedValue)?.label}
                 placeholder={label || 'Search...'}
+                onFocus={() => setShowDropdown(true)}
                 className="w-full p-2 border border-gray-300 rounded"
                 disabled={disabled}
                 style={{ backgroundColor: bg_color }}
                 required={required}
                 readOnly={false} // Set to false so user can type
-            />
+            /> */}
             {showDropdown && (
                 <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded max-h-48 overflow-auto text-base">
-                    {start_empty && (
+                    {/* {start_empty && (
                         <li
                             key="empty"
                             onClick={() => handleSelectOption(initialValue)}
@@ -102,7 +105,19 @@ export const Searchable_Dropdown = ({
                         >
                             {label || 'Select an option'}
                         </li>
-                    )}
+                    )} */}
+                    <input
+                        type="text"
+                        value={showDropdown ? searchTerm : options_arr.find((opt) => opt.value === selectedValue)?.label || ''}
+                        onChange={handleInputChange}
+                        onFocus={() => setShowDropdown(true)}
+                        placeholder={'Search...'}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        disabled={disabled}
+                        style={{ backgroundColor: '#f1f0f0' }}
+                        required={required}
+                        readOnly={false} // Set to false so user can type
+                    />
                     {filteredOptions.map(({ value, label, disabled }, ind) => (
                         <li
                             key={ind}
