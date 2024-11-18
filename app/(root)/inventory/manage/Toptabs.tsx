@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GoDotFill } from "react-icons/go";
 import { usePathname } from 'next/navigation'
 import EditIcon from "@/assets/svg_icons/Edit_Icon";
+import Location_Component from "@/components/Location_Component";
 
 const TopTabs = () => {
     const pathname = usePathname()
@@ -13,12 +14,12 @@ const TopTabs = () => {
             url: "/"
         },
         {
-            title: "Inventory",
-            url: "inventory"
-        },
-        {
             title: "Products",
             url: "products"
+        },
+        {
+            title: "Inventory",
+            url: "inventory"
         },
 
     ];
@@ -38,7 +39,10 @@ const TopTabs = () => {
 
                     </li>
                 ))}
+
+
             </ul>
+                <Location_Component />
 
 
         </nav>
