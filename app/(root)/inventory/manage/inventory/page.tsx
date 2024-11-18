@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Label, Select, Spinner } from 'flowbite-react';
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import moment from 'moment';
@@ -17,6 +17,7 @@ import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 import { useProductsClinica } from '@/hooks/useProductsClinica';
 import { useMasterProductsClinica } from '@/hooks/useMasterProductsClinica';
 import { Price_Input } from '@/components/Price_Input';
+import { LocationContext } from '@/context';
 
 
 interface DataListInterface {
@@ -59,11 +60,11 @@ const tableHeader = [
     id: 'actions',
     label: 'Action',
     align: 'text-right',
-    Render_Value: ({ clickHandle }: { clickHandle: (state: string) => void }) => {
+    Render_Value: ({ clickHandle, getDataArchiveType }: { clickHandle: (state: string) => void, getDataArchiveType: boolean }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label='Archive' onClick={() => clickHandle(modalStateEnum.DELETE)} bg_color='bg-[#FF6363]' />
-      </div>
+      <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} onClick={() => clickHandle(modalStateEnum.DELETE)} />
+    </div>
 
     }
 
@@ -74,24 +75,24 @@ const requiredInputFields = [
   {
     id: 'category_id',
     label: 'Category',
-    type:'select'
+    type: 'select'
   },
   {
     id: 'master_product_id',
     label: 'Product',
-    type:'select'
+    type: 'select'
   },
   {
     id: 'price',
     label: 'Price',
     colSpan: 'col-span-1',
-    type:'number'
+    type: 'number'
   },
   {
     id: 'quantity_available',
     label: 'Units',
     colSpan: 'col-span-1',
-    type:'number'
+    type: 'number'
   },
 ]
 
@@ -112,8 +113,12 @@ const Inventory = () => {
   const [sortColumn, setSortColumn] = useState('')
 
   const { products, onChangeCategory, loadingProducts, selectedCategory, selectedProduct, selectProductHandle } = useMasterProductsClinica()
+  const { selectedLocation } = useContext(LocationContext);
+  const [getDataArchiveType, setGetDataArchiveType] = useState(false);
 
-  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+
+
+
 
 
 
@@ -133,7 +138,7 @@ const Inventory = () => {
 
 
 
-  const fetch_handle = async (location_id: number) => {
+  const fetch_handle = async (archived: boolean, location_id: number) => {
     setLoading(true)
     const fetched_data = await fetch_content_service({
       table: 'inventory', language: '', selectParam: `,products(product_name,product_id,category_id, categories(category_name))`, matchCase: [
@@ -143,7 +148,7 @@ const Inventory = () => {
         },
         {
           key: 'archived',
-          value: false
+          value: archived
         },
         {
           key: 'products.archived',
@@ -184,10 +189,10 @@ const Inventory = () => {
 
 
   useEffect(() => {
-    if (selected_location) {
-      fetch_handle(selected_location);
+    if (selectedLocation) {
+      fetch_handle(getDataArchiveType, selectedLocation.id);
     }
-  }, [selected_location]);
+  }, [selectedLocation]);
 
 
   const modalInputChangeHandle = (key: string, value: string | number) => {
@@ -216,7 +221,7 @@ const Inventory = () => {
       const invenPostData = {
         price: modalData.price,
         quantity: modalData.quantity_available,
-        location_id: selected_location,
+        location_id: selectedLocation.id,
         product_id: modalData.master_product_id,
       }
 
@@ -232,7 +237,7 @@ const Inventory = () => {
       if (res_data?.length) {
         toast.success('Created successfully');
         closeModalHandle()
-        fetch_handle(selected_location);
+        fetch_handle(getDataArchiveType, selectedLocation.id);
       }
     }
     else {
@@ -242,7 +247,7 @@ const Inventory = () => {
           inventory_id: +modalData.product_id,
           price: +modalData.price,
           quantity: +modalData.quantity_available,
-          location_id: +selected_location,
+          location_id: +selectedLocation.id,
           product_id: modalData.master_product_id,
 
         }
@@ -250,7 +255,7 @@ const Inventory = () => {
         const res_data = await update_content_service({ table: 'inventory', language: '', post_data: postData, matchKey: 'inventory_id' });
         if (res_data?.length) {
           toast.success('Updated successfully');
-          fetch_handle(selected_location);
+          fetch_handle(getDataArchiveType, selectedLocation.id);
           closeModalHandle()
         }
 
@@ -276,10 +281,10 @@ const Inventory = () => {
 
 
   const onClickHandle = async (id: number) => {
-    const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: true, inventory_id: id } })
+    const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: !getDataArchiveType, inventory_id: id } })
     if (!error) {
-      fetch_handle(selected_location)
-      toast.success('Archived successfully');
+      fetch_handle(getDataArchiveType,  selectedLocation.id)
+      toast.success(getDataArchiveType ? "Inventory no longer archived" : 'Archived successfully');
     }
     else if (error) {
       console.log(error.message)
@@ -344,11 +349,42 @@ const Inventory = () => {
   }
 
 
-  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = val.target.value
+  useEffect(() => {
+    if (selectedLocation?.id) {
+      fetch_handle(getDataArchiveType, selectedLocation.id);
+    }
+  }, [getDataArchiveType, selectedLocation]);
 
-    set_location_handle(value)
-  }
+  const handleActiveClick = useCallback(() => {
+    setGetDataArchiveType(false);
+  }, []);
+
+  const handleArchiveClick = useCallback(() => {
+    setGetDataArchiveType(true);
+  }, []);
+
+  const RightSideComponent = useMemo(
+    () => (
+      <div className='text-sm text-gray-500 space-x-4 flex items-center justify-end'>
+        <button
+          onClick={handleActiveClick}
+          className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Active
+        </button>
+        <button
+          onClick={handleArchiveClick}
+          className={`${getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
+        >
+          Archive
+        </button>
+       
+      </div>
+    ),
+    [getDataArchiveType, handleActiveClick, handleArchiveClick]
+  );
+
+
 
   return (
     <main className="w-full  h-full font-[500] text-[20px]">
@@ -360,7 +396,7 @@ const Inventory = () => {
         <div className=' h-[100%]  col-span-2 rounded-md py-2   ' >
 
           <div className='px-3 py-4 flex justify-between items-center '>
-            <div className='flex items-center gap-x-3'>
+            <div className='flex items-center gap-x-3 '>
 
               <input onChange={onChangeHandle} type="text" placeholder="Search by Product" className=' px-1 py-3 w-72 text-sm rounded-md focus:outline-none bg-white' />
               <button onClick={() => openModalHandle(modalStateEnum.CREATE)}>
@@ -375,12 +411,7 @@ const Inventory = () => {
             </div>
 
 
-            <div >
-              <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-                {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
-              </Select>
-
-            </div>
+            {RightSideComponent}
 
 
 
@@ -419,7 +450,7 @@ const Inventory = () => {
                       {
                         tableHeader.map((element, ind) => {
                           const { id, Render_Value, align } = element
-                          const content = Render_Value ? <Render_Value clickHandle={(action: string) => buttonClickActionHandle(action, elem)} /> : elem[id]
+                          const content = Render_Value ? <Render_Value getDataArchiveType={getDataArchiveType} clickHandle={(action: string) => buttonClickActionHandle(action, elem)} /> : elem[id]
                           return <h1 key={ind} className={`flex-1 ${align || 'text-start'}  `}>
                             {id === 'category' ? elem.categories.category_name : content}
                           </h1>
