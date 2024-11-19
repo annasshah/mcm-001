@@ -225,10 +225,10 @@ const EmailBroadcast: React.FC = () => {
         return;
       }
 
-      console.log(selectedGender, onsite, location, treatmentType);
+     // console.log(selectedGender, onsite, location, treatmentType);
 
       const toastId = toast.loading("Loading...");
-      const res = await fetch("http://localhost:3000/api/sendEmail", {
+      const res = await fetch("/api/sendEmail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
