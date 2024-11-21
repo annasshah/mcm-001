@@ -118,6 +118,7 @@ export const routeList: Route[] = [
       { id: 2, name: "Website Content", route: "/tools/websitecontent" },
       { id: 3, name: "Text Broadcast", route: "/tools/textbroadcast" },
       { id: 4, name: "Promo Codes", route: "/tools/promo-codes" },
+      { id: 4, name: "User Management", route: "/tools/user-management" },
     ],
   },
 ];
