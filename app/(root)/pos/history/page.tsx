@@ -192,7 +192,7 @@ const SalesHistory = () => {
             </Select>
 
           </div>
-          <ExportAsPDF tableData={formattedData(dataList)} />
+          <ExportAsPDF  />
         </div>
       </div>
 
