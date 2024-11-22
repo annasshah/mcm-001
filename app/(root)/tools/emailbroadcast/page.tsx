@@ -219,22 +219,16 @@ const EmailBroadcast: React.FC = () => {
       if (
         !subject ||
         !name ||
-        !clinicName ||
-        !buttonText ||
-        !buttonLink ||
-        !startDate ||
-        !endDate ||
-        !reason ||
         !price
       ) {
         toast.error("All fields are necessary.", { position: "top-center" });
         return;
       }
 
-      console.log(selectedGender, onsite, location, treatmentType);
+     // console.log(selectedGender, onsite, location, treatmentType);
 
       const toastId = toast.loading("Loading...");
-      const res = await fetch("http://localhost:3000/api/sendEmail", {
+      const res = await fetch("/api/sendEmail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -275,7 +269,7 @@ const EmailBroadcast: React.FC = () => {
   };
 
   return (
-    <main className="w-full  text-[#B6B6B6] text-[20px] flex flex-row justify-start  overflow-hidden items-center mt-5  p-4">
+    <main className="w-full  text-[#000000] text-[20px] flex flex-row justify-start  overflow-hidden items-center mt-5  p-4">
       <div className=" w-[60%] h-full flex items-start   justify-start flex-col ">
         <div className="w-full h-full mt-[80px]">
           <div className="w-full flex flex-col">
