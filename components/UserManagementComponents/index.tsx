@@ -196,7 +196,7 @@ const UserManagementComponent = () => {
 
                                     const content = elem[id];
 
-                                    return (<div className={`${classNames ? classNames : 'flex-1'} ${align || 'text-start'}`}>
+                                    return (<div className={`${classNames ? classNames : 'flex-1'} ${align || 'text-start'}`} key={ind}>
                                         {id === 'toggle' ? <Switch /> : id === 'actions' ? <div className="flex items-center space-x-5 justify-end ">
                                             <MdPassword size={25} /><GoPencil size={25} />
 

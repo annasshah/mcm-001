@@ -72,7 +72,7 @@ const LocationModal = () => {
                                 {
                                     locations.map(({ title, id }: any) => {
                                         const isAddedList = selectedLocationlist.includes(id)
-                                        return <button onClick={() => selectLocationHandle(id, !isAddedList)} className='border-[1px] w-full border-gray-300 rounded-lg py-3 px-2 flex items-center space-x-4'>
+                                        return <button key={id} onClick={() => selectLocationHandle(id, !isAddedList)} className='border-[1px] w-full border-gray-300 rounded-lg py-3 px-2 flex items-center space-x-4'>
                                             <div>
                                                 {isAddedList ? <RiCheckboxBlankFill color='green' /> : <RiCheckboxBlankLine color='lightgray' />}
 
