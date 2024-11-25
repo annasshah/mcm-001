@@ -11,7 +11,7 @@ export default function layout({
 	children: React.ReactNode;
 }) {
 	return (
-		<div>
+		<div className="bg-gray-50">
 			<ActiveTabProvider>
 				<LocationProvider>
 
@@ -29,11 +29,11 @@ export default function layout({
 							<Navbar width={sidebarWidth} />
 
 							<section
-								className="flex-grow p-4"
+								className="flex-grow p-4 bg-gray-50"
 								// style={{ minHeight: "calc(100vh - 70px)" }}
 								style={{
 									minHeight: "100vh",
-									backgroundColor: "#FFFFFF",
+									// backgroundColor: ,
 								}}
 							>
 								{children}

@@ -137,7 +137,7 @@ export const SidebarPanel = () => {
 											<Sidebar.Item
 												key={item.id}
 												href={item.route}
-												className={`text-[#3A3541] text-left ${
+												className={`text-[#3A3541] text-left text-sm ${
 													pathname === item.route ? "text-[#0F4698]" : ""
 												}`}
 											>

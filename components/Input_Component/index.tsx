@@ -1,5 +1,6 @@
 import { Label } from 'flowbite-react'
-import React from 'react'
+import React, { useState } from 'react'
+import { LuEye, LuEyeOff } from "react-icons/lu";
 
 // Define props interface for the Input_Component
 interface InputComponentProps {
@@ -7,16 +8,17 @@ interface InputComponentProps {
     bg_color?: string;
     border?: string;
     py?: string;
-    onChange: (value:any) => void; // Accepting both string and boolean for value
+    onChange: (value: any) => void; // Accepting both string and boolean for value
     value?: string | boolean; // value can be string or boolean
     placeholder?: string;
     type?: string;
     min?: string; // Keep as string to match HTML input attributes
     max?: string;
-  }
+    passwordEye?: boolean
+}
 
 
-export const Input_Component:React.FC<InputComponentProps> = ({
+export const Input_Component: React.FC<InputComponentProps> = ({
     label,
     bg_color = 'bg-white',
     border = '',
@@ -26,10 +28,18 @@ export const Input_Component:React.FC<InputComponentProps> = ({
     placeholder = '',
     type = 'text',
     min = '',
-    max = ''
+    max = '',
+    passwordEye = false
 }) => {
     console.log({ min, max })
-    
+
+    const [showPassword, setShowPassword] = useState(false)
+
+
+    const togglePassHandle = () => {
+        setShowPassword((pre) => !pre)
+    }
+
     return (
         <div className='w-full space-y-2'>
             {label && <Label htmlFor="section" value={label} className='font-bold' />}
@@ -60,17 +70,23 @@ export const Input_Component:React.FC<InputComponentProps> = ({
                         </label>
                     </div>
                 ) : (
-                    <input
-                        min={min}
-                        max={100}
-                        // @ts-ignore
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        type={type}
-                        placeholder={placeholder}
-                        className={`w-full h-auto p-3 rounded-lg ${bg_color} ${py} px-3`}
-                        id="section"
-                    />
+                    <div className='flex w-full items-center pr-3'>
+                        <input
+                            min={min}
+                            max={100}
+                            // @ts-ignore
+                            value={value}
+                            onChange={(e) => onChange(e.target.value)}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder={placeholder}
+                            className={`w-full h-auto p-3 rounded-lg ${bg_color} ${py} px-3 flex-1`}
+                            id="section"
+                        />
+                        {passwordEye ? <button onClick={togglePassHandle}>
+                            {showPassword ? <LuEyeOff /> : <LuEye />}
+                        </button> : null}
+
+                    </div>
                 )}
             </div>
         </div>
