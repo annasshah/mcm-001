@@ -1,11 +1,10 @@
 'use client'
-import React, { FC, useEffect, useState } from 'react'
-import { Button, Select, Spinner } from 'flowbite-react';
-import moment from 'moment';
+import React, { FC, useContext, useEffect, useState } from 'react'
+import { Button, Spinner } from 'flowbite-react';
 import { delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
 import { toast } from 'react-toastify';
-import { useLocationClinica } from '@/hooks/useLocationClinica';
+import { LocationContext } from '@/context';
 
 interface DataListInterface {
     return_id: number;
@@ -38,25 +37,6 @@ interface DataListInterface {
         };
     };
 }
-
-
-
-// BFH793
-// Marco Barfiled
-// Order ID
-// Return ID
-// 20 - 10 - 2024
-// 20 - 10 - 2024
-// Patient name
-// Patient ID
-// 20 - 10 - 2024
-// 20 - 10 - 2024
-// Amount
-// Patient Phone
-// Expired.
-// Patient Email
-// Expired.
-//     Reason
 
 const detailsArray = (dataDetails: DataListInterface) => [
     {
@@ -109,14 +89,14 @@ interface Props {
 const Returns: FC<Props> = () => {
 
 
-    const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
-
-
     const [dataList, setDataList] = useState<DataListInterface[]>([])
     const [allData, setAllData] = useState<DataListInterface[]>([])
     const [dataDetails, setDataDetails] = useState<DataListInterface | null>(null)
     const [loading, setLoading] = useState(true)
     const [deleteLoading, setDeleteLoading] = useState(false)
+
+
+    const { selectedLocation } = useContext(LocationContext);
 
 
     const [sortOrder, setSortOrder] = useState(-1)
@@ -148,7 +128,7 @@ const Returns: FC<Props> = () => {
     const fetch_handle = async (location_id: any) => {
         setLoading(true)
         // @ts-ignore
-        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: `,sales_history(order_id, orders(patient_id,  pos(firstname,lastname,phone,email,locationid ))),inventory(price, products(product_name, categories(category_name)))`, matchCase: [{ key: 'merge', value: false }, { key: 'sales_history.orders.pos.locationid', value: location_id }], filterOptions: [{ operator: 'not', column: 'sales_history.orders.pos', value: null }]  });
+        const fetched_data: any = await fetch_content_service({ table: 'returns', selectParam: `,sales_history(order_id, orders(patient_id,  pos(firstname,lastname,phone,email,locationid ))),inventory(price, products(product_name, categories(category_name)))`, matchCase: [{ key: 'merge', value: false }, { key: 'sales_history.orders.pos.locationid', value: location_id }], filterOptions: [{ operator: 'not', column: 'sales_history.orders', value: null }, { operator: 'not', column: 'sales_history.orders.pos', value: null }, { operator: 'not', column: 'sales_history', value: null }] });
         // const filteredData = fetched_data.filter((elem: any) => elem.saleshistory.orders.pos !== null)
         setDataList(fetched_data)
         setAllData(fetched_data)
@@ -158,10 +138,10 @@ const Returns: FC<Props> = () => {
     }
 
     useEffect(() => {
-        if (selected_location) {
-            fetch_handle(selected_location);
+        if (selectedLocation) {
+            fetch_handle(selectedLocation.id);
         }
-    }, [selected_location]);
+    }, [selectedLocation]);
 
 
 
@@ -267,11 +247,11 @@ const Returns: FC<Props> = () => {
 
     }
 
-    const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = val.target.value
+    // const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const value = val.target.value
 
-        set_location_handle(value)
-    }
+    //     set_location_handle(value)
+    // }
 
 
 
@@ -283,12 +263,12 @@ const Returns: FC<Props> = () => {
                     Returns
                 </h1>
 
-                <div >
+                {/* <div >
                     <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
                         {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
                     </Select>
 
-                </div>
+                </div> */}
 
             </div>
 
@@ -352,7 +332,7 @@ const Returns: FC<Props> = () => {
                                 <Spinner size='xl' />
                             </div> :
                                 dataList.length > 0 ? dataList.map((elem) => {
-                                    const { return_id, quantity, sales_history: { order_id }, inventory: {products: { product_name, categories: { category_name }} } } = elem
+                                    const { return_id, quantity, sales_history: { order_id }, inventory: { products: { product_name, categories: { category_name } } } } = elem
                                     return <div key={return_id} onClick={() => detailsViewHandle(elem)} className='cursor-pointer hover:bg-gray-500 hover:text-white flex items-center flex-1 font-semibold bg-white px-3 py-4 rounded-md '>
                                         <h1 className='ms-4 flex-1 text-start'>
                                             {return_id}

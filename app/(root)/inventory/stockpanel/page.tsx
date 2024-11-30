@@ -3,7 +3,6 @@ import React, { useEffect, useState, useCallback, useMemo, useContext } from 're
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import InventoryCards from './InventoryCards';
 import TableComponent from '@/components/TableComponent';
-import Location_Component from '@/components/Location_Component';
 import { LocationContext } from '@/context';
 
 interface DataListInterface {
@@ -113,7 +112,7 @@ const StockPanel = () => {
 
   const RightSideComponent = useMemo(
     () => (
-      <div className='text-sm text-gray-500 space-x-4 mr-6 flex items-center'>
+      <div className='text-sm text-gray-500 space-x-4 flex items-center'>
         <button
           onClick={handleActiveClick}
           className={`${!getDataArchiveType ? 'bg-primary_color text-white' : 'bg-gray-400 text-white'} px-3 py-2 rounded-md`}
@@ -126,9 +125,7 @@ const StockPanel = () => {
         >
           Archive
         </button>
-        <div className='w-72'>
 
-        </div>
       </div>
     ),
     [getDataArchiveType, handleActiveClick, handleArchiveClick]

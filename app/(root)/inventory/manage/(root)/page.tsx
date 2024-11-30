@@ -1,12 +1,10 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Select, Spinner } from 'flowbite-react';
-import { HiMiniChevronUpDown } from "react-icons/hi2";
-import moment from 'moment';
+import { Button, Spinner } from 'flowbite-react';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { toast } from 'react-toastify';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
@@ -34,8 +32,8 @@ const tableHeader = [
     Render_Value: ({ val, onClickHandle, isLoading, getDataArchiveType }: { val?: string, onClickHandle?: () => void, isLoading?: boolean, getDataArchiveType: boolean }) => {
 
       return <div className='space-x-4'>
-      <Action_Button isLoading={isLoading} onClick={onClickHandle} label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} />
-      {/* <Action_Button  isLoading={isLoading} onClick={onClickHandle} label={'Delete'} bg_color={'bg-red-700'} /> */}
+        <Action_Button isLoading={isLoading} onClick={onClickHandle} label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} />
+        {/* <Action_Button  isLoading={isLoading} onClick={onClickHandle} label={'Delete'} bg_color={'bg-red-700'} /> */}
       </div>
 
     }
@@ -63,7 +61,6 @@ const Categories = () => {
   const [getDataArchiveType, setGetDataArchiveType] = useState(false);
 
 
-  // const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
 
 
 
@@ -80,7 +77,7 @@ const Categories = () => {
 
   const fetch_handle = async (archive: boolean) => {
     setLoading(true)
-    const fetched_data = await fetch_content_service({ table: 'categories',selectParam:',products:products!inner()' , matchCase: { key: 'archived', value: archive }, language: '' });
+    const fetched_data = await fetch_content_service({ table: 'categories', selectParam: ',products:products!inner()', matchCase: { key: 'archived', value: archive }, language: '' });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)
@@ -303,14 +300,14 @@ const Categories = () => {
           <div className='bg-white w-full max-w-xl px-4 py-3 rounded-lg'>
 
             <h1 className='font-bold text-xl text-black mb-5'>Confirmation</h1>
-            <p className='text-lg'>Do you really want to {getDataArchiveType ?  "Unarchive" : "Archive" } this category</p>
-            <p className='text-sm'>Remember All of the associated products will also be {getDataArchiveType ?  "Unarchive" : "Archive" } with the category</p>
+            <p className='text-lg'>Do you really want to {getDataArchiveType ? "Unarchive" : "Archive"} this category</p>
+            <p className='text-sm'>Remember All of the associated products will also be {getDataArchiveType ? "Unarchive" : "Archive"} with the category</p>
 
 
             <div className='mt-4 flex items-center space-x-3 justify-end'>
               <Button disabled={deleteLoading} onClick={() => setActiveDeleteId(0)} color="gray">Cancel</Button>
               <Button isProcessing={deleteLoading} color={"failure"} onClick={deleteHandle}>
-                {getDataArchiveType ?  "Unarchive" : "Archive" }
+                {getDataArchiveType ? "Unarchive" : "Archive"}
               </Button>
             </div>
 

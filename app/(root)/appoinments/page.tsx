@@ -1,19 +1,18 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
-import { IoMdArrowDropdown } from "react-icons/io";
 import { delete_appointment_service, fetchAppointmentsByLocation, fetchLocations } from '@/utils/supabase/data_services/data_services'
 import { Select, Spinner } from "flowbite-react";
 import { useLocationClinica } from '@/hooks/useLocationClinica'
 import Moment from 'moment';
-import { supabase } from "@/services/supabase";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { Calendar, DatePicker, Input } from "antd";
+import { DatePicker } from "antd";
 import { Appointment_Edit_Modal } from "@/components/Appointment/Appointment_Edit/Appointment_Edit_Modal";
 import { Add_Appointment_Modal } from "@/components/Appointment/Add_Appointment_Modal";
 import { formatPhoneNumber } from "@/utils/getCountryName";
+import { LocationContext } from "@/context";
 
 export interface Location {
   id: number;
@@ -193,34 +192,27 @@ const Appoinments = () => {
   const [sortOrder, setSortOrder] = useState(-1)
 
 
+  const { selectedLocation } = useContext(LocationContext);
 
 
-  useEffect(() => {
+
+  const fetchDataHandler = async (locationId: number) => {
     setAppoint_loading(true)
-
-      ; (async function getLocations() {
-        const data = await fetchLocations()
-        const appoint_data: any = await fetchAppointmentsByLocation(null)
-        setAllAppointments(appoint_data)
-        setAppointments(appoint_data)
-        setAppoint_loading(false)
-        // console.log(data)
-      })()
-
-  }, [])
-
-
-
-  const select_change_handle = async (e: any) => {
-    const value = e.target.value
     setAppointment_details(null)
-    setAppoint_loading(true)
-    const data: any = await fetchAppointmentsByLocation(value)
-    setAllAppointments(data)
-    setAppointments(data)
+    const appoint_data: any = await fetchAppointmentsByLocation(locationId)
+    setAllAppointments(appoint_data)
+    setAppointments(appoint_data)
     setAppoint_loading(false)
     // console.log(data)
   }
+
+
+  useEffect(() => {
+    if (selectedLocation) {
+      fetchDataHandler(selectedLocation.id)
+    }
+
+  }, [selectedLocation])
 
   const find_locations = (location_id: number) => {
     const find_location = locations.find((location: LocationInterface) => location.id === location_id)
@@ -228,8 +220,6 @@ const Appoinments = () => {
   }
 
   const select_for_details_handle = (appoint: any) => {
-    console.log(find_locations(appoint.location_id))
-
     setAppointment_details(appoint)
   }
 
@@ -287,8 +277,7 @@ const Appoinments = () => {
     setAppoint_loading(true)
 
       ; (async function getLocations() {
-        const data = await fetchLocations()
-        const appoint_data: any = await fetchAppointmentsByLocation(null)
+        const appoint_data: any = await fetchAppointmentsByLocation(selectedLocation.id)
         setAllAppointments(appoint_data)
         setAppointments(appoint_data)
         setAppoint_loading(false)
@@ -404,16 +393,7 @@ const Appoinments = () => {
             </div>
           </div>
         </div>
-        <div className="w-1/4 ">
-          <div >
-            <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-              <option selected value=''>All locations</option>
-              {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.address}</option>)}
-            </Select>
-
-          </div>
-        </div>
-
+       
       </div>
 
 
@@ -460,7 +440,7 @@ const Appoinments = () => {
               <div className=" font-semibold space-y-4 flex-1 text-black">
                 {render_detail_keys.map((elem, index: any) => {
                   const key: string = elem.key
-                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.address : key === 'phone' ? formatPhoneNumber(appointment_details?.phone)  :appointment_details ? appointment_details[key as keyof typeof Appoinments] : '-'}</span></h1>
+                  return <h1 key={index}>{elem.label}: <span className="font-normal">{elem.date_format ? Moment(appointment_details['created_at']).format('LLL') : elem.type === 'date_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[0] : elem.type === 'time_slot' && appointment_details?.date_and_time ? appointment_details?.date_and_time?.split('|')?.[1]?.split(' - ')[1] : elem.key === 'location' ? appointment_details?.location?.address : key === 'phone' ? formatPhoneNumber(appointment_details?.phone) : appointment_details ? appointment_details[key as keyof typeof Appoinments] : '-'}</span></h1>
                 })}
               </div>
 
