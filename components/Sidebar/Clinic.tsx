@@ -1,5 +1,6 @@
 import { clinca_logo } from "@/assets/images";
 import Image from "next/image";
+import ChangeLocationModal from "./ChangeLocationModal";
 // import ChangeLocationModal from "./ChangeLocationModal";
 
 export const Clinic = () => {
@@ -13,8 +14,8 @@ export const Clinic = () => {
           className="w-[30px] h-[30px] object-contain rounded-[5px]"
         />
         <div className="flex flex-col items-start justify-center">
-          <h3 className="text-[#FFFFFF] text-[12px]">Clinca San Miguel</h3>
-          <p className="text-[#FFFFFF] text-[10px]">River Oaks Road</p>
+          {/* <h3 className="text-[#FFFFFF] text-[12px]">Clinca San Miguel</h3> */}
+          <ChangeLocationModal />
         </div>
       </div>
     </article>

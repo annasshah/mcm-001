@@ -1,8 +1,6 @@
 'use client'
-import { Select_Dropdown } from '@/components/Select_Dropdown';
 import React, { FC, useEffect, useState } from 'react'
 import { Quantity_Field } from '@/components/Quantity_Field';
-import { RxReload } from "react-icons/rx";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import { Select } from 'flowbite-react';
@@ -18,12 +16,6 @@ import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 import PromoCodeComponent from '@/components/PromoCodeComponent';
 import { PromoCodeDataInterface } from '@/types/typesInterfaces';
 import { formatPhoneNumber } from '@/utils/getCountryName';
-// interface PatientDetailsInterface {
-//     name: string;
-//     phone_number: string;
-//     email: string;
-//     treatment_category: string;
-// }
 
 interface CartItemComponentInterface {
     data: CartArrayInterface,

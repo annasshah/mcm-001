@@ -1,20 +1,16 @@
 'use client'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Label, Select, Spinner } from 'flowbite-react';
-import { HiMiniChevronUpDown } from "react-icons/hi2";
-import moment from 'moment';
+import { Spinner } from 'flowbite-react';
 import Image from 'next/image';
 import PlusIcon from "@/assets/images/Logos/plus-icon.png"
 import { Action_Button } from '@/components/Action_Button';
-import { create_content_service, delete_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
+import { create_content_service, fetch_content_service, update_content_service } from '@/utils/supabase/data_services/data_services';
 import { Custom_Modal } from '@/components/Modal_Components/Custom_Modal';
 import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
-import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
-import { useProductsClinica } from '@/hooks/useProductsClinica';
 import { useMasterProductsClinica } from '@/hooks/useMasterProductsClinica';
 import { Price_Input } from '@/components/Price_Input';
 import { LocationContext } from '@/context';
@@ -63,8 +59,8 @@ const tableHeader = [
     Render_Value: ({ clickHandle, getDataArchiveType }: { clickHandle: (state: string) => void, getDataArchiveType: boolean }) => {
 
       return <div className='flex items-end justify-end space-x-2'>
-      <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} onClick={() => clickHandle(modalStateEnum.DELETE)} />
-    </div>
+        <Action_Button onClick={() => clickHandle(modalStateEnum.UPDATE)} label='Update' bg_color='bg-[#6596FF]' /> <Action_Button label={getDataArchiveType ? 'Unarchive' : 'Archive'} bg_color={getDataArchiveType ? 'bg-green-400' : 'bg-[#FF6363]'} onClick={() => clickHandle(modalStateEnum.DELETE)} />
+      </div>
 
     }
 
@@ -283,7 +279,7 @@ const Inventory = () => {
   const onClickHandle = async (id: number) => {
     const { error }: any = await update_content_service({ table: 'inventory', matchKey: 'inventory_id', post_data: { archived: !getDataArchiveType, inventory_id: id } })
     if (!error) {
-      fetch_handle(getDataArchiveType,  selectedLocation.id)
+      fetch_handle(getDataArchiveType, selectedLocation.id)
       toast.success(getDataArchiveType ? "Inventory no longer archived" : 'Archived successfully');
     }
     else if (error) {
@@ -378,7 +374,7 @@ const Inventory = () => {
         >
           Archive
         </button>
-       
+
       </div>
     ),
     [getDataArchiveType, handleActiveClick, handleArchiveClick]

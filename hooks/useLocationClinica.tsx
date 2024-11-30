@@ -4,15 +4,16 @@ import { fetchLocations, updateLocationData } from '@/utils/supabase/data_servic
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
+const LOCAL_STORAGE_KEY = "@location";
 
 
 export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
     const { defaultSetFirst = false } = params
 
-    const {  selectedLocation, setSelectedLocation } = useContext(LocationContext);
+    const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
 
-    console.log({selectedLocation})
+    console.log({ selectedLocation })
 
     const [locations, setLocations] = useState([])
 
@@ -31,7 +32,7 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
 
         const data = locations.find((item: { id: number | string; }) => item.id == value)
-        console.log({data})
+        localStorage.setItem(LOCAL_STORAGE_KEY, value.toLocaleString())
         setSelected_location_data(data)
         setSelectedLocation(data)
         setChange_data(data)
@@ -61,27 +62,31 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
             toast.success('Updated successfully');
         }
         // console.log(res_data);
-        setSelected_location_data(()=>res_data[0]);
+        setSelected_location_data(() => res_data[0]);
         set_update_loading(false);
         set_is_edited(false);
     };
-
-
-
-
-
 
 
     useEffect(() => {
         !(async function fetch_data() {
             const data = await fetchLocations()
             setLocations(data);
-            if (defaultSetFirst) {
-                setSelected_location(data[0].id);
-                setSelected_location_data(data[0])
-                setSelectedLocation(data[0])
-                setChange_data(data[0])
-                
+            const locationRecord = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+            if (data.length) {
+                let findLocation:any = data[0]
+
+                if (locationRecord) {
+                    findLocation = data.find((item: { id: number | string }) => item.id == +locationRecord);
+                }
+                else {
+                    localStorage.setItem(LOCAL_STORAGE_KEY, findLocation.id.toLocaleString())
+                }
+                setSelected_location(findLocation.id);
+                setSelected_location_data(findLocation)
+                setSelectedLocation(findLocation)
+                setChange_data(findLocation)
             }
         })()
 

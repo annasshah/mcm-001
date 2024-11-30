@@ -21,6 +21,7 @@ interface LocationProviderProps {
 // Location provider component
 export const LocationProvider = ({ children }: LocationProviderProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  
 
   return (
     <LocationContext.Provider value={{ selectedLocation, setSelectedLocation }}>
