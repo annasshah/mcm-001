@@ -42,9 +42,6 @@ const TopTabs = () => {
 
 
             </ul>
-                <Location_Component />
-
-
         </nav>
     );
 }

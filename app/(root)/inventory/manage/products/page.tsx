@@ -10,7 +10,6 @@ import { Input_Component } from '@/components/Input_Component';
 import { toast } from 'react-toastify';
 import { useCategoriesClinica } from '@/hooks/useCategoriesClinica'
 import { PiCaretUpDownBold } from "react-icons/pi";
-import { useLocationClinica } from '@/hooks/useLocationClinica';
 import { Searchable_Dropdown } from '@/components/Searchable_Dropdown';
 
 

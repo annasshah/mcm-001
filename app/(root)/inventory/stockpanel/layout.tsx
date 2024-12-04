@@ -9,9 +9,6 @@ const layout: React.FC<LayoutProps> = ({
 }) => {
     return (
         <div className='mt-16' >
-            <div className='absolute top-72 right-10 mt-1'>
-                <Location_Component />
-            </div>
             {children}
         </div>
     )

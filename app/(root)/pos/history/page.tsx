@@ -1,16 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { currencyFormatHandle } from '@/helper/common_functions';
-import { CircularProgress } from '@mui/material';
 import OrderDetailsModal from './OrderDetailsModal'; // Import the modal
-import { CiSearch } from 'react-icons/ci';
 import TableComponent from '@/components/TableComponent';
 import ExportAsPDF from '@/components/ExportPDF';
-import { useLocationClinica } from '@/hooks/useLocationClinica';
-import { Select } from 'flowbite-react';
+import { LocationContext } from '@/context';
 
 interface DataListInterface {
   [key: string]: any; // This allows dynamic property access
@@ -89,7 +86,9 @@ const SalesHistory = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<DataListInterface | null>(null);
 
-  const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+  // const { locations, set_location_handle, selected_location } = useLocationClinica({ defaultSetFirst: true })
+  const { selectedLocation } = useContext(LocationContext);
+
   const [preDefinedReasonList, setPreDefinedReasonList] = useState([])
 
 
@@ -164,17 +163,12 @@ const SalesHistory = () => {
   };
 
 
-  const select_location_handle = (val: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = val.target.value
-
-    set_location_handle(value)
-  }
 
   useEffect(() => {
-    if (selected_location) {
-      fetch_handle(selected_location);
+    if (selectedLocation) {
+      fetch_handle(selectedLocation.id);
     }
-  }, [selected_location]);
+  }, [selectedLocation]);
 
 
   useEffect(() => {
@@ -186,12 +180,6 @@ const SalesHistory = () => {
       <div className='flex justify-between items-center px-4 py-4 space-x-2'>
         <h1 className='text-xl font-bold'>Sales History</h1>
         <div className='flex items-center space-x-3'>
-          <div >
-            <Select onChange={select_location_handle} defaultValue={selected_location} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-              {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
-            </Select>
-
-          </div>
           <ExportAsPDF  />
         </div>
       </div>

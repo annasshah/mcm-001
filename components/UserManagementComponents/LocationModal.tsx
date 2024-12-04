@@ -88,10 +88,6 @@ const LocationModal = () => {
 
                             </div>
 
-
-
-
-
                         </div>
                     </div>
                 </div>

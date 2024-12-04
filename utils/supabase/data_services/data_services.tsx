@@ -98,7 +98,10 @@ export async function fetch_content_service({
     if (Array.isArray(matchCase)) {
       // Apply each filter in the array
       matchCase.forEach((condition) => {
-        query = query.eq(condition.key, condition.value,);
+        if(condition){
+          query = query.eq(condition.key, condition.value,);
+        }
+        
       });
     } else {
       // Apply single match case

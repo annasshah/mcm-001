@@ -1,12 +1,11 @@
 'use client'
-import React, { FC, useEffect, useState } from 'react'
-import { Select, Spinner } from 'flowbite-react';
-import { CiFilter } from "react-icons/ci";
-import { useLocationClinica } from '@/hooks/useLocationClinica';
+import React, { FC, useContext, useEffect, useState } from 'react'
+import {Spinner } from 'flowbite-react';
 import moment from 'moment';
 import { fetch_content_service } from '@/utils/supabase/data_services/data_services';
 import { PiCaretUpDownBold } from 'react-icons/pi';
 import { formatPhoneNumber } from '@/utils/getCountryName';
+import { LocationContext } from '@/context';
 
 interface DataListInterface {
   id: number;
@@ -58,7 +57,8 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
 
 
 
-  const { locations } = useLocationClinica()
+  const { selectedLocation } = useContext(LocationContext);
+
 
   const [dataList, setDataList] = useState<DataListInterface[]>([])
   const [allData, setAllData] = useState<DataListInterface[]>([])
@@ -90,10 +90,10 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
 
 
 
-  const fetch_handle = async () => {
+  const fetch_handle = async (locationid: number) => {
     setLoading(true)
     // @ts-ignore
-    const fetched_data: any = await fetch_content_service({ table: 'allpatients', language: '', matchCase: queries[renderType] });
+    const fetched_data: any = await fetch_content_service({ table: 'allpatients', language: '', matchCase: [queries[renderType], { key: 'locationid', value: locationid }] });
     setDataList(fetched_data)
     setAllData(fetched_data)
     setLoading(false)
@@ -102,8 +102,8 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
   }
 
   useEffect(() => {
-    fetch_handle()
-  }, [])
+    fetch_handle(selectedLocation?.id || 0)
+  }, [,selectedLocation])
 
 
 
@@ -157,19 +157,19 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
   }
 
 
-  const select_change_handle = (e: any) => {
-    const selectedId = e.target.value
+  // const select_change_handle = (e: any) => {
+  //   const selectedId = e.target.value
 
-    setDataList(() => {
-      if (!selectedId) {
-        return allData
-      }
-      else {
-        return allData.filter(({ locationid }) => locationid === +selectedId)
-      }
-    })
+  //   setDataList(() => {
+  //     if (!selectedId) {
+  //       return allData
+  //     }
+  //     else {
+  //       return allData.filter(({ locationid }) => locationid === +selectedId)
+  //     }
+  //   })
 
-  }
+  // }
 
 
   return (
@@ -180,13 +180,7 @@ const Patient_Table_Component: FC<Props> = ({ renderType = 'all' }) => {
           All pateints
         </h1>
 
-        <div >
-          <Select onChange={select_change_handle} style={{ backgroundColor: '#D9D9D9' }} id="locations" required>
-            <option selected value=''>All locations</option>
-            {locations.map((location: any, index: any) => <option key={index} value={location.id}>{location.title}</option>)}
-          </Select>
-
-        </div>
+      
       </div>
 
 
