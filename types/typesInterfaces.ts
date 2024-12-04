@@ -3,3 +3,13 @@ export interface PromoCodeDataInterface {
     id: number
 
 }
+
+
+export interface CreateUserModalDataInterface {
+    email: string;
+    roleId: number;
+    locationIds: number[];
+    fullName:string
+    password:string
+
+}

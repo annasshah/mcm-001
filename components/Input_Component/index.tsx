@@ -1,5 +1,5 @@
 import { Label } from 'flowbite-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LuEye, LuEyeOff } from "react-icons/lu";
 
 // Define props interface for the Input_Component
@@ -39,6 +39,14 @@ export const Input_Component: React.FC<InputComponentProps> = ({
     const togglePassHandle = () => {
         setShowPassword((pre) => !pre)
     }
+
+    useEffect(() => {
+        if(!passwordEye){
+            setShowPassword(true)
+        }
+
+    }, [])
+    
 
     return (
         <div className='w-full space-y-2'>
@@ -82,7 +90,7 @@ export const Input_Component: React.FC<InputComponentProps> = ({
                             className={`w-full h-auto p-3 rounded-lg ${bg_color} ${py} px-3 flex-1`}
                             id="section"
                         />
-                        {passwordEye ? <button onClick={togglePassHandle}>
+                        {passwordEye ? <button type='button' onClick={togglePassHandle}>
                             {showPassword ? <LuEyeOff /> : <LuEye />}
                         </button> : null}
 
