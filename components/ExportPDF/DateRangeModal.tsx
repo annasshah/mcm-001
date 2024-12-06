@@ -69,9 +69,10 @@ export default function DateRangeModal({
                 aria-labelledby="date-range-modal-title"
                 aria-describedby="date-range-modal-description"
             >
-                <div className='w-full h-full flex justify-center items-center ' >
+                <div className='w-full h-full flex justify-CENTER items-center ' >
                     <div className='bg-white rounded-md px-3 py-3'>
                         <h2 id="date-range-modal-title" className='mb-4 font-bold'>Select a Date Range</h2>
+                        {/* @ts-ignore */}
                         <DateRangePicker
                             ranges={[selectionRange]}
                             onChange={handleSelect}
