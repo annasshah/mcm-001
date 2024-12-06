@@ -34,7 +34,7 @@ export const POST = async (req: Request) => {
         await supabaseAdmin.from('user_locations').insert(userLocations);
 
         await supabaseAdmin.auth.resetPasswordForEmail(email, {
-            redirectTo: 'http://localhost:3000/set-password',
+            redirectTo: 'https://login.myclinicmd.com/set-password',
         });
 
 
