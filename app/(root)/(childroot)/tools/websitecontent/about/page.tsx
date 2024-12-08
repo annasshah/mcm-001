@@ -1,10 +1,10 @@
 "use client"
 import React from 'react';
-import WebsiteContentLayout from '@/app/(root)/tools/websitecontent/Layout';
 import { useSingleRowDataHandle } from '@/hooks/useSingleRowDataHandle'
 import { Select_Dropdown } from '@/components/Select_Dropdown'
 import { about_section_options, langage_list_options } from '@/utils/list_options/dropdown_list_options'
 import { Form_Component } from '@/components/Form_Component';
+import WebsiteContentLayout from '../Layout';
 
 
 const only_fields_to_render: any = {

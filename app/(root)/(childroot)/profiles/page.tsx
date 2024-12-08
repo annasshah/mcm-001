@@ -1,5 +1,6 @@
-import ProfileHeader from "../../../components/Profile/ProfileHeader";
-import ProfileSection from "../../../components/Profile/ProfileSection";
+import ProfileHeader from "@/components/Profile/ProfileHeader";
+import ProfileSection from "@/components/Profile/ProfileSection";
+
 
 const Profiles = () => {
   return (
