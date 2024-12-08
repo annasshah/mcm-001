@@ -1,11 +1,7 @@
-// pages/api/createUser.ts
-
-import { supabase } from '@/services/supabase';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { parse } from 'path';
 
-export const supabaseAdmin = createClient(
+const supabaseAdmin:any = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
