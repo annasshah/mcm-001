@@ -13,9 +13,9 @@ interface PropsInterface {
 }
 
 const roles = [
-    { id: 1, label: 'Admin' },
-    { id: 2, label: 'Manager' },
-    { id: 3, label: 'Inventory Manager' },
+    { id: 2, label: 'Admin' },
+    { id: 3, label: 'Manager' },
+    { id: 4, label: 'sales person'},
 ];
 
 export default function AddEditUserModal({
@@ -105,6 +105,16 @@ export default function AddEditUserModal({
                                         type='email'
                                         border="border-[1px] border-gray-300 rounded-md"
                                         onChange={(value) => handleInputChange('email', value)}
+                                    />
+                                </div>
+                                <div className="col-span-full">
+                                    <Input_Component
+                                        value={formData.password}
+                                        passwordEye
+                                        placeholder="Password"
+                                        type='password'
+                                        border="border-[1px] border-gray-300 rounded-md"
+                                        onChange={(value) => handleInputChange('password', value)}
                                     />
                                 </div>
 

@@ -12,6 +12,10 @@ export async function middleware(request: NextRequest) {
   // Retrieve user session
   const path_start_with = pathname.startsWith('/login')
 
+  if (pathname.startsWith('/set-password')) {
+    return NextResponse.next()
+  }
+
   // await updateSession(request);
 
   if (session) {

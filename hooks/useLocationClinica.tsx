@@ -1,5 +1,5 @@
 const { useEffect, useState } = require("react");
-import { LocationContext } from '@/context';
+import { AuthContext, LocationContext } from '@/context';
 import { fetchLocations, updateLocationData } from '@/utils/supabase/data_services/data_services'
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
@@ -13,7 +13,7 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
 
     const { selectedLocation, setSelectedLocation } = useContext(LocationContext);
 
-    console.log({ selectedLocation })
+    const { allowedLocations, userRole } = useContext(AuthContext);
 
     const [locations, setLocations] = useState([])
 
@@ -71,14 +71,24 @@ export function useLocationClinica(params: { defaultSetFirst?: boolean } = {}) {
     useEffect(() => {
         !(async function fetch_data() {
             const data = await fetchLocations()
-            setLocations(data);
+
             const locationRecord = localStorage.getItem(LOCAL_STORAGE_KEY);
 
+
             if (data.length) {
-                let findLocation:any = data[0]
+                let findLocation: any = data[0]
+
+                const filterLocations = userRole === 'super admin' ? data : data.filter((loc) => allowedLocations.includes(loc.id))
+
+                setLocations(filterLocations);
 
                 if (locationRecord) {
-                    findLocation = data.find((item: { id: number | string }) => item.id == +locationRecord);
+                    findLocation = filterLocations.find((item: { id: number | string }) => item.id == +locationRecord);
+
+                    if (!locationRecord) {
+                        findLocation = filterLocations[0]
+                        localStorage.setItem(LOCAL_STORAGE_KEY, findLocation.id.toLocaleString())
+                    }
                 }
                 else {
                     localStorage.setItem(LOCAL_STORAGE_KEY, findLocation.id.toLocaleString())

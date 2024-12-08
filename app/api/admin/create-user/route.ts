@@ -1,20 +1,23 @@
 // pages/api/createUser.ts
 
+import { supabase } from '@/services/supabase';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { parse } from 'path';
 
-const supabaseAdmin = createClient(
+export const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export const POST = async (req: Request) => {
 
-    const { email, roleId = 1, locationIds, fullName } = await req.json();
+    const { email, roleId = 1, locationIds, fullName, password } = await req.json();
 
     try {
         const { data: user, error } = await supabaseAdmin.auth.admin.createUser({
             email,
+            password: password || null,
             email_confirm: true,
         });
 
@@ -33,9 +36,11 @@ export const POST = async (req: Request) => {
 
         await supabaseAdmin.from('user_locations').insert(userLocations);
 
-        await supabaseAdmin.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://login.myclinicmd.com/set-password',
-        });
+        if (!password) {
+            await supabaseAdmin.auth.resetPasswordForEmail(email, {
+                redirectTo: 'http://localhost:3000/set-password',
+            });
+        }
 
 
         return NextResponse.json(
@@ -47,3 +52,4 @@ export const POST = async (req: Request) => {
         return NextResponse.json({ message: error?.message || 'Internal Server Error' }, { status: 500 });
     }
 }
+

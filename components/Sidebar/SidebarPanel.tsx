@@ -3,21 +3,64 @@ import { CustomFlowbiteTheme, Sidebar } from "flowbite-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-// constants
 import { routeList } from "./constant";
 
-// context
 import { useContext, useEffect, useMemo } from "react";
-import { TabContext } from "@/context";
-
-// icons
+import { AuthContext, TabContext } from "@/context";
 import { FaChevronRight } from "react-icons/fa";
+
+
+interface Route {
+	id: number;
+	name: string;
+	icon?: {
+		src: string;
+		height: number;
+		width: number;
+	};
+	route?: string;
+	children?: Route[];
+}
 
 export const SidebarPanel = () => {
 	const pathname = usePathname();
 
-	const memoizedRouteList = useMemo(() => {
-		return routeList;
+	const { allowedLocations, userRole, permissions } = useContext(AuthContext);
+
+	const memoizedRouteList = useMemo((): Route[] => {
+
+		if(userRole === 'super admin'){
+			return routeList
+		}else{
+		const allowedRoutes = permissions;
+
+		const filterRoutes = (routes: Route[]): Route[] => {
+			return routes
+				.map((route) => {
+					const isParentAllowed = allowedRoutes.some((perm:any) =>
+						route.name.toLowerCase().includes(perm.toLowerCase())
+					);
+
+					if (isParentAllowed) {
+						return route;
+					}
+					if (route.children) {
+						const filteredChildren = filterRoutes(route.children);
+						if (filteredChildren.length > 0) {
+							return {
+								...route,
+								children: filteredChildren,
+							};
+						}
+					}
+					return null;
+				})
+				.filter((route): route is Route => route !== null);
+		};
+
+		return filterRoutes(routeList);
+		}
+		
 	}, []);
 
 	const customTheme: CustomFlowbiteTheme["sidebar"] = {
@@ -96,9 +139,8 @@ export const SidebarPanel = () => {
 											</div>
 										}
 										labelColor="transparent"
-										className={`text-[#3A3541] hover:bg-[#0F4698] hover:bg-opacity-30  ${
-											isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
-										}`}
+										className={`text-[#3A3541] hover:bg-[#0F4698] hover:bg-opacity-30  ${isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
+											}`}
 									>
 										<h3>{list.name}</h3>
 									</Sidebar.Item>
@@ -127,9 +169,8 @@ export const SidebarPanel = () => {
 											/>
 										)}
 										label={list.name}
-										className={`text-[#3A3541] hover:bg-[#0F4698] transition-all ease-out delay-75 hover:bg-opacity-30  ${
-											isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
-										}`}
+										className={`text-[#3A3541] hover:bg-[#0F4698] transition-all ease-out delay-75 hover:bg-opacity-30  ${isRouteActive ? "bg-[#0F4698] bg-opacity-30" : ""
+											}`}
 										// onClick={() => handleCollapseClick(list.id)}
 										open={isRouteActive}
 									>
@@ -137,9 +178,8 @@ export const SidebarPanel = () => {
 											<Sidebar.Item
 												key={item.id}
 												href={item.route}
-												className={`text-[#3A3541] text-left text-sm ${
-													pathname === item.route ? "text-[#0F4698]" : ""
-												}`}
+												className={`text-[#3A3541] text-left text-sm ${pathname === item.route ? "text-[#0F4698]" : ""
+													}`}
 											>
 												{item.name}
 											</Sidebar.Item>
