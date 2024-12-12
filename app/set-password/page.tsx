@@ -68,3 +68,5 @@ export default function SetPassword() {
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';

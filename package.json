@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "fast-dev": "next dev --turbo",
-    "build": "next build",
+    "build": "cross-env NODE_OPTIONS='--no-deprecation' next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install"
@@ -62,6 +62,7 @@
     "@types/react-date-range": "^1.4.9",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "husky": "^8.0.0",
@@ -73,6 +74,5 @@
   "main": "yes",
   "repository": "yes",
   "author": "yes",
-  "license": "MIT",
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
+  "license": "MIT"
 }
