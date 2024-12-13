@@ -3,9 +3,9 @@ import React, { FC, useState } from 'react'
 import { Custom_Modal } from '../../Modal_Components/Custom_Modal'
 import ScheduleDateTime, { DayTimings } from './ScheduleDateTime'
 import moment from 'moment'
-import { Appointment, LocationInterface } from '@/app/(root)/appoinments/page'
 import { update_appointment_service } from '@/utils/supabase/data_services/data_services'
 import { toast } from 'react-toastify'
+import { Appointment, LocationInterface } from '@/app/(root)/(childroot)/appoinments/page'
 
 interface Appointment_Edit_Modal_Props {
     location_data: LocationInterface;

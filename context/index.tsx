@@ -1,6 +1,5 @@
-import { ActiveTabProvider } from "./ActiveTabContext";
-
-import { TabContext } from "./ActiveTabContext";
+import { TabContext, ActiveTabProvider } from "./ActiveTabContext";
 import { LocationContext, LocationProvider } from "./LocationContext";
+import { AuthContext, AuthProvider } from "./AuthContext";
 
-export { ActiveTabProvider, TabContext, LocationProvider, LocationContext };
+export { ActiveTabProvider, TabContext, LocationProvider, LocationContext, AuthContext, AuthProvider  };

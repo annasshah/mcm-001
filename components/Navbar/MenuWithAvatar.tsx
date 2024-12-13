@@ -3,13 +3,18 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Avatar } from "@/assets/images";
 import { signOut } from '@/actions/supabase_auth/action';
+import { AuthContext } from '@/context';
 
 
 export default function MenuWithAvatar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const {userProfile, userRole } = useContext(AuthContext);
+
+
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -44,9 +49,9 @@ export default function MenuWithAvatar() {
 
                     <div className="flex flex-col items-start justify-center">
                         <div className="text-[#121111] text-[16px] font-semibold">
-                            Raheel
+                           {userProfile?.full_name}
                         </div>
-                        <div className="text-[#121111] text-[12px]">Admin</div>
+                        <div className="text-[#121111] text-xs">{userRole}</div>
                     </div>
                 </div>
             </Button>

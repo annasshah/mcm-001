@@ -72,6 +72,7 @@ export default function DateRangeModal({
                 <div className='w-full h-full flex justify-center items-center ' >
                     <div className='bg-white rounded-md px-3 py-3'>
                         <h2 id="date-range-modal-title" className='mb-4 font-bold'>Select a Date Range</h2>
+                        {/* @ts-ignore */}
                         <DateRangePicker
                             ranges={[selectionRange]}
                             onChange={handleSelect}
